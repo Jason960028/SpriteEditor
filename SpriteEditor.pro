@@ -15,6 +15,7 @@ SOURCES += \
     saveload.cpp \
     spriteEditorModel.cpp \
     spriteEditorView.cpp \
+    spriteeitorcontroller.cpp \
     tools.cpp
 
 HEADERS += \
@@ -23,6 +24,7 @@ HEADERS += \
     saveload.h \
     spriteEditorModel.h \
     spriteEditorView.h \
+    spriteeitorcontroller.h \
     tools.h
 
 FORMS += \

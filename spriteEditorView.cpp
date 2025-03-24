@@ -1,5 +1,5 @@
-#include "spriteeditorview.h"
-#include "ui_spriteeditorview.h"
+#include "spriteEditorView.h"
+#include "ui_spriteEditorView.h"
 
 SpriteEditorView::SpriteEditorView(QWidget *parent)
     : QMainWindow(parent)

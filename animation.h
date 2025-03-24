@@ -3,8 +3,10 @@
 
 class animation
 {
-public:
-    animation();
+
+    public:
+        animation();
+
 };
 
 #endif // ANIMATION_H

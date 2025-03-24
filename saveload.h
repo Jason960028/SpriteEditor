@@ -3,8 +3,10 @@
 
 class saveLoad
 {
-public:
-    saveLoad();
+
+    public:
+        saveLoad();
+
 };
 
 #endif // SAVELOAD_H

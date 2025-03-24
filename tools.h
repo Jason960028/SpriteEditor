@@ -3,8 +3,10 @@
 
 class tools
 {
-public:
-    tools();
+
+    public:
+        tools();
+
 };
 
 #endif // TOOLS_H

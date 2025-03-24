@@ -3,8 +3,11 @@
 
 class canvas
 {
-public:
-    canvas();
+    public:
+        canvas();
+
+    private:
+
 };
 
 #endif // CANVAS_H

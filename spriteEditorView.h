@@ -2,26 +2,43 @@
 #define SPRITEEDITORVIEW_H
 
 #include <QMainWindow>
+#include <QColorDialog>
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
+class QListWidget;
+class QSlider;
+class CanvasWidget;
+class AnimationPreview;
 
-    class SpriteEditorView;
-
-}
-
-QT_END_NAMESPACE
-
-class SpriteEditorView : public QMainWindow
+class spriteEditorView : public QMainWindow
 {
     Q_OBJECT
+public:
+    explicit spriteEditorView(QWidget *parent = nullptr);
 
-    public:
-        SpriteEditorView(QWidget *parent = nullptr);
-        ~SpriteEditorView();
+    // UI Getters
+    CanvasWidget* canvas() const;
+    AnimationPreview* animationPreview() const;
+    QColor selectedColor() const;
+    int selectedTool() const;
+    int fps() const;
 
-    private:
-        Ui::SpriteEditorView *ui;
+public slots:
+    void updateFrameList(const QList<QImage>& frames);
+    void setCurrentFrame(const QImage& frame);
+    void setPreviewEnabled(bool enabled);
+
+
+
+
+private:
+    void setupUi();
+    void setupToolbar();
+
+    CanvasWidget *m_canvas;
+    AnimationPreview *m_animationPreview;
+    QListWidget *m_frameList;
+    QColorDialog *m_colorDialog;
+    QSlider *m_fpsSlider;
 };
 
-#endif // SPRITEEDITORVIEW_H
+#endif

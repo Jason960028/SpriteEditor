@@ -1,3 +1,3 @@
-#include "spriteEditorControl.h"
+#include "SpriteEditorControl.h"
 
 spriteEitorController::spriteEitorController() {}

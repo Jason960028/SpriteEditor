@@ -1,3 +1,3 @@
-#include "canvas.h"
+#include "Canvas.h"
 
 canvas::canvas() {}

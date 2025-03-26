@@ -1,3 +1,3 @@
-#include "animation.h"
+#include "Animation.h"
 
 animation::animation() {}

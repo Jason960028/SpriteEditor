@@ -1,4 +1,4 @@
-#include "spriteEditorView.h"
+#include "SpriteEditorView.h"
 
 #include <QApplication>
 

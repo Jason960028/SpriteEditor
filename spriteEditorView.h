@@ -24,10 +24,13 @@ public:
     ~spriteEditorView();
 
 private slots:
-
+    // handle the addFrame button and call model to update
     void onAddFrameClicked();
+    // handle the deleteFrame button and call model to update
     void onRemoveFrameClicked();
+    // handle playButton and call preview to play
     void onPlayClicked();
+    // handle stopButton and call preview to stop
     void onStopClicked();
 
 private:

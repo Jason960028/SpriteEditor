@@ -13,7 +13,7 @@ spriteEditorView::spriteEditorView(spriteEditorModel* model,
     ui(new Ui::spriteEditorView),
     m_model(model),
     m_controller(controller),
-    m_canvasWidget(new canvas(this)),
+    //m_canvasWidget(new canvas(this)),
     m_penTool(nullptr),
     m_eraserTool(nullptr),
     m_activeTool(nullptr)
@@ -28,7 +28,7 @@ spriteEditorView::spriteEditorView(spriteEditorModel* model,
 
     // Initialize with first frame
     if (m_model->frameCount() > 0) {
-        m_canvas->setImage(m_model->getFrame(0));
+        //m_canvas->setImage(m_model->getFrame(0));
     }
 }
 
@@ -93,26 +93,7 @@ void spriteEditorView::connectSignals()
     });
 }
 
-void spriteEditorView::onPenClicked()
-{
-    m_activeTool = m_penTool;
-    //m_controller->setActiveTool(m_activeTool);
-    m_penButton->setChecked(true);
-    m_eraserButton->setChecked(false);
-}
 
-void spriteEditorView::onEraserClicked()
-{
-    m_activeTool = m_eraserTool;
-    //m_controller->setActiveTool(m_activeTool);
-    m_eraserButton->setChecked(true);
-    m_penButton->setChecked(false);
-}
-
-void spriteEditorView::onAddFrameClicked()
-{
-    m_model->addFrame();
-}
 
 void spriteEditorView::onRemoveFrameClicked()
 {

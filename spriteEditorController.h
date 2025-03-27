@@ -35,6 +35,7 @@ signals:
 public slots:
     void onPenClicked();
     void onEraserClicked();
+void paintUpdate(); // handle the Qimage data by calling model
 
 private:
     spriteEditorModel* m_model;

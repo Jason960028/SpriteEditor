@@ -15,12 +15,16 @@ public:
 
     // create a new project
     void createNewProject(int width, int height);
+
     // add new frame
     void addFrame();
+
     // remove the current frame
-    void removeFrame(int index);
-    // get the selected frame index
+    void removeFrame();
+
+    // get the selected frame by index
     QImage getFrame(int index) const;
+
     // frame number for preview fps
     int frameCount() const;
 
@@ -29,18 +33,24 @@ public:
 
     // save the current project to be Json file
     bool saveProject(const QString &filename);
+
     // load the project from Json file
     bool loadProject(const QString &filename);
-
-    // current selected color
-    QColor currentColor() const;
 
     // return current Canvas size (for new frame usage)
     QSize frameSize() const;
 
+    // use index to change current frame
     void setCurrentFrame(int index);
+
     // slot to update the current selected color
     void setCurrentColor(const QColor &color);
+
+    //getCurrentColor
+    QColor getCurrentColor();
+
+    //get current index
+    int getCurrentIndex();
 
 
 
@@ -51,6 +61,7 @@ signals:
     void framesUpdated();
     // signal is sent to View to update the selected color
     void colorChanged(QColor color);
+    void frameListChanged();
 
 private:
     // current frame
@@ -66,10 +77,10 @@ private:
     QImage jsonToFrame(const QJsonObject &json) const;
 
     // current tool
-    Tools *currentTool;
+    Tools *m_currentTool;
 
     //current frame
-    QImage currentFrame;
+    QImage m_currentFrame;
 };
 
 #endif // SPRITEEDITORMODEL_H

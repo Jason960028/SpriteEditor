@@ -24,12 +24,10 @@ void spriteEditorController::setActiveTool(Tools::Type toolType)
     emit toolChanged(toolType);
 }
 
+// connect to Canvas mouse clicked signal
 void spriteEditorController::handlePixelClick(int x, int y)
 {
-    if (m_activeTool && m_model) {
-        QPoint p(x,y);
-        m_activeTool->apply(m_model, p);
-    }
+    m_model->setPixel(x, y);
 }
 
 void spriteEditorController::handlePixelDrag(int x, int y)
@@ -47,7 +45,7 @@ void spriteEditorController::addFrame()
 void spriteEditorController::removeCurrentFrame()
 {
     if (m_model && m_model->frameCount() > 1) {
-        m_model->removeFrame(m_model->currentFrameIndex());
+        m_model->removeFrame();
     }
 }
 

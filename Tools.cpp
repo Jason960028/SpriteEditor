@@ -1,150 +1,119 @@
+/**
+ * @file tools.cpp
+ * @brief Implements the Tools class, providing core drawing tool logic for the sprite editor.
+ *
+ * This file includes the implementation of pixel-editing tools such as Pen, Eraser,
+ * and Fill, as well as utility functions to convert tool-specific types to Qt types.
+ * The fill tool uses a breadth-first flood fill algorithm.
+ *
+ * @author Jason Chang
+ */
+
 #include "tools.h"
-#include <QPainter>
-#include <QStack>
+#include <QQueue>
+#include <QSet>
 
-Tools::Tools() : m_currentTool(TOOL_TYPE::PEN),
-                 m_currentColor(COLOR_TYPE::BLACK),
-                 m_penSize(1),
-                 m_eraserSize(1) {
-}
+Tools::Tools() {}
 
-void Tools::selectTool(TOOL_TYPE tool) {
-    m_currentTool = tool;
-}
-
-Tools::TOOL_TYPE Tools::currentTool() const {
-    return m_currentTool;
-}
-
-void Tools::setColor(COLOR_TYPE color) {
-    m_currentColor = color;
-}
-
-Tools::COLOR_TYPE Tools::currentColor() const {
-    return m_currentColor;
-}
-
-QColor Tools::toQColor(COLOR_TYPE color) {
-    switch (color) {
-        case COLOR_TYPE::BLACK:       return QColor(Qt::black);
-        case COLOR_TYPE::WHITE:       return QColor(Qt::white);
-        case COLOR_TYPE::GRAY:        return QColor(Qt::gray);
-        case COLOR_TYPE::RED:         return QColor(Qt::red);
-        case COLOR_TYPE::MEAT:        return QColor(255, 102, 102);
-        case COLOR_TYPE::DARK_BROWN:  return QColor(101, 67, 33);
-        case COLOR_TYPE::BROWN:       return QColor(150, 75, 0);
-        case COLOR_TYPE::ORANGE:      return QColor(255, 165, 0);
-        case COLOR_TYPE::YELLOW:      return QColor(Qt::yellow);
-        case COLOR_TYPE::DARK_GREEN:  return QColor(0, 100, 0);
-        case COLOR_TYPE::GREEN:       return QColor(Qt::green);
-        case COLOR_TYPE::SLIME_GREEN: return QColor(50, 205, 50);
-        case COLOR_TYPE::NIGHT_BLUE:  return QColor(25, 25, 112);
-        case COLOR_TYPE::SEA_BLUE:    return QColor(70, 130, 180);
-        case COLOR_TYPE::SKY_BLUE:    return QColor(135, 206, 235);
-        case COLOR_TYPE::CLOUD_BLUE:  return QColor(176, 196, 222);
-        default:                      return QColor(Qt::black);
+QColor Tools::getQColor(ColorType colorType) {
+    switch (colorType) {
+    case ColorType::Black:       return QColor(0, 0, 0);
+    case ColorType::White:       return QColor(255, 255, 255);
+    case ColorType::Gray:        return QColor(128, 128, 128);
+    case ColorType::Red:         return QColor(255, 0, 0);
+    case ColorType::Meat:        return QColor(255, 150, 150);
+    case ColorType::DarkBrown:   return QColor(101, 67, 33);
+    case ColorType::Brown:       return QColor(150, 100, 50);
+    case ColorType::Orange:      return QColor(255, 165, 0);
+    case ColorType::Yellow:      return QColor(255, 255, 0);
+    case ColorType::DarkGreen:   return QColor(0, 100, 0);
+    case ColorType::Green:       return QColor(0, 255, 0);
+    case ColorType::SlimeGreen:  return QColor(50, 205, 50);
+    case ColorType::NightBlue:   return QColor(25, 25, 112);
+    case ColorType::SeaBlue:     return QColor(0, 105, 148);
+    case ColorType::SkyBlue:     return QColor(135, 206, 235);
+    case ColorType::CloudBlue:   return QColor(200, 230, 255);
+    default:                     return QColor(0, 0, 0);
     }
 }
 
-void Tools::applyTool(QImage &image, const QPoint &position) {
-    switch (m_currentTool) {
-        case TOOL_TYPE::PEN:
-            applyPen(image, position);
-            break;
-        case TOOL_TYPE::ERASER:
-            applyEraser(image, position);
-            break;
-        case TOOL_TYPE::FILL:
-            applyFill(image, position);
-            break;
+void Tools::applyTool(QImage& image, const QPoint& pos, ToolType toolType, ColorType colorType) {
+    // Check if position is within image bounds
+    if (pos.x() < 0 || pos.x() >= image.width() ||
+        pos.y() < 0 || pos.y() >= image.height()) {
+        return;
+    }
+
+    QColor color = getQColor(colorType);
+
+    switch (toolType) {
+    case ToolType::Pen:
+        image.setPixelColor(pos, color);
+        break;
+    case ToolType::Eraser:
+        image.setPixelColor(pos, Qt::transparent);
+        break;
+    case ToolType::Fill:
+        fillArea(image, pos, color);
+        break;
     }
 }
 
-void Tools::applyPen(QImage &image, const QPoint &position) {
-    int halfSize = m_penSize / 2;
-    QColor drawColor = toQColor(m_currentColor);
-
-    for (int offsetY = -halfSize; offsetY <= halfSize; ++offsetY) {
-
-        for (int offsetX = -halfSize; offsetX <= halfSize; ++offsetX) {
-            QPoint currentposition = position + QPoint(offsetX, offsetY);
-
-            if (image.rect().contains(currentposition)) {
-                image.setPixelColor(currentposition, drawColor);
-            }
-        }
+QColor Tools::getColorAt(const QImage& image, const QPoint& pos) {
+    if (pos.x() >= 0 && pos.x() < image.width() &&
+        pos.y() >= 0 && pos.y() < image.height()) {
+        return image.pixelColor(pos);
     }
+    return Qt::transparent;
 }
 
-void Tools::applyEraser(QImage &image, const QPoint &position) {
-    int halfSize = m_eraserSize / 2;
-    QColor eraserColor = QColor(Qt::white);
+void Tools::fillArea(QImage& image, const QPoint& startPos, const QColor& fillColor) {
+    // Get the color at the starting position — this is the target color to be replaced
+    QColor targetColor = image.pixelColor(startPos);
 
-    for (int offsetY = -halfSize; offsetY <= halfSize; ++offsetY) {
-
-        for (int offsetX = -halfSize; offsetX <= halfSize; ++offsetX) {
-            QPoint currentposition = position + QPoint(offsetX, offsetY);
-
-            if (image.rect().contains(currentposition)) {
-                image.setPixelColor(currentposition, eraserColor);
-            }
-        }
-    }
-}
-
-void Tools::applyFill(QImage &image, const QPoint &position) {
-    QColor targetColor = image.pixelColor(position);
-    QColor fillColor = toQColor(m_currentColor);
-
+    // If the target color is the same as the fill color, there's nothing to do
     if (targetColor == fillColor) {
         return;
     }
 
-    QStack<QPoint> pointStack;
-    pointStack.push(position);
+    // Use BFS (Breadth-First Search) approach with a queue for filling
+    QQueue<QPoint> queue;     // Queue to manage pixels to process
+    QSet<QPoint> visited;     // Set to track already-visited positions and prevent infinite loops
 
-    while (!pointStack.isEmpty()) {
-        QPoint currentPoint = pointStack.pop();
+    // Start from the initial pixel
+    queue.enqueue(startPos);
+    visited.insert(startPos);
 
-        if (!image.rect().contains(currentPoint)) {
-            continue;
+    // Direction vectors for 4-connected neighbors (up, right, down, left)
+    int dx[] = {0, 1, 0, -1};
+    int dy[] = {-1, 0, 1, 0};
+
+    // Process the queue until all connected targetColor pixels are filled
+    while (!queue.isEmpty()) {
+        QPoint current = queue.dequeue();
+
+        // Fill the current pixel with the new color
+        image.setPixelColor(current, fillColor);
+
+        // Check all 4 neighboring pixels
+        for (int i = 0; i < 4; ++i) {
+            QPoint next(current.x() + dx[i], current.y() + dy[i]);
+
+            // Skip if next point is out of bounds
+            if (next.x() < 0 || next.x() >= image.width() ||
+                next.y() < 0 || next.y() >= image.height()) {
+                continue;
+            }
+
+            // Skip if already visited or the color does not match the target
+            if (visited.contains(next)) {
+                continue;
+            }
+
+            if (image.pixelColor(next) == targetColor) {
+                queue.enqueue(next);        // Add to queue for processing
+                visited.insert(next);       // Mark as visited
+            }
         }
-        if (image.pixelColor(currentPoint) != targetColor) {
-            continue;
-        }
-
-        image.setPixelColor(currentPoint, fillColor);
-        pointStack.push(QPoint(currentPoint.x() + 1, currentPoint.y()));
-        pointStack.push(QPoint(currentPoint.x() - 1, currentPoint.y()));
-        pointStack.push(QPoint(currentPoint.x(), currentPoint.y() + 1));
-        pointStack.push(QPoint(currentPoint.x(), currentPoint.y() - 1));
     }
-}
-
-void Tools::setPenSize(int size) {
-    if (size < 1) {
-        size = 1;
-    } else if (size > 9) {
-        size = 9;
-    }
-
-    m_penSize = size;
-}
-
-int Tools::penSize() const {
-    return m_penSize;
-}
-
-void Tools::setEraserSize(int size) {
-    if (size < 1) {
-        size = 1;
-    } else if (size > 9) {
-        size = 9;
-    }
-
-    m_eraserSize = size;
-}
-
-int Tools::eraserSize() const {
-    return m_eraserSize;
 }

@@ -1,143 +1,98 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
-#include <QWidget>
+/**
+ * @file tools.h
+ * @brief Declares the Tools class, which provides basic drawing functionality for the sprite editor.
+ *
+ * This class includes definitions for available tool types and color palettes,
+ * along with static utility functions to apply drawing actions (pen, eraser, fill)
+ * on a QImage-based canvas.
+ *
+ *
+ * @author Jason Chang
+ */
+
 #include <QImage>
-#include <QMouseEvent>
-#include <QRect>
 #include <QColor>
 #include <QPoint>
 
 /**
- * @brief The Tools class provides drawing operations for the sprite editor.
+ * @class Tools
+ * @brief Static utility class providing drawing tool functionality.
  */
 class Tools {
-
 public:
     /**
-     * @brief Enumeration for tool types.
+     * @enum ToolType
+     * @brief Tool types available in the sprite editor.
      */
-    enum class TOOL_TYPE {
-        PEN,
-        ERASER,
-        FILL
+    enum class ToolType {
+        Pen,
+        Eraser,
+        Fill
     };
 
     /**
-     * @brief Enumeration for color types.
+     * @enum ColorType
+     * @brief Color palette for the sprite editor.
      */
-    enum class COLOR_TYPE {
-        BLACK,
-        WHITE,
-        GRAY,
-        RED,
-        MEAT,
-        DARK_BROWN,
-        BROWN,
-        ORANGE,
-        YELLOW,
-        DARK_GREEN,
-        GREEN,
-        SLIME_GREEN,
-        NIGHT_BLUE,
-        SEA_BLUE,
-        SKY_BLUE,
-        CLOUD_BLUE
+    enum class ColorType {
+        Black,
+        White,
+        Gray,
+        Red,
+        Meat,
+        DarkBrown,
+        Brown,
+        Orange,
+        Yellow,
+        DarkGreen,
+        Green,
+        SlimeGreen,
+        NightBlue,
+        SeaBlue,
+        SkyBlue,
+        CloudBlue
     };
 
     /**
-     * @brief Constructs a Tools object with default settings.
+     * @brief Constructs a Tools object.
      */
     Tools();
 
     /**
-     * @brief Select a drawing tool.
-     * @param tool The tool type to select.
-     */
-    void selectTool(TOOL_TYPE tool);
-
-    /**
-     * @brief Returns the currently selected tool.
-     * @return The current tool type.
-     */
-    TOOL_TYPE currentTool() const;
-
-    /**
-     * @brief Set the current drawing color.
-     * @param color The color type.
-     */
-    void setColor(COLOR_TYPE color);
-
-    /**
-     * @brief Returns the current drawing color.
-     * @return The current color type.
-     */
-    COLOR_TYPE currentColor() const;
-
-    /**
-     * @brief Converts a COLOR_TYPE to a QColor.
-     * @param color The color type.
+     * @brief Converts a ColorType to a QColor.
+     * @param colorType The ColorType to convert.
      * @return The corresponding QColor.
      */
-    static QColor toQColor(COLOR_TYPE color);
+    static QColor getQColor(ColorType colorType);
 
     /**
-     * @brief Applies the current tool to the given image at a specified positionition.
+     * @brief Applies a tool at a specific position.
      * @param image The image to modify.
-     * @param position The positionition where the tool is applied.
+     * @param pos The position to apply the tool.
+     * @param toolType The tool to use.
+     * @param colorType The color to use (ignored for Eraser).
      */
-    void applyTool(QImage &image, const QPoint &position);
+    static void applyTool(QImage& image, const QPoint& pos, ToolType toolType, ColorType colorType);
 
     /**
-     * @brief Sets the brush size for the pen tool.
-     * @param size Brush size (allowed values: 1 to 9).
+     * @brief Gets the color at the specified position.
+     * @param image The image to sample from.
+     * @param pos The position to sample at.
+     * @return The color at the specified position.
      */
-    void setPenSize(int size);
-
-    /**
-     * @brief Returns the current brush size for the pen tool.
-     * @return The pen brush size.
-     */
-    int penSize() const;
-
-    /**
-     * @brief Sets the brush size for the eraser tool.
-     * @param size Brush size (allowed values: 1 to 9).
-     */
-    void setEraserSize(int size);
-
-    /**
-     * @brief Returns the current brush size for the eraser tool.
-     * @return The eraser brush size.
-     */
-    int eraserSize() const;
+    static QColor getColorAt(const QImage& image, const QPoint& pos);
 
 private:
-    TOOL_TYPE m_currentTool;      ///< Currently selected drawing tool.
-    COLOR_TYPE m_currentColor;    ///< Currently selected drawing color.
-    int m_penSize;                ///< Brush size for the pen tool.
-    int m_eraserSize;             ///< Brush size for the eraser tool.
-
     /**
-     * @brief Applies the pen tool to the image.
+     * @brief Fills an area with a specified color using a flood-fill algorithm.
      * @param image The image to modify.
-     * @param positionition The positionitionition to draw.
+     * @param startPos The starting position for the fill.
+     * @param fillColor The color to fill with.
      */
-    void applyPen(QImage &image, const QPoint &position);
-
-    /**
-     * @brief Applies the eraser tool to the image.
-     * @param image The image to modify.
-     * @param position The positionition to erase.
-     */
-    void applyEraser(QImage &image, const QPoint &position);
-
-    /**
-     * @brief Applies the fill tool to the image.
-     * @param image The image to modify.
-     * @param position The starting positionition for fill.
-     */
-    void applyFill(QImage &image, const QPoint &position);
+    static void fillArea(QImage& image, const QPoint& startPos, const QColor& fillColor);
 };
 
 #endif // TOOLS_H

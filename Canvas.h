@@ -1,76 +1,74 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
+/**
+ * @file canvas.h
+ * @brief Declares the Canvas class responsible for displaying and interacting with pixel-based sprites.
+ *
+ * The Canvas class provides a QWidget-based drawable surface for editing sprites. It supports mouse interaction,
+ * zoom-scaling, grid rendering, and updating pixel images with external frame data.
+ *
+ * @author Jason Chang
+ */
+
 #include <QWidget>
 #include <QImage>
+#include <QVector>
+#include <QColor>
 #include "tools.h"
 
 /**
- * @brief The Canvas class implements the sprite editor canvas.
- *
- * This widget handles user mouse events to modify a QImage representing the sprite.
+ * @class Canvas
+ * @brief A QWidget that provides pixel-level editing for sprite images.
  */
 class Canvas : public QWidget {
     Q_OBJECT
 
-    public:
+public:
+    /**
+     * @brief Constructs a Canvas object.
+     * @param parent The parent QWidget (default is nullptr).
+     */
+    explicit Canvas(QWidget* parent = nullptr);
 
-        /**
-         * @brief Constructs a CanvasWidget with an optional parent widget.
-         * @param parent Pointer to the parent widget.
-         */
-        explicit Canvas(QWidget *parent = nullptr);
+    /**
+     * @brief Updates the displayed image on the canvas.
+     * @param frameImage The new frame image to render.
+     */
+    void updateCanvas(const QImage& frameImage);
 
-        /**
-         * @brief Provides a minimum size hint for the canvas.
-         * @return The minimum size.
-         */
-        QSize minimumSizeHint() const override;
+    /**
+     * @brief Converts screen coordinates to image pixel coordinates.
+     * @param screenPos The position on the screen.
+     * @return The corresponding image position, or (-1, -1) if out of bounds.
+     */
+    QPoint screenToImagePos(const QPoint& screenPos) const;
 
-        /**
-         * @brief Provides a recommended size for the canvas.
-         * @return The recommended size.
-         */
-        QSize sizeHint() const override;
+    // Accessors for canvas properties
+    int getCanvasWidth() const { return canvasWidth; }
+    int getCanvasHeight() const { return canvasHeight; }
+    int getMaxGridWidth() const { return maxGridWidth; }
+    int getMaxGridHeight() const { return maxGridHeight; }
 
-        /**
-         * @brief Sets the canvas size.
-         * @param width Width of the canvas (allowed between 32 and 64).
-         * @param height Height of the canvas (allowed between 32 and 64).
-         */
-        void setCanvasSize(int width, int height);
+signals:
+    void mousePressed(const QPoint& pos);
+    void mouseDragged(const QPoint& pos);
+    void mouseReleased(const QPoint& pos);
 
-    protected:
+protected:
+    void paintEvent(QPaintEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 
-        /**
-         * @brief Paint event to render the canvas.
-         * @param event Pointer to the paint event.
-         */
-        void paintEvent(QPaintEvent *event) override;
+private:
+    static const int MIN_CANVAS_SIZE = 32;
 
-        /**
-         * @brief Mouse press event handler.
-         * @param event Pointer to the mouse event.
-         */
-        void mousePressEvent(QMouseEvent *event) override;
-
-        /**
-         * @brief Mouse move event handler.
-         * @param event Pointer to the mouse event.
-         */
-        void mouseMoveEvent(QMouseEvent *event) override;
-
-        /**
-         * @brief Mouse release event handler.
-         * @param event Pointer to the mouse event.
-         */
-        void mouseReleaseEvent(QMouseEvent *event) override;
-
-    private:
-
-        QImage image;         ///< The sprite image.
-        bool isDrawing;       ///< Indicates if a drawing operation is in progress.
-        Tools tool;           ///< Instance of drawing tools.
+    QImage displayImage;
+    int canvasWidth;
+    int canvasHeight;
+    int maxGridWidth;
+    int maxGridHeight;
 };
 
 #endif // CANVAS_H

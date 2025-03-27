@@ -1,5 +1,5 @@
 /********************************************************************************
-** Form generated from reading UI file 'spriteEditorView.ui'
+** Form generated from reading UI file 'SpriteEditorView.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.8.2
 **
@@ -59,7 +59,7 @@ public:
     {
         if (SpriteEditorView->objectName().isEmpty())
             SpriteEditorView->setObjectName("SpriteEditorView");
-        SpriteEditorView->resize(800, 600);
+        SpriteEditorView->resize(1027, 731);
         centralwidget = new QWidget(SpriteEditorView);
         centralwidget->setObjectName("centralwidget");
         MainFrame = new QFrame(centralwidget);
@@ -108,7 +108,7 @@ public:
         line->setFrameShadow(QFrame::Shadow::Sunken);
         ColorPanelFram = new QFrame(centralwidget);
         ColorPanelFram->setObjectName("ColorPanelFram");
-        ColorPanelFram->setGeometry(QRect(10, 250, 121, 181));
+        ColorPanelFram->setGeometry(QRect(0, 370, 141, 211));
         ColorPanelFram->setFrameShape(QFrame::Shape::StyledPanel);
         ColorPanelFram->setFrameShadow(QFrame::Shadow::Raised);
         PreviewFrame = new QFrame(centralwidget);
@@ -173,7 +173,7 @@ public:
         SpriteEditorView->setCentralWidget(centralwidget);
         menubar = new QMenuBar(SpriteEditorView);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 43));
+        menubar->setGeometry(QRect(0, 0, 1027, 43));
         SpriteEditorView->setMenuBar(menubar);
 
         retranslateUi(SpriteEditorView);

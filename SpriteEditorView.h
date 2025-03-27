@@ -1,17 +1,6 @@
 #ifndef SPRITEEDITORVIEW_H
 #define SPRITEEDITORVIEW_H
 
-/**
- * @file spriteeditorview.h
- * @brief Declares the SpriteEditorView class, the main GUI controller for the sprite editor.
- *
- * SpriteEditorView manages user interaction with the editor window, including canvas drawing,
- * tool selection, and real-time sprite updates. It serves as the connection between UI components
- * and underlying pixel editing logic.
- *
- * @author Jason chang
- */
-
 #include <QMainWindow>
 #include <QVBoxLayout>
 #include "tools.h"
@@ -64,6 +53,12 @@ private slots:
     void onPenSelected();
     void onEraserSelected();
     void onFillSelected();
+    void onLoadButtonClicked();
+    void onSaveButtonClicked();
+
+signals:
+    void loadClicked();
+    void saveClicked();
 
 private:
     Ui::SpriteEditorView* ui;
@@ -90,3 +85,4 @@ private:
 };
 
 #endif // SPRITEEDITORVIEW_H
+

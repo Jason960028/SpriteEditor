@@ -1,10 +1,26 @@
-#ifndef SPRITEEDITORCONTROL_H
-#define SPRITEEDITORCONTROL_H
+#ifndef SPRITEEDITORCONTROLLER_H
+#define SPRITEEDITORCONTROLLER_H
 
-class spriteEitorController
+#include <QObject>
+#include <QWidget>
+
+class spriteEditorModel; // Forward declaration of the spriteEditorModel class
+
+class spriteEditorController : public QObject
 {
+    Q_OBJECT
+
 public:
-    spriteEitorController();
+    explicit spriteEditorController(spriteEditorModel* model, QObject* parent = nullptr, QWidget* parentWidget = nullptr);
+
+public slots:
+    void onLoadClicked();
+    void onSaveClicked();
+
+private:
+    spriteEditorModel* m_model;
+    QWidget* m_parentWidget;
 };
 
-#endif // SPRITEEDITORCONTROL_H
+#endif // SPRITEEDITORCONTROLLER_H
+

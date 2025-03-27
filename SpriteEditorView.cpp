@@ -55,6 +55,10 @@ SpriteEditorView::SpriteEditorView(QWidget* parent)
     connect(ui->Eraser, &QToolButton::clicked, this, &SpriteEditorView::onEraserSelected);
     connect(ui->Fill, &QToolButton::clicked, this, &SpriteEditorView::onFillSelected);
 
+    // Connect the load and save button
+    connect(ui->Load, &QToolButton::clicked, this, &SpriteEditorView::onLoadButtonClicked);
+    connect(ui->Save, &QToolButton::clicked, this, &SpriteEditorView::onSaveButtonClicked);
+
     // Set Pen button as default
     ui->Pen->setChecked(true);
 }
@@ -125,4 +129,15 @@ void SpriteEditorView::updateCanvasDisplay() {
 
 SpriteEditorView::~SpriteEditorView() {
     delete ui;
+}
+
+// Load and Save Handlers
+
+void SpriteEditorView::onLoadButtonClicked(){
+    qDebug() << "Load was clicked!";
+    emit loadClicked();
+}
+
+void SpriteEditorView::onSaveButtonClicked(){
+    emit saveClicked();
 }

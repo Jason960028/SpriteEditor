@@ -14,6 +14,7 @@ spriteEditorController::spriteEditorController(spriteEditorModel* model, QObject
     if (!view) {
         qWarning() << "Parent widget is not of type SpriteEditorView!";
     }
+
     if (view) {
         connect(view, &SpriteEditorView::loadClicked, this, &spriteEditorController::onLoadClicked);
         connect(view, &SpriteEditorView::saveClicked, this, &spriteEditorController::onSaveClicked);
@@ -37,5 +38,18 @@ void spriteEditorController::onLoadClicked() {
 }
 
 void spriteEditorController::onSaveClicked(){
+    QString fileName = QFileDialog::getSaveFileName(
+        m_parentWidget,
+        tr("Save File"),
+        "", // Optional default filename, e.g., "untitled.ssp"
+        tr("Spreadsheet Files (*.ssp)")
+        );
 
+    if (!fileName.isEmpty()) {
+        if (!fileName.endsWith(".ssp", Qt::CaseInsensitive)) {
+            fileName += ".ssp";
+        }
+
+        m_model->saveSprite(fileName);
+    }
 }

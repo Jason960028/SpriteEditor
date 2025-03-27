@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QVBoxLayout>
 #include "tools.h"
+#include "SpriteEditorModel.h"
 
 namespace Ui {
 class SpriteEditorView;
@@ -23,7 +24,7 @@ public:
      * @brief Constructs the SpriteEditorView.
      * @param parent The parent widget (default is nullptr).
      */
-    explicit SpriteEditorView(QWidget* parent = nullptr);
+    explicit SpriteEditorView(QWidget* parent = nullptr, spriteEditorModel* model = nullptr);
 
     /**
      * @brief Destructor for SpriteEditorView.
@@ -62,6 +63,7 @@ signals:
 
 private:
     Ui::SpriteEditorView* ui;
+    spriteEditorModel* m_model;
     Canvas* canvas;
 
     // Currently selected tool (default: Pen)

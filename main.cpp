@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     spriteEditorModel model;
 
     // Create the view (Note: pass a nullptr for parentWidget since we won't be passing the view to itself)
-    SpriteEditorView w(nullptr);
+    SpriteEditorView w(nullptr, &model);
 
     // Create the controller and pass the model to it
     spriteEditorController controller(&model, nullptr, &w);

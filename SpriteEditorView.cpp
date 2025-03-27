@@ -13,10 +13,11 @@
 #include "canvas.h"
 #include "tools.h"
 
-SpriteEditorView::SpriteEditorView(QWidget* parent)
+SpriteEditorView::SpriteEditorView(QWidget* parent, spriteEditorModel* model)
     : QMainWindow(parent),
-    ui(new Ui::SpriteEditorView) {
-
+    ui(new Ui::SpriteEditorView),
+    m_model(model)
+{
     ui->setupUi(this);
 
     // Create Canvas object
@@ -61,6 +62,7 @@ SpriteEditorView::SpriteEditorView(QWidget* parent)
 
     // Set Pen button as default
     ui->Pen->setChecked(true);
+    m_model->addFrames(currentFrame);
 }
 
 // Tool selection handlers
@@ -125,6 +127,7 @@ void SpriteEditorView::handleMouseReleased(const QPoint& pos) {
 
 void SpriteEditorView::updateCanvasDisplay() {
     canvas->updateCanvas(currentFrame);
+    m_model->updateFrame(currentFrame);
 }
 
 SpriteEditorView::~SpriteEditorView() {
@@ -134,8 +137,11 @@ SpriteEditorView::~SpriteEditorView() {
 // Load and Save Handlers
 
 void SpriteEditorView::onLoadButtonClicked(){
-    qDebug() << "Load was clicked!";
     emit loadClicked();
+
+    std::vector<QImage> m_frames = m_model->getFrames();
+    currentFrame = m_frames[0];
+    updateCanvasDisplay();
 }
 
 void SpriteEditorView::onSaveButtonClicked(){

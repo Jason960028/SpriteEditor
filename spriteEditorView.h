@@ -2,43 +2,57 @@
 #define SPRITEEDITORVIEW_H
 
 #include <QMainWindow>
-#include <QColorDialog>
+#include "spriteEditorModel.h"
+#include "spriteEditorController.h"
+#include "canvas.h"
+#include "tools.h"
 
-class QListWidget;
-class QSlider;
-class CanvasWidget;
-class AnimationPreview;
+class QToolButton;
+
+namespace Ui {
+class spriteEditorView;
+}
 
 class spriteEditorView : public QMainWindow
 {
     Q_OBJECT
+
 public:
-    explicit spriteEditorView(QWidget *parent = nullptr);
+    explicit spriteEditorView(spriteEditorModel* model,
+                              spriteEditorController* controller,
+                              QWidget* parent = nullptr);
+    ~spriteEditorView();
 
-    // UI Getters
-    CanvasWidget* canvas() const;
-    AnimationPreview* animationPreview() const;
-    QColor selectedColor() const;
-    int selectedTool() const;
-    int fps() const;
+private slots:
 
-public slots:
-    void updateFrameList(const QList<QImage>& frames);
-    void setCurrentFrame(const QImage& frame);
-    void setPreviewEnabled(bool enabled);
-
-
-
+    void onAddFrameClicked();
+    void onRemoveFrameClicked();
+    void onPlayClicked();
+    void onStopClicked();
 
 private:
-    void setupUi();
-    void setupToolbar();
+    void setupUI();
+    void setupTools();
+    void connectSignals();
 
-    CanvasWidget *m_canvas;
-    AnimationPreview *m_animationPreview;
-    QListWidget *m_frameList;
-    QColorDialog *m_colorDialog;
-    QSlider *m_fpsSlider;
+    Ui::spriteEditorView* ui;
+
+    spriteEditorModel* m_model;
+    spriteEditorController* m_controller;
+    canvas* m_canvasWidget;
+
+    // Tools
+    Tools* m_penTool;
+    Tools* m_eraserTool;
+    Tools* m_activeTool;
+
+    // UI Elements
+    QToolButton* m_penButton;
+    QToolButton* m_eraserButton;
+    QToolButton* m_addFrameButton;
+    QToolButton* m_removeFrameButton;
+    QToolButton* m_playButton;
+    QToolButton* m_stopButton;
 };
 
-#endif
+#endif // SPRITEEDITORVIEW_H

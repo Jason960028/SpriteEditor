@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SpriteEditorView</class>
- <widget class="QMainWindow" name="SpriteEditorView">
+ <class>spriteEditorView</class>
+ <widget class="QMainWindow" name="spriteEditorView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -29,7 +29,7 @@
     <property name="frameShadow">
      <enum>QFrame::Shadow::Raised</enum>
     </property>
-    <widget class="QFrame" name="ImageSequence">
+    <widget class="QFrame" name="FrameList">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -44,26 +44,52 @@
      <property name="frameShadow">
       <enum>QFrame::Shadow::Raised</enum>
      </property>
-     <widget class="QPushButton" name="Image">
+     <widget class="QToolButton" name="AddFrame">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>20</y>
+        <y>10</y>
         <width>31</width>
-        <height>31</height>
+        <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>Image</string>
+       <string>add</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>130</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="DeleteFrame">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>delete</string>
       </property>
      </widget>
     </widget>
     <widget class="QFrame" name="CanvasFrame">
      <property name="geometry">
       <rect>
-       <x>99</x>
+       <x>69</x>
        <y>9</y>
-       <width>341</width>
+       <width>371</width>
        <height>491</height>
       </rect>
      </property>
@@ -78,7 +104,7 @@
        <rect>
         <x>-1</x>
         <y>-1</y>
-        <width>341</width>
+        <width>371</width>
         <height>491</height>
        </rect>
       </property>
@@ -168,19 +194,6 @@
       </property>
      </widget>
     </widget>
-    <widget class="QPushButton" name="PlayButton">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>150</y>
-       <width>41</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Play</string>
-     </property>
-    </widget>
     <widget class="QSlider" name="FPS">
      <property name="geometry">
       <rect>
@@ -192,6 +205,32 @@
      </property>
      <property name="orientation">
       <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="Play">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>31</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Play</string>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="S">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>31</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Stop</string>
      </property>
     </widget>
    </widget>
@@ -344,64 +383,87 @@
      </widget>
     </widget>
    </widget>
-  </widget>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>LeftToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionTool"/>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menumenu">
-    <property name="title">
-     <string>File</string>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>-1</x>
+      <y>0</y>
+      <width>801</width>
+      <height>21</height>
+     </rect>
     </property>
-   </widget>
-   <widget class="QMenu" name="menusave">
-    <property name="title">
-     <string>save</string>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
     </property>
-   </widget>
-   <widget class="QMenu" name="menuload">
-    <property name="title">
-     <string>load</string>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
     </property>
+    <widget class="QPushButton" name="saveButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Save</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="loadButton">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>0</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="CleanButton">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>0</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Clean</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="redoButton">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>0</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Redo</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="undoButton">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>0</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Undo</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QMenu" name="menuredo">
-    <property name="title">
-     <string>redo</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuundo">
-    <property name="title">
-     <string>undo</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuedit">
-    <property name="title">
-     <string>edit</string>
-    </property>
-   </widget>
-   <addaction name="menumenu"/>
-   <addaction name="menuedit"/>
-   <addaction name="menusave"/>
-   <addaction name="menuload"/>
-   <addaction name="menuredo"/>
-   <addaction name="menuundo"/>
   </widget>
   <action name="actionTool">
    <property name="text">

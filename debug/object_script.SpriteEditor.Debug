@@ -1,0 +1,11 @@
+debug/animation.o
+debug/canvas.o
+debug/main.o
+debug/saveload.o
+debug/spriteEditorController.o
+debug/spriteEditorModel.o
+debug/spriteEditorView.o
+debug/tools.o
+debug/moc_spriteEditorController.o
+debug/moc_spriteEditorModel.o
+debug/moc_spriteEditorView.o

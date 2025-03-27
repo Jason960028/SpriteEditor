@@ -1,3 +1,5 @@
 #include "canvas.h"
 
-canvas::canvas() {}
+canvas::canvas() {
+
+}

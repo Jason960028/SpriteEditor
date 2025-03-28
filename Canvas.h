@@ -15,7 +15,7 @@
 #include <QImage>
 #include <QVector>
 #include <QColor>
-#include "spriteEditorModel.h"
+#include "SpriteEditorModel.h"
 
 /**
  * @class Canvas

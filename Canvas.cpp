@@ -8,7 +8,7 @@
  * @author Jason Chang
  */
 
-#include "canvas.h"
+#include "Canvas.h"
 #include <QPainter>
 #include <QMouseEvent>
 #include <QPaintEvent>

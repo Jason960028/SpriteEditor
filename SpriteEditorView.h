@@ -2,17 +2,17 @@
 #define SPRITEEDITORVIEW_H
 
 #include <QMainWindow>
-#include "spriteEditorModel.h"
-#include "spriteEditorController.h"
-#include "canvas.h"
-#include "tools.h"
+#include <QToolButton>
 #include <QListWidget>
-
-class QToolButton;
+#include "tools.h"
 
 namespace Ui {
 class SpriteEditorView;
 }
+
+class SpriteEditorModel;
+class SpriteEditorController;
+class Canvas;
 
 class SpriteEditorView : public QMainWindow
 {
@@ -24,8 +24,18 @@ public:
                               QWidget* parent = nullptr);
     ~SpriteEditorView();
 
-    void updateCanvasDisplay();
-
+private slots:
+    void handleFrameChanged();
+    void updateFrameList();
+    void updateFrameListSelection();
+    void onAddFrameClicked();
+    void onDeleteFrameClicked();
+    void onMoveUpClicked();
+    void onMoveDownClicked();
+    void onFrameSelectionChanged(int row);
+    void handleMousePressed(const QPoint& pos);
+    void handleMouseDragged(const QPoint& pos);
+    void handleMouseReleased(const QPoint& pos);
 
 signals:
     void addFrameRequested();
@@ -33,59 +43,30 @@ signals:
     void moveFrameUpRequested(int index);
     void moveFrameDownRequested(int index);
     void frameSelected(int index);
-
-private slots:
-
-    void handleMousePressed(const QPoint& pos);
-
-    void handleMouseDragged(const QPoint& pos);
-
-    void handleMouseReleased(const QPoint& pos);
-    //handle the Canvas update when frame changed
-    void handleFrameChanged();
-
-    void updateFrameList(int currentIndex);
-
-    void onAddFrameClicked();
-
-    void onDeleteFrameClicked();
-
-    void onMoveUpClicked();
-
-    void onMoveDownClicked();
-
-    void onFrameSelectionChanged();
-
     void updateToolButtonStates();
 
 private:
     void setupUI();
     void setupTools();
     void connectSignals();
+    void updateCanvasDisplay();
 
     Ui::SpriteEditorView* ui;
-
     SpriteEditorModel* m_model;
     SpriteEditorController* m_controller;
-    Canvas* m_canvasWidget;
+    Canvas* m_canvas;
 
-    // Tool
-    Tools::ToolType m_currentTool;
-
-    QImage m_currentFrame;
-
-    QColor m_currentColor;
-
-    Canvas*  m_canvas;
-
-    // UI Elements
     QToolButton* m_penButton;
     QToolButton* m_eraserButton;
+    QToolButton* m_fillButton;
     QToolButton* m_addFrameButton;
     QToolButton* m_deleteFrameButton;
-    QToolButton* m_playButton;
-    QToolButton* m_stopButton;
+
     QListWidget* m_frameList;
+
+    Tools::ToolType m_currentTool;
+    QImage m_currentFrame;
+    QColor m_currentColor;
 };
 
 #endif // SPRITEEDITORVIEW_H

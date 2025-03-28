@@ -9,26 +9,26 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    animation.cpp \
-    canvas.cpp \
-    main.cpp \
-    saveload.cpp \
-    spriteEditorController.cpp \
-    spriteEditorModel.cpp \
-    spriteEditorView.cpp \
-    tools.cpp
+    Animation.cpp \
+    Canvas.cpp \
+    SaveLoad.cpp \
+    SpriteEditorControl.cpp \
+    SpriteEditorModel.cpp \
+    SpriteEditorView.cpp \
+    Tools.cpp \
+    main.cpp
 
 HEADERS += \
-    animation.h \
-    canvas.h \
-    saveload.h \
-    spriteEditorController.h \
-    spriteEditorModel.h \
-    spriteEditorView.h \
-    tools.h
+    Animation.h \
+    Canvas.h \
+    SaveLoad.h \
+    SpriteEditorControl.h \
+    SpriteEditorModel.h \
+    SpriteEditorView.h \
+    Tools.h
 
 FORMS += \
-    spriteEditorView.ui
+    SpriteEditorView.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

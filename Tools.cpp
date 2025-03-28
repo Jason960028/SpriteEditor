@@ -1,6 +1,6 @@
-#include "tools.h"
+#include "Tools.h"
 #include <QPainter>
-#include "spriteEditorModel.h"
+#include "SpriteEditorModel.h"
 
 
 // Static tool instances
@@ -16,7 +16,7 @@ QMap<Tools::ToolType, Tools*> Tools::m_tools;
  * @author Jason Chang
  */
 
-#include "tools.h"
+#include "Tools.h"
 #include <QQueue>
 #include <QSet>
 

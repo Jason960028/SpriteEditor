@@ -25,7 +25,7 @@ void SpriteEditorController::removeCurrentFrame()
 {
     if (m_model && m_model->getFramesListSize() > 1) {
         m_model->removeFrame();
-        emit frameListChanged(m_model->getFramesListSize());
+        emit frameListChanged(m_model->getCurrentIndex());
         qDebug() << "Frame deleted";
     }
 

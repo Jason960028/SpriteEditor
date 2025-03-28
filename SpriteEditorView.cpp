@@ -115,7 +115,9 @@ void SpriteEditorView::updateFrameList(int currentIndex)
         item->setIcon(QIcon(":/icons/frame.png"));
     }
     ui->frameListWidget->setCurrentRow(currentIndex);
+    updateCanvasDisplay();
     ui->frameListWidget->blockSignals(false);
+
 }
 
 // Slot to update the preview when Animation emits frameChanged signal

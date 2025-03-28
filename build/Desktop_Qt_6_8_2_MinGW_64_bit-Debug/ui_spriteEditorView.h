@@ -13,6 +13,7 @@
 #include <QtGui/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QFrame>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSlider>
@@ -29,12 +30,13 @@ public:
     QFrame *MainFrame;
     QFrame *FrameList;
     QToolButton *AddFrame;
-    QPushButton *pushButton;
     QToolButton *DeleteFrame;
+    QFrame *line_2;
+    QToolButton *moveUpFrameButton;
+    QToolButton *moveDownFrameButton;
+    QListWidget *frameListWidget;
     QFrame *CanvasFrame;
     QWidget *Canvas;
-    QSlider *PenSize;
-    QFrame *line;
     QFrame *ColorPanelFram;
     QFrame *PreviewFrame;
     QFrame *PreviewBox;
@@ -46,6 +48,8 @@ public:
     QToolButton *Fill;
     QToolButton *Pen;
     QToolButton *Eraser;
+    QSlider *PenSize;
+    QFrame *line;
     QFrame *Layer;
     QPushButton *addLayer;
     QPushButton *moveUp;
@@ -64,7 +68,7 @@ public:
     {
         if (SpriteEditorView->objectName().isEmpty())
             SpriteEditorView->setObjectName("SpriteEditorView");
-        SpriteEditorView->resize(800, 600);
+        SpriteEditorView->resize(1008, 589);
         actionTool = new QAction(SpriteEditorView);
         actionTool->setObjectName("actionTool");
         actionTool->setMenuRole(QAction::MenuRole::NoRole);
@@ -72,48 +76,50 @@ public:
         centralwidget->setObjectName("centralwidget");
         MainFrame = new QFrame(centralwidget);
         MainFrame->setObjectName("MainFrame");
-        MainFrame->setGeometry(QRect(140, 30, 461, 521));
+        MainFrame->setGeometry(QRect(190, 30, 591, 531));
         MainFrame->setFrameShape(QFrame::Shape::StyledPanel);
         MainFrame->setFrameShadow(QFrame::Shadow::Raised);
         FrameList = new QFrame(MainFrame);
         FrameList->setObjectName("FrameList");
-        FrameList->setGeometry(QRect(0, 0, 51, 521));
+        FrameList->setGeometry(QRect(0, 0, 61, 531));
         FrameList->setFrameShape(QFrame::Shape::StyledPanel);
         FrameList->setFrameShadow(QFrame::Shadow::Raised);
         AddFrame = new QToolButton(FrameList);
         AddFrame->setObjectName("AddFrame");
-        AddFrame->setGeometry(QRect(10, 10, 31, 21));
-        pushButton = new QPushButton(FrameList);
-        pushButton->setObjectName("pushButton");
-        pushButton->setGeometry(QRect(10, 130, 31, 21));
+        AddFrame->setGeometry(QRect(10, 10, 41, 21));
         DeleteFrame = new QToolButton(FrameList);
         DeleteFrame->setObjectName("DeleteFrame");
-        DeleteFrame->setGeometry(QRect(10, 40, 31, 21));
+        DeleteFrame->setGeometry(QRect(10, 40, 41, 21));
+        line_2 = new QFrame(FrameList);
+        line_2->setObjectName("line_2");
+        line_2->setGeometry(QRect(0, 130, 59, 3));
+        line_2->setFrameShape(QFrame::Shape::HLine);
+        line_2->setFrameShadow(QFrame::Shadow::Sunken);
+        moveUpFrameButton = new QToolButton(FrameList);
+        moveUpFrameButton->setObjectName("moveUpFrameButton");
+        moveUpFrameButton->setGeometry(QRect(10, 70, 41, 21));
+        moveDownFrameButton = new QToolButton(FrameList);
+        moveDownFrameButton->setObjectName("moveDownFrameButton");
+        moveDownFrameButton->setGeometry(QRect(10, 100, 41, 21));
+        frameListWidget = new QListWidget(FrameList);
+        frameListWidget->setObjectName("frameListWidget");
+        frameListWidget->setGeometry(QRect(0, 130, 61, 399));
         CanvasFrame = new QFrame(MainFrame);
         CanvasFrame->setObjectName("CanvasFrame");
-        CanvasFrame->setGeometry(QRect(69, 9, 371, 491));
+        CanvasFrame->setGeometry(QRect(69, 9, 511, 511));
         CanvasFrame->setFrameShape(QFrame::Shape::StyledPanel);
         CanvasFrame->setFrameShadow(QFrame::Shadow::Raised);
         Canvas = new QWidget(CanvasFrame);
         Canvas->setObjectName("Canvas");
-        Canvas->setGeometry(QRect(-1, -1, 371, 491));
-        PenSize = new QSlider(centralwidget);
-        PenSize->setObjectName("PenSize");
-        PenSize->setGeometry(QRect(10, 40, 121, 20));
-        PenSize->setOrientation(Qt::Orientation::Horizontal);
-        line = new QFrame(centralwidget);
-        line->setObjectName("line");
-        line->setGeometry(QRect(0, 60, 141, 16));
-        line->setFrameShape(QFrame::Shape::HLine);
-        line->setFrameShadow(QFrame::Shadow::Sunken);
+        Canvas->setGeometry(QRect(-1, -1, 512, 512));
         ColorPanelFram = new QFrame(centralwidget);
         ColorPanelFram->setObjectName("ColorPanelFram");
-        ColorPanelFram->setGeometry(QRect(0, 370, 141, 211));
+        ColorPanelFram->setGeometry(QRect(10, 280, 171, 281));
         ColorPanelFram->setFrameShape(QFrame::Shape::StyledPanel);
         ColorPanelFram->setFrameShadow(QFrame::Shadow::Raised);
         PreviewFrame = new QFrame(centralwidget);
         PreviewFrame->setObjectName("PreviewFrame");
-        PreviewFrame->setGeometry(QRect(600, 30, 201, 231));
+        PreviewFrame->setGeometry(QRect(790, 30, 201, 231));
         PreviewFrame->setFrameShape(QFrame::Shape::StyledPanel);
         PreviewFrame->setFrameShadow(QFrame::Shadow::Raised);
         PreviewBox = new QFrame(PreviewFrame);
@@ -136,21 +142,30 @@ public:
         S->setGeometry(QRect(10, 180, 31, 23));
         Tool = new QFrame(centralwidget);
         Tool->setObjectName("Tool");
-        Tool->setGeometry(QRect(10, 80, 121, 161));
+        Tool->setGeometry(QRect(20, 30, 141, 241));
         Tool->setFrameShape(QFrame::Shape::StyledPanel);
         Tool->setFrameShadow(QFrame::Shadow::Raised);
         Fill = new QToolButton(Tool);
         Fill->setObjectName("Fill");
-        Fill->setGeometry(QRect(0, 50, 61, 51));
+        Fill->setGeometry(QRect(10, 100, 61, 51));
         Pen = new QToolButton(Tool);
         Pen->setObjectName("Pen");
-        Pen->setGeometry(QRect(0, 0, 61, 51));
+        Pen->setGeometry(QRect(10, 50, 61, 51));
         Eraser = new QToolButton(Tool);
         Eraser->setObjectName("Eraser");
-        Eraser->setGeometry(QRect(60, 0, 61, 51));
+        Eraser->setGeometry(QRect(70, 50, 61, 51));
+        PenSize = new QSlider(Tool);
+        PenSize->setObjectName("PenSize");
+        PenSize->setGeometry(QRect(10, 10, 121, 20));
+        PenSize->setOrientation(Qt::Orientation::Horizontal);
+        line = new QFrame(Tool);
+        line->setObjectName("line");
+        line->setGeometry(QRect(0, 40, 141, 16));
+        line->setFrameShape(QFrame::Shape::HLine);
+        line->setFrameShadow(QFrame::Shadow::Sunken);
         Layer = new QFrame(centralwidget);
         Layer->setObjectName("Layer");
-        Layer->setGeometry(QRect(599, 269, 201, 101));
+        Layer->setGeometry(QRect(790, 280, 201, 101));
         Layer->setFrameShape(QFrame::Shape::StyledPanel);
         Layer->setFrameShadow(QFrame::Shadow::Raised);
         addLayer = new QPushButton(Layer);
@@ -175,7 +190,7 @@ public:
         LayerContent->setGeometry(QRect(-1, -1, 181, 31));
         frame = new QFrame(centralwidget);
         frame->setObjectName("frame");
-        frame->setGeometry(QRect(-1, 0, 801, 21));
+        frame->setGeometry(QRect(-1, 0, 991, 21));
         frame->setFrameShape(QFrame::Shape::StyledPanel);
         frame->setFrameShadow(QFrame::Shadow::Raised);
         saveButton = new QPushButton(frame);
@@ -205,8 +220,9 @@ public:
         SpriteEditorView->setWindowTitle(QCoreApplication::translate("SpriteEditorView", "SpriteEditorView", nullptr));
         actionTool->setText(QCoreApplication::translate("SpriteEditorView", "Tool", nullptr));
         AddFrame->setText(QCoreApplication::translate("SpriteEditorView", "add", nullptr));
-        pushButton->setText(QCoreApplication::translate("SpriteEditorView", "PushButton", nullptr));
         DeleteFrame->setText(QCoreApplication::translate("SpriteEditorView", "delete", nullptr));
+        moveUpFrameButton->setText(QCoreApplication::translate("SpriteEditorView", "up", nullptr));
+        moveDownFrameButton->setText(QCoreApplication::translate("SpriteEditorView", "down", nullptr));
         Play->setText(QCoreApplication::translate("SpriteEditorView", "Play", nullptr));
         S->setText(QCoreApplication::translate("SpriteEditorView", "Stop", nullptr));
         Fill->setText(QCoreApplication::translate("SpriteEditorView", "Filling", nullptr));

@@ -4,42 +4,60 @@
 #include <QObject>
 #include "tools.h"
 
-class spriteEditorModel;
+class SpriteEditorModel;
 
-class spriteEditorController : public QObject
+class SpriteEditorController : public QObject
 {
     Q_OBJECT
 public:
-    explicit spriteEditorController(spriteEditorModel* model, QObject* parent = nullptr);
+    explicit SpriteEditorController(SpriteEditorModel* model, QObject* parent = nullptr);
 
-    // Tool management
-    void setActiveTool(Tools::Type toolType);
-    Tools* activeTool() const { return m_activeTool; }
-
-    // Pixel operations
-    void handlePixelClick(int x, int y);
-    void handlePixelDrag(int x, int y);
 
     // Frame operations
-    void addFrame();
-    void removeCurrentFrame();
+
 
     // Animation control
     void playAnimation();
     void stopAnimation();
 
 signals:
-    void toolChanged(Tools::Type newTool);
+    // signal to change frame list
+    void frameListChanged(int size);
+
+    // signal to play or stop animation
     void animationStateChanged(bool playing);
 
 public slots:
+    // slot to handle Play button
+    void handlePlayPressed();
+
+    // slot to handle stop button
+    void handleStopPressed();
+
+    // slot to update current tool to Pen
     void onPenClicked();
+
+    // slot to update current tool to Eraser
     void onEraserClicked();
-void paintUpdate(); // handle the Qimage data by calling model
+
+    // slot to handle addFrame button and update frame list
+    void addFrame();
+
+    // slot to handle remove button and update frame list
+    void removeCurrentFrame();
+
+    // slot to update current frame by selected index
+    void handleFrameSelected(int index);
+
+    // slot to move to previous frame
+    void moveFrameUp(int index);
+
+    // slot to move to next frame
+    void moveFrameDown(int index);
 
 private:
-    spriteEditorModel* m_model;
-    Tools* m_activeTool;
+    SpriteEditorModel* m_model;
+    Tools::ToolType m_currentTool;
 };
 
 #endif // SPRITEEDITORCONTROLLER_H

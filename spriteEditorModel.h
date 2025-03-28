@@ -8,10 +8,10 @@
 #include <QJsonObject>
 #include "tools.h"
 
-class spriteEditorModel : public QObject {
+class SpriteEditorModel : public QObject {
     Q_OBJECT
 public:
-    explicit spriteEditorModel(QObject *parent = nullptr);
+    explicit SpriteEditorModel(QObject *parent = nullptr);
 
     // create a new project
     void createNewProject(int width, int height);
@@ -25,8 +25,8 @@ public:
     // get the selected frame by index
     QImage getFrame(int index) const;
 
-    // frame number for preview fps
-    int frameCount() const;
+    //get the framesList size
+    int getFramesListSize();
 
     // update the pixel color with the provided position
     void setPixel(int x, int y);
@@ -43,14 +43,28 @@ public:
     // use index to change current frame
     void setCurrentFrame(int index);
 
+    //get current frame
+    QImage getCurrentFrame();
+
     // slot to update the current selected color
     void setCurrentColor(const QColor &color);
+
+    // set the tool to current tool
+    void setCurrentTool(Tools::ToolType tool);
+
+    //get the maxium size of canvas
+    QSize getMaxSize() const;
+
+    // get the Tool from model
+    Tools::ToolType getCurrentTool();
 
     //getCurrentColor
     QColor getCurrentColor();
 
     //get current index
     int getCurrentIndex();
+
+
 
 
 
@@ -69,7 +83,7 @@ private:
     // current color
     QColor m_currentColor = Qt::black;
     // setting size
-    QSize m_frameSize = QSize(32, 32);
+    QSize m_frameSize;
     // defualt size
     QSize m_defualSize = QSize(32,32);
 
@@ -77,10 +91,14 @@ private:
     QImage jsonToFrame(const QJsonObject &json) const;
 
     // current tool
-    Tools *m_currentTool;
+    Tools::ToolType m_currentTool;
 
     //current frame
     QImage m_currentFrame;
+
+    // Canvas size
+    int maxGridWidth;
+    int maxGridHeight;
 };
 
 #endif // SPRITEEDITORMODEL_H

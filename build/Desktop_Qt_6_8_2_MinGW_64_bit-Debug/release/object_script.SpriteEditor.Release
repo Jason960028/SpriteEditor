@@ -6,6 +6,7 @@ release/spriteEditorController.o
 release/spriteEditorModel.o
 release/spriteEditorView.o
 release/tools.o
+release/moc_canvas.o
 release/moc_spriteEditorController.o
 release/moc_spriteEditorModel.o
 release/moc_spriteEditorView.o

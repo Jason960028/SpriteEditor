@@ -4,115 +4,183 @@
 #include <QButtonGroup>
 #include <QMessageBox>
 #include "spriteEditorModel.h"
-#include "ui_spriteEditorView.h"
+#include "ui_SpriteEditorView.h"
+#include "canvas.h"
 
-spriteEditorView::spriteEditorView(spriteEditorModel* model,
-                                   spriteEditorController* controller,
+SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
+                                   SpriteEditorController* m_controller,
                                    QWidget* parent)
     : QMainWindow(parent),
-    ui(new Ui::spriteEditorView),
+    ui(new Ui::SpriteEditorView),
     m_model(model),
-    m_controller(controller),
+    m_controller(m_controller),
     //m_canvasWidget(new canvas(this)),
-    m_penTool(nullptr),
-    m_eraserTool(nullptr),
-    m_activeTool(nullptr)
+    m_currentTool(Tools::ToolType::Pen),
+    m_currentFrame(m_model->getCurrentFrame()),
+    m_currentColor(m_model->getCurrentColor()),
+    m_canvas(new Canvas(this))
 {
     ui->setupUi(this);
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
 
+    m_addFrameButton = ui->AddFrame;
+    m_deleteFrameButton = ui->DeleteFrame;
+
     setupUI();
-    setupTools();
     connectSignals();
-
-    // Initialize with first frame
-    if (m_model->frameCount() > 0) {
-        //m_canvas->setImage(m_model->getFrame(0));
-    }
+    m_frameList = ui->frameListWidget;
 }
 
-spriteEditorView::~spriteEditorView()
+SpriteEditorView::~SpriteEditorView()
 {
-    delete m_penTool;
-    delete m_eraserTool;
+    delete ui;
 }
 
-void spriteEditorView::setupUI()
+void SpriteEditorView::setupUI()
 {
 
 }
 
-void spriteEditorView::setupTools()
+void SpriteEditorView::setupTools()
 {
-    // Create tools using factory
-    //m_penTool = Tools::createTool(Tools::Pen, this);
-    //m_eraserTool = Tools::createTool(Tools::Eraser, this);
-
-    // Set default tool
-    m_activeTool = m_penTool;
-    //m_controller->setActiveTool(m_activeTool);
-    m_penButton->setChecked(true);
-
-    // Set button icons and text
-    if (m_penTool) {
-        m_penButton->setIcon(QIcon("icon.png"));
-        m_penButton->setToolTip("Pen Tool");
-    }
-    if (m_eraserTool) {
-        m_eraserButton->setIcon(QIcon("icon.png"));
-        m_eraserButton->setToolTip("Eraser Tool");
-    }
+    m_currentTool = m_model->getCurrentTool();
 }
 
-void spriteEditorView::connectSignals()
+void SpriteEditorView::connectSignals()
 {
     // Tool buttons
-    connect(m_penButton, &QToolButton::clicked, m_controller, &spriteEditorController::onPenClicked);
-    connect(m_eraserButton, &QToolButton::clicked, m_controller, &spriteEditorController::onEraserClicked);
+    connect(m_penButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onPenClicked);
+    connect(m_eraserButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onEraserClicked);
 
-    // Frame buttons
-    connect(m_addFrameButton, &QToolButton::clicked, this, &spriteEditorView::onAddFrameClicked);
-    connect(m_removeFrameButton, &QToolButton::clicked, this, &spriteEditorView::onRemoveFrameClicked);
+    // Canvas updates
+    connect(m_model, &SpriteEditorModel::frameChanged, this, &SpriteEditorView::handleFrameChanged);
 
-    // Animation buttons
-    connect(m_playButton, &QToolButton::clicked, this, &spriteEditorView::onPlayClicked);
-    connect(m_stopButton, &QToolButton::clicked, this, &spriteEditorView::onStopClicked);
+    // Add frame update
+    connect(m_addFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::addFrame);
+    // delete frame update
+    connect(m_deleteFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::removeCurrentFrame);
+    // frame list update
+    connect(m_controller, &SpriteEditorController::frameListChanged, this, &SpriteEditorView::updateFrameList);
+
+    // In your main window or m_controller
+    connect(this, &SpriteEditorView::addFrameRequested,
+            m_controller, &SpriteEditorController::addFrame);
+    connect(this, &SpriteEditorView::deleteFrameRequested,
+            m_controller, &SpriteEditorController::removeCurrentFrame);
+    connect(this, &SpriteEditorView::moveFrameUpRequested,
+            m_controller, &SpriteEditorController::moveFrameUp);
+    connect(this, &SpriteEditorView::moveFrameDownRequested,
+            m_controller, &SpriteEditorController::moveFrameDown);
+    connect(this, &SpriteEditorView::frameSelected,
+            m_controller, &SpriteEditorController::handleFrameSelected);
 
 
+    // Connect canvas interaction signals
+    connect(m_canvas, &Canvas::mousePressed, this, &SpriteEditorView::handleMousePressed);
+    connect(m_canvas, &Canvas::mouseDragged, this, &SpriteEditorView::handleMouseDragged);
+    connect(m_canvas, &Canvas::mouseReleased, this, &SpriteEditorView::handleMouseReleased);
 
-    // Model updates
-    connect(m_model, &spriteEditorModel::frameChanged, this, [this](int index) {
-        //m_canvas->setImage(m_model->getFrame(index));
-    });
-
-    connect(m_model, &spriteEditorModel::framesUpdated, this, [this]() {
-        bool hasFrames = m_model->frameCount() > 0;
-        m_removeFrameButton->setEnabled(hasFrames);
-        m_playButton->setEnabled(hasFrames);
-    });
 }
 
+void SpriteEditorView::updateFrameList(int currentIndex){
+    ui->frameListWidget->clear();
 
+    for (int i = 0; i < m_model->getFramesListSize(); ++i) {
+        QListWidgetItem *item = new QListWidgetItem(
+            QString("Frame %1").arg(i+1),
+            ui->frameListWidget
+            );
+        item->setIcon(QIcon(":/icons/frame.png"));
+    }
 
-void spriteEditorView::onRemoveFrameClicked()
+    // Block signals temporarily to prevent spurious emissions
+    ui->frameListWidget->blockSignals(true);
+    // Set current selection
+    ui->frameListWidget->setCurrentRow(currentIndex);
+    // Restore signal handling
+    ui->frameListWidget->blockSignals(false);
+
+}
+
+void SpriteEditorView::onAddFrameClicked()
 {
-    if (m_model->frameCount() > 0) {
-        m_model->removeFrame(m_model->currentFrameIndex());
+    emit addFrameRequested();
+    updateFrameList(m_model->getCurrentIndex());
+}
+
+void SpriteEditorView::onDeleteFrameClicked()
+{
+    int index = m_model->getCurrentIndex();
+    if (index >= 0) {
+        emit deleteFrameRequested(index);
+        updateFrameList(m_model->getCurrentIndex());
     }
 }
 
-void spriteEditorView::onPlayClicked()
+void SpriteEditorView::onMoveUpClicked()
 {
-    m_playButton->setEnabled(false);
-    m_stopButton->setEnabled(true);
-    // Start animation - implementation depends on your Animation class
+    int index = m_model->getCurrentIndex();
+    if (index > 0) {
+        emit moveFrameUpRequested(index);
+        updateFrameList(index-1);
+    }
 }
 
-void spriteEditorView::onStopClicked()
+void SpriteEditorView::onMoveDownClicked()
 {
-    m_playButton->setEnabled(true);
-    m_stopButton->setEnabled(false);
-    // Stop animation - implementation depends on your Animation class
+    int index = m_model->getCurrentIndex();
+    if (index >= 0 && index < ui->frameListWidget->count()-1) {
+        emit moveFrameDownRequested(index);
+        updateFrameList(index+1);
+    }
 }
+
+void SpriteEditorView::handleFrameChanged(){
+    updateCanvasDisplay();
+}
+
+void SpriteEditorView::handleMousePressed(const QPoint& pos) {
+    if (pos.x() >= 0 && pos.y() >= 0) {
+        Tools::applyTool(m_currentFrame, pos, m_currentTool, m_currentColor);
+        updateCanvasDisplay();
+    }
+}
+
+void SpriteEditorView::handleMouseDragged(const QPoint& pos) {
+    if (pos.x() >= 0 && pos.y() >= 0) {
+        Tools::applyTool(m_currentFrame, pos, m_currentTool, m_currentColor);
+        updateCanvasDisplay();
+    }
+}
+
+void SpriteEditorView::handleMouseReleased(const QPoint& pos) {
+    if (pos.x() >= 0 && pos.y() >= 0) {
+        Tools::applyTool(m_currentFrame, pos, m_currentTool, m_currentColor);
+        updateCanvasDisplay();
+    }
+}
+
+void SpriteEditorView::updateCanvasDisplay() {
+    m_canvas->updateCanvas(m_currentFrame);
+}
+
+void SpriteEditorView::onFrameSelectionChanged()
+{
+    int selectedRow = ui->frameListWidget->currentRow();
+    if (selectedRow >= 0) {
+        emit frameSelected(selectedRow);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 

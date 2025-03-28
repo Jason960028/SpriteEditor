@@ -6,6 +6,7 @@ debug/spriteEditorController.o
 debug/spriteEditorModel.o
 debug/spriteEditorView.o
 debug/tools.o
+debug/moc_canvas.o
 debug/moc_spriteEditorController.o
 debug/moc_spriteEditorModel.o
 debug/moc_spriteEditorView.o

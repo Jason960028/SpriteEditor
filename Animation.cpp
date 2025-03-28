@@ -96,6 +96,4 @@ void Animation::paintEvent(QPaintEvent *event)
         painter.drawText(rect(), Qt::AlignCenter, "No frames to display");
     }
 }
-#include "Animation.h"
 
-animation::animation() {}

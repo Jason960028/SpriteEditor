@@ -3,10 +3,13 @@
 #include <QToolButton>
 #include <QButtonGroup>
 #include <QMessageBox>
+#include <QPixmap>
+#include <QDebug>
 #include "SpriteEditorModel.h"
 #include "ui_SpriteEditorView.h"
 #include "canvas.h"
 #include "QVBoxLayout"
+#include "Animation.h"
 
 SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
                                    SpriteEditorController* m_controller,
@@ -15,12 +18,12 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     ui(new Ui::SpriteEditorView),
     m_model(model),
     m_controller(m_controller),
-    //m_canvasWidget(new canvas(this)),
     m_currentTool(Tools::ToolType::Pen),
     m_currentFrame(m_model->getCurrentFrame()),
     m_currentColor(m_model->getCurrentColor())
 {
     ui->setupUi(this);
+
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
 
@@ -32,13 +35,11 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_frameList = ui->frameListWidget;
     connectSignals();
 
-
     // Set up layout for CanvasFrame
     QVBoxLayout* canvasLayout = new QVBoxLayout(ui->Canvas);
     canvasLayout->setContentsMargins(0, 0, 0, 0);
     canvasLayout->addWidget(m_canvas);
 
-    // Set layout policy to Fixed to maintain exact Canvas size
     m_canvas->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     // Get canvas dimensions through accessors
@@ -49,11 +50,24 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     int pixelScale = 10;
     m_canvas->setFixedSize(canvasWidth * pixelScale, canvasHeight * pixelScale);
 
-
     // Update canvas with initial frame
     m_canvas->updateCanvas(m_currentFrame);
-
     updateFrameList(m_model->getCurrentIndex());
+
+    // connecting animation
+    m_animation = new Animation(ui->Preview);
+    QVBoxLayout* previewLayout = new QVBoxLayout(ui->Preview);
+    previewLayout->setContentsMargins(0, 0, 0, 0);
+    previewLayout->addWidget(m_animation);
+
+
+    m_animation->show();
+    m_animation->raise();  // Move it to the top so it's not obscured by other widgets
+
+    // Add all frames from the model to the animation
+    for (int i = 0; i < m_model->getFramesListSize(); ++i) {
+        m_animation->addFrame(m_model->getFrame(i));
+    }
 }
 
 SpriteEditorView::~SpriteEditorView()
@@ -61,13 +75,9 @@ SpriteEditorView::~SpriteEditorView()
     delete ui;
 }
 
-void SpriteEditorView::setupUI()
-{
+void SpriteEditorView::setupUI() {}
 
-}
-
-void SpriteEditorView::setupTools()
-{
+void SpriteEditorView::setupTools() {
     m_currentTool = m_model->getCurrentTool();
 }
 
@@ -84,31 +94,40 @@ void SpriteEditorView::connectSignals()
 
     // Add frame update
     connect(m_addFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::addFrame);
+
     // delete frame update
     connect(m_deleteFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::removeCurrentFrame);
+
     // frame list update
     connect(m_controller, &SpriteEditorController::frameListChanged, this, &SpriteEditorView::updateFrameList);
 
-    connect(m_controller, &SpriteEditorController::toolSelectSignal, this, &SpriteEditorView::updateToolButtonStates);
-
     // In your main window or m_controller
-    connect(this, &SpriteEditorView::addFrameRequested,
-            m_controller, &SpriteEditorController::addFrame);
-    connect(this, &SpriteEditorView::deleteFrameRequested,
-            m_controller, &SpriteEditorController::removeCurrentFrame);
-    connect(this, &SpriteEditorView::moveFrameUpRequested,
-            m_controller, &SpriteEditorController::moveFrameUp);
-    connect(this, &SpriteEditorView::moveFrameDownRequested,
-            m_controller, &SpriteEditorController::moveFrameDown);
-    connect(this, &SpriteEditorView::frameSelected,
-            m_controller, &SpriteEditorController::handleFrameSelected);
-    connect(m_frameList, &QListWidget::currentRowChanged,
-            this, &SpriteEditorView::onFrameSelectionChanged);
+    connect(m_controller, &SpriteEditorController::toolSelectSignal, this, &SpriteEditorView::updateToolButtonStates);
+    connect(this, &SpriteEditorView::addFrameRequested, m_controller, &SpriteEditorController::addFrame);
+    connect(this, &SpriteEditorView::deleteFrameRequested, m_controller, &SpriteEditorController::removeCurrentFrame);
+    connect(this, &SpriteEditorView::moveFrameUpRequested, m_controller, &SpriteEditorController::moveFrameUp);
+    connect(this, &SpriteEditorView::moveFrameDownRequested, m_controller, &SpriteEditorController::moveFrameDown);
+    connect(this, &SpriteEditorView::frameSelected, m_controller, &SpriteEditorController::handleFrameSelected);
+    connect(m_frameList, &QListWidget::currentRowChanged, this, &SpriteEditorView::onFrameSelectionChanged);
 
     // Connect canvas interaction signals
     connect(m_canvas, &Canvas::mousePressed, this, &SpriteEditorView::handleMousePressed);
     connect(m_canvas, &Canvas::mouseDragged, this, &SpriteEditorView::handleMouseDragged);
     connect(m_canvas, &Canvas::mouseReleased, this, &SpriteEditorView::handleMouseReleased);
+
+
+    // ------Animation part-----------
+    // Connect the Play button to the slot that starts the animation
+    connect(ui->Play, &QPushButton::clicked, this, &SpriteEditorView::onPlayButtonClicked);
+
+    // Connect the Stop button to the slot that stops the animation
+    connect(ui->Stop, &QPushButton::clicked, this, &SpriteEditorView::onStopButtonClicked);
+
+    // Connect the FPS slider to update the animation frame delay dynamically
+    connect(ui->FPS, &QSlider::valueChanged, this, [this](int value) {
+        if (value > 0)
+            m_animation->setFrameDelay(1000 / value);  // Calculate delay in milliseconds from FPS
+    });
 
 }
 
@@ -132,13 +151,33 @@ void SpriteEditorView::updateFrameList(int currentIndex){
 
 }
 
-void SpriteEditorView::onAddFrameClicked()
-{
+
+// Slot called when the Play button is clicked
+void SpriteEditorView::onPlayButtonClicked() {
+    if (m_animation) {
+        m_animation->clearFrames();  // Clear any previously loaded frames
+
+        // Load all frames from the model into the animation
+        for (int i = 0; i < m_model->getFramesListSize(); ++i) {
+            m_animation->addFrame(m_model->getFrame(i));
+        }
+
+        // Start the animation playback
+        m_animation->play();
+    }
+}
+
+// Slot called when the Stop button is clicked
+void SpriteEditorView::onStopButtonClicked() {
+    if (m_animation)
+        m_animation->stop();  // Stop the animation playback
+}
+
+void SpriteEditorView::onAddFrameClicked() {
     emit addFrameRequested();
 }
 
-void SpriteEditorView::onDeleteFrameClicked()
-{
+void SpriteEditorView::onDeleteFrameClicked() {
     int index = m_model->getCurrentIndex();
     if (index >= 0) {
         emit deleteFrameRequested(index);
@@ -146,23 +185,19 @@ void SpriteEditorView::onDeleteFrameClicked()
     updateCanvasDisplay();
 }
 
-void SpriteEditorView::onMoveUpClicked()
-{
+void SpriteEditorView::onMoveUpClicked() {
     int index = m_model->getCurrentIndex();
     if (index > 0) {
         emit moveFrameUpRequested(index);
-        ui->frameListWidget->setCurrentRow(index-1);
-
+        ui->frameListWidget->setCurrentRow(index - 1);
     }
 }
 
-void SpriteEditorView::onMoveDownClicked()
-{
+void SpriteEditorView::onMoveDownClicked() {
     int index = m_model->getCurrentIndex();
-    if (index >= 0 && index < ui->frameListWidget->count()-1) {
+    if (index >= 0 && index < ui->frameListWidget->count() - 1) {
         emit moveFrameDownRequested(index);
-        ui->frameListWidget->setCurrentRow(index+1);
-
+        ui->frameListWidget->setCurrentRow(index + 1);
     }
 }
 
@@ -205,7 +240,6 @@ void SpriteEditorView::onFrameSelectionChanged()
         emit frameSelected(selectedRow);
     }
     updateCanvasDisplay();
-
 }
 
 void SpriteEditorView::updateToolButtonStates() {

@@ -64,6 +64,9 @@ public slots:
 
     void onLoadClicked();
     void onSaveClicked();
+    void onRedoClicked();
+    void onUndoClicked();
+    void onCleanClicked();
 
 
 private:

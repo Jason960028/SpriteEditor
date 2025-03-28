@@ -15,6 +15,9 @@ void SpriteEditorController::setView(SpriteEditorView* view) {
     m_view = view;
     connect(m_view, &SpriteEditorView::loadClicked, this, &SpriteEditorController::onLoadClicked);
     connect(m_view, &SpriteEditorView::saveClicked, this, &SpriteEditorController::onSaveClicked);
+    connect(m_view, &SpriteEditorView::redoClicked, this, &SpriteEditorController::onRedoClicked);
+    connect(m_view, &SpriteEditorView::undoClicked, this, &SpriteEditorController::onUndoClicked);
+    connect(m_view, &SpriteEditorView::cleanClicked, this, &SpriteEditorController::onCleanClicked);
 }
 
 void SpriteEditorController::addFrame()
@@ -109,4 +112,16 @@ void SpriteEditorController::onSaveClicked(){
     if (!fileName.isEmpty()) {
         m_model->saveSprite(fileName);
     }
+}
+
+void SpriteEditorController::onRedoClicked(){
+    m_model->redo();
+    emit frameListChanged(m_model->getCurrentIndex());
+}
+void SpriteEditorController::onUndoClicked(){
+    m_model->undo();
+    emit frameListChanged(m_model->getCurrentIndex());
+}
+void SpriteEditorController::onCleanClicked(){
+
 }

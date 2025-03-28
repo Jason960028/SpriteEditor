@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QColor>
 #include <QJsonObject>
+#include <QStack>
 #include "tools.h"
 
 class SpriteEditorModel : public QObject {
@@ -68,6 +69,8 @@ public:
 
     QVector<QImage> getFrames();
 
+    void undo();
+    void redo();
 
 
 signals:
@@ -97,6 +100,13 @@ private:
     // Canvas size
     int maxGridWidth;
     int maxGridHeight;
+
+    QStack<QImage> m_undoStack;
+    QStack<QImage> m_redoStack;
+
+    // Helper methods to save the current state to undo/redo stacks
+    void saveStateToUndoStack();
+    void clearRedoStack();
 };
 
 #endif // SPRITEEDITORMODEL_H

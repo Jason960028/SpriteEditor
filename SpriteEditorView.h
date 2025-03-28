@@ -40,6 +40,9 @@ signals:
     void frameSelected(int index);
     void loadClicked();
     void saveClicked();
+    void redoClicked();
+    void undoClicked();
+    void cleanClicked();
 
 
 private slots:
@@ -79,6 +82,11 @@ private slots:
     void onLoadButtonClicked();
     void onSaveButtonClicked();
 
+    // Redo, undo and clear
+    void onRedoButtonClicked();
+    void onUndoButtonClicked();
+    void onCleanButtonClicked();
+
 private:
     void setupUI();
     void setupTools();
@@ -108,6 +116,9 @@ private:
     QToolButton* m_stopButton;
     QPushButton* m_loadButton;
     QPushButton* m_saveButton;
+    QPushButton* m_redoButton;
+    QPushButton* m_undoButton;
+    QPushButton* m_cleanButton;
     QListWidget* m_frameList;
     QWidget* m_ui;
 

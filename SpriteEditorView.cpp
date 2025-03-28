@@ -29,9 +29,14 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_addFrameButton = ui->AddFrame;
     m_deleteFrameButton = ui->DeleteFrame;
 
-    //Load and save
+    // Load and save
     m_loadButton = ui->loadButton;
     m_saveButton = ui->saveButton;
+
+    // Redo, undo, clear
+    m_redoButton = ui->redoButton;
+    m_undoButton = ui->undoButton;
+    m_cleanButton = ui->CleanButton;
 
     m_canvas = new Canvas(this, m_model);
     setupUI();
@@ -112,6 +117,10 @@ void SpriteEditorView::connectSignals()
     // Connect save and load
     connect(m_loadButton, &QPushButton::clicked, this, &SpriteEditorView::onLoadButtonClicked);
     connect(m_saveButton, &QPushButton::clicked, this, &SpriteEditorView::onSaveButtonClicked);
+
+    connect(m_redoButton, &QPushButton::clicked, this, &SpriteEditorView::onRedoButtonClicked);
+    connect(m_undoButton, &QPushButton::clicked, this, &SpriteEditorView::onUndoButtonClicked);
+    connect(m_cleanButton, &QPushButton::clicked, this, &SpriteEditorView::onCleanButtonClicked);
 
 }
 
@@ -265,4 +274,20 @@ void SpriteEditorView::onLoadButtonClicked(){
 
 void SpriteEditorView::onSaveButtonClicked(){
     emit saveClicked();
+}
+
+
+void SpriteEditorView::onRedoButtonClicked(){
+    emit redoClicked();
+    updateCanvasDisplay();
+}
+
+void SpriteEditorView::onUndoButtonClicked(){
+    emit undoClicked();
+    updateCanvasDisplay();
+}
+
+void SpriteEditorView::onCleanButtonClicked(){
+    emit cleanClicked();
+    updateCanvasDisplay();
 }

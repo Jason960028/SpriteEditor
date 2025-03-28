@@ -230,7 +230,7 @@
       <string>Play</string>
      </property>
     </widget>
-    <widget class="QToolButton" name="S">
+    <widget class="QToolButton" name="Stop">
      <property name="geometry">
       <rect>
        <x>10</x>

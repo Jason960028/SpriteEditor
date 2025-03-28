@@ -38,6 +38,7 @@ void spriteEditorController::onLoadClicked() {
 }
 
 void spriteEditorController::onSaveClicked(){
+
     QString fileName = QFileDialog::getSaveFileName(
         m_parentWidget,
         tr("Save File"),
@@ -46,10 +47,6 @@ void spriteEditorController::onSaveClicked(){
         );
 
     if (!fileName.isEmpty()) {
-        if (!fileName.endsWith(".ssp", Qt::CaseInsensitive)) {
-            fileName += ".ssp";
-        }
-
         m_model->saveSprite(fileName);
     }
 }

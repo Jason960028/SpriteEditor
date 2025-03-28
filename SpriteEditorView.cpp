@@ -169,6 +169,7 @@ void SpriteEditorView::onMoveDownClicked()
 
 void SpriteEditorView::handleFrameChanged(){
     updateFrameList(m_model->getCurrentIndex());
+    updateCanvasDisplay();
 }
 
 void SpriteEditorView::handleMousePressed(const QPoint& pos) {
@@ -194,6 +195,7 @@ void SpriteEditorView::handleMouseReleased(const QPoint& pos) {
 
 void SpriteEditorView::updateCanvasDisplay() {
     m_canvas->updateCanvas(m_model->getCurrentFrame());
+    ui->frameListWidget->setCurrentRow(m_model->getCurrentIndex());
 }
 
 void SpriteEditorView::onFrameSelectionChanged()
@@ -204,6 +206,7 @@ void SpriteEditorView::onFrameSelectionChanged()
         emit frameSelected(selectedRow);
     }
     updateCanvasDisplay();
+
 }
 
 void SpriteEditorView::updateToolButtonStates() {

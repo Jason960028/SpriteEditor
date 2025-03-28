@@ -29,6 +29,10 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_addFrameButton = ui->AddFrame;
     m_deleteFrameButton = ui->DeleteFrame;
 
+    //Load and save
+    m_loadButton = ui->loadButton;
+    m_saveButton = ui->saveButton;
+
     m_canvas = new Canvas(this, m_model);
     setupUI();
     m_frameList = ui->frameListWidget;
@@ -104,6 +108,11 @@ void SpriteEditorView::connectSignals()
         if (value > 0)
             m_animation->setFrameDelay(1000 / value);  // Calculate delay in milliseconds from FPS
     });
+
+    // Connect save and load
+    connect(m_loadButton, &QPushButton::clicked, this, &SpriteEditorView::onLoadButtonClicked);
+    connect(m_saveButton, &QPushButton::clicked, this, &SpriteEditorView::onSaveButtonClicked);
+
 }
 
 void SpriteEditorView::updateFrameList(int currentIndex)
@@ -238,4 +247,22 @@ void SpriteEditorView::updateToolButtonStates() {
         ui->Fill->setChecked(true);
         break;
     }
+}
+
+void SpriteEditorView::onLoadButtonClicked(){
+    emit loadClicked();
+
+    // Sets the current frame to the first one and updates the GUI
+    QVector<QImage> m_frames = m_model->getFrames();
+    if (!m_frames.isEmpty()) {
+        m_currentFrame = m_frames[0];  // Set the first frame
+        updateFrameList(0);            // Update the frame list
+        updatePreviewFrame(m_currentFrame);
+        updateCanvasDisplay();         // Update the canvas with the first frame
+
+    }
+}
+
+void SpriteEditorView::onSaveButtonClicked(){
+    emit saveClicked();
 }

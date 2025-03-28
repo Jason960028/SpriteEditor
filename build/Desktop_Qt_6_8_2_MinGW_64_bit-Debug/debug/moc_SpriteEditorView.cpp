@@ -45,6 +45,8 @@ static constexpr auto qt_meta_stringdata_ZN16SpriteEditorViewE = QtMocHelpers::s
     "moveFrameUpRequested",
     "moveFrameDownRequested",
     "frameSelected",
+    "loadClicked",
+    "saveClicked",
     "handleMousePressed",
     "pos",
     "handleMouseDragged",
@@ -61,7 +63,9 @@ static constexpr auto qt_meta_stringdata_ZN16SpriteEditorViewE = QtMocHelpers::s
     "updatePreviewFrame",
     "frame",
     "onPlayButtonClicked",
-    "onStopButtonClicked"
+    "onStopButtonClicked",
+    "onLoadButtonClicked",
+    "onSaveButtonClicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -73,35 +77,39 @@ Q_CONSTINIT static const uint qt_meta_data_ZN16SpriteEditorViewE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      19,   14, // methods
+      23,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       5,       // signalCount
+       7,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,  128,    2, 0x06,    1 /* Public */,
-       3,    1,  129,    2, 0x06,    2 /* Public */,
-       5,    1,  132,    2, 0x06,    4 /* Public */,
-       6,    1,  135,    2, 0x06,    6 /* Public */,
-       7,    1,  138,    2, 0x06,    8 /* Public */,
+       1,    0,  152,    2, 0x06,    1 /* Public */,
+       3,    1,  153,    2, 0x06,    2 /* Public */,
+       5,    1,  156,    2, 0x06,    4 /* Public */,
+       6,    1,  159,    2, 0x06,    6 /* Public */,
+       7,    1,  162,    2, 0x06,    8 /* Public */,
+       8,    0,  165,    2, 0x06,   10 /* Public */,
+       9,    0,  166,    2, 0x06,   11 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       8,    1,  141,    2, 0x08,   10 /* Private */,
-      10,    1,  144,    2, 0x08,   12 /* Private */,
-      11,    1,  147,    2, 0x08,   14 /* Private */,
-      12,    0,  150,    2, 0x08,   16 /* Private */,
-      13,    1,  151,    2, 0x08,   17 /* Private */,
-      15,    0,  154,    2, 0x08,   19 /* Private */,
-      16,    0,  155,    2, 0x08,   20 /* Private */,
-      17,    0,  156,    2, 0x08,   21 /* Private */,
-      18,    0,  157,    2, 0x08,   22 /* Private */,
-      19,    0,  158,    2, 0x08,   23 /* Private */,
-      20,    0,  159,    2, 0x08,   24 /* Private */,
-      21,    1,  160,    2, 0x08,   25 /* Private */,
-      23,    0,  163,    2, 0x08,   27 /* Private */,
-      24,    0,  164,    2, 0x08,   28 /* Private */,
+      10,    1,  167,    2, 0x08,   12 /* Private */,
+      12,    1,  170,    2, 0x08,   14 /* Private */,
+      13,    1,  173,    2, 0x08,   16 /* Private */,
+      14,    0,  176,    2, 0x08,   18 /* Private */,
+      15,    1,  177,    2, 0x08,   19 /* Private */,
+      17,    0,  180,    2, 0x08,   21 /* Private */,
+      18,    0,  181,    2, 0x08,   22 /* Private */,
+      19,    0,  182,    2, 0x08,   23 /* Private */,
+      20,    0,  183,    2, 0x08,   24 /* Private */,
+      21,    0,  184,    2, 0x08,   25 /* Private */,
+      22,    0,  185,    2, 0x08,   26 /* Private */,
+      23,    1,  186,    2, 0x08,   27 /* Private */,
+      25,    0,  189,    2, 0x08,   29 /* Private */,
+      26,    0,  190,    2, 0x08,   30 /* Private */,
+      27,    0,  191,    2, 0x08,   31 /* Private */,
+      28,    0,  192,    2, 0x08,   32 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
@@ -109,20 +117,24 @@ Q_CONSTINIT static const uint qt_meta_data_ZN16SpriteEditorViewE[] = {
     QMetaType::Void, QMetaType::Int,    4,
     QMetaType::Void, QMetaType::Int,    4,
     QMetaType::Void, QMetaType::Int,    4,
+    QMetaType::Void,
+    QMetaType::Void,
 
  // slots: parameters
-    QMetaType::Void, QMetaType::QPoint,    9,
-    QMetaType::Void, QMetaType::QPoint,    9,
-    QMetaType::Void, QMetaType::QPoint,    9,
+    QMetaType::Void, QMetaType::QPoint,   11,
+    QMetaType::Void, QMetaType::QPoint,   11,
+    QMetaType::Void, QMetaType::QPoint,   11,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   14,
-    QMetaType::Void,
-    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   16,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QImage,   22,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QImage,   24,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -152,6 +164,10 @@ Q_CONSTINIT const QMetaObject SpriteEditorView::staticMetaObject = { {
         // method 'frameSelected'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        // method 'loadClicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'saveClicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'handleMousePressed'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QPoint &, std::false_type>,
@@ -184,6 +200,10 @@ Q_CONSTINIT const QMetaObject SpriteEditorView::staticMetaObject = { {
         // method 'onPlayButtonClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onStopButtonClicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'onLoadButtonClicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'onSaveButtonClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -199,20 +219,24 @@ void SpriteEditorView::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 2: _t->moveFrameUpRequested((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         case 3: _t->moveFrameDownRequested((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         case 4: _t->frameSelected((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 5: _t->handleMousePressed((*reinterpret_cast< std::add_pointer_t<QPoint>>(_a[1]))); break;
-        case 6: _t->handleMouseDragged((*reinterpret_cast< std::add_pointer_t<QPoint>>(_a[1]))); break;
-        case 7: _t->handleMouseReleased((*reinterpret_cast< std::add_pointer_t<QPoint>>(_a[1]))); break;
-        case 8: _t->handleFrameChanged(); break;
-        case 9: _t->updateFrameList((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 10: _t->onAddFrameClicked(); break;
-        case 11: _t->onDeleteFrameClicked(); break;
-        case 12: _t->onMoveUpClicked(); break;
-        case 13: _t->onMoveDownClicked(); break;
-        case 14: _t->onFrameSelectionChanged(); break;
-        case 15: _t->updateToolButtonStates(); break;
-        case 16: _t->updatePreviewFrame((*reinterpret_cast< std::add_pointer_t<QImage>>(_a[1]))); break;
-        case 17: _t->onPlayButtonClicked(); break;
-        case 18: _t->onStopButtonClicked(); break;
+        case 5: _t->loadClicked(); break;
+        case 6: _t->saveClicked(); break;
+        case 7: _t->handleMousePressed((*reinterpret_cast< std::add_pointer_t<QPoint>>(_a[1]))); break;
+        case 8: _t->handleMouseDragged((*reinterpret_cast< std::add_pointer_t<QPoint>>(_a[1]))); break;
+        case 9: _t->handleMouseReleased((*reinterpret_cast< std::add_pointer_t<QPoint>>(_a[1]))); break;
+        case 10: _t->handleFrameChanged(); break;
+        case 11: _t->updateFrameList((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 12: _t->onAddFrameClicked(); break;
+        case 13: _t->onDeleteFrameClicked(); break;
+        case 14: _t->onMoveUpClicked(); break;
+        case 15: _t->onMoveDownClicked(); break;
+        case 16: _t->onFrameSelectionChanged(); break;
+        case 17: _t->updateToolButtonStates(); break;
+        case 18: _t->updatePreviewFrame((*reinterpret_cast< std::add_pointer_t<QImage>>(_a[1]))); break;
+        case 19: _t->onPlayButtonClicked(); break;
+        case 20: _t->onStopButtonClicked(); break;
+        case 21: _t->onLoadButtonClicked(); break;
+        case 22: _t->onSaveButtonClicked(); break;
         default: ;
         }
     }
@@ -253,6 +277,20 @@ void SpriteEditorView::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
                 return;
             }
         }
+        {
+            using _q_method_type = void (SpriteEditorView::*)();
+            if (_q_method_type _q_method = &SpriteEditorView::loadClicked; *reinterpret_cast<_q_method_type *>(_a[1]) == _q_method) {
+                *result = 5;
+                return;
+            }
+        }
+        {
+            using _q_method_type = void (SpriteEditorView::*)();
+            if (_q_method_type _q_method = &SpriteEditorView::saveClicked; *reinterpret_cast<_q_method_type *>(_a[1]) == _q_method) {
+                *result = 6;
+                return;
+            }
+        }
     }
 }
 
@@ -275,14 +313,14 @@ int SpriteEditorView::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 19)
+        if (_id < 23)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 19;
+        _id -= 23;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 19)
+        if (_id < 23)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 19;
+        _id -= 23;
     }
     return _id;
 }
@@ -319,5 +357,17 @@ void SpriteEditorView::frameSelected(int _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 4, _a);
+}
+
+// SIGNAL 5
+void SpriteEditorView::loadClicked()
+{
+    QMetaObject::activate(this, &staticMetaObject, 5, nullptr);
+}
+
+// SIGNAL 6
+void SpriteEditorView::saveClicked()
+{
+    QMetaObject::activate(this, &staticMetaObject, 6, nullptr);
 }
 QT_WARNING_POP

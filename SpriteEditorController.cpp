@@ -1,5 +1,7 @@
 #include "SpriteEditorController.h"
 #include "SpriteEditorModel.h"
+#include "SpriteEditorView.h"
+
 
 SpriteEditorController::SpriteEditorController(SpriteEditorModel* model, QObject* parent)
     : QObject(parent),
@@ -7,6 +9,12 @@ SpriteEditorController::SpriteEditorController(SpriteEditorModel* model, QObject
     m_currentTool(Tools::ToolType::Pen)
 {
 
+}
+
+void SpriteEditorController::setView(SpriteEditorView* view) {
+    m_view = view;
+    connect(m_view, &SpriteEditorView::loadClicked, this, &SpriteEditorController::onLoadClicked);
+    connect(m_view, &SpriteEditorView::saveClicked, this, &SpriteEditorController::onSaveClicked);
 }
 
 void SpriteEditorController::addFrame()
@@ -17,8 +25,6 @@ void SpriteEditorController::addFrame()
         qDebug() << "Frame added";
         qDebug() << "Frame size " << m_model->getFramesListSize();
     }
-
-
 }
 
 void SpriteEditorController::removeCurrentFrame()
@@ -75,4 +81,32 @@ void SpriteEditorController::onEraserClicked(){
     m_model->setCurrentTool(Tools::ToolType::Eraser);
     m_currentTool = m_model->getCurrentTool();
     emit toolSelectSignal(m_currentTool);
+}
+
+void SpriteEditorController::onLoadClicked() {
+    QString fileName = QFileDialog::getOpenFileName(
+        m_view,  // the QWidget* view passed in
+        tr("Open SSP File"),
+        "",
+        tr("SSP Files (*.ssp)")
+        );
+
+    if (!fileName.isEmpty()) {
+        // Call load function that is inside the model
+        m_model->loadSprite(fileName);
+    }
+}
+
+void SpriteEditorController::onSaveClicked(){
+
+    QString fileName = QFileDialog::getSaveFileName(
+        m_view,
+        tr("Save File"),
+        "", // Optional default filename, e.g., "untitled.ssp"
+        tr("Spreadsheet Files (*.ssp)")
+        );
+
+    if (!fileName.isEmpty()) {
+        m_model->saveSprite(fileName);
+    }
 }

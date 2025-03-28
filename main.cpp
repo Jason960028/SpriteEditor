@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
     SpriteEditorModel model;
     SpriteEditorController controller(&model);
     SpriteEditorView view(&model, &controller);
+    controller.setView(&view);
 
     // Initialize with default project (32x32)
     //model.createNewProject(32, 32);

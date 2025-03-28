@@ -203,6 +203,7 @@ void SpriteEditorView::updateToolButtonStates() {
     ui->Pen->setChecked(false);
     ui->Eraser->setChecked(false);
     ui->Fill->setChecked(false);
+    m_currentTool = m_model->getCurrentTool();
 
     // Check the button for the current tool
     switch (m_currentTool) {

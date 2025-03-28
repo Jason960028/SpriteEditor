@@ -34,8 +34,6 @@ void SpriteEditorModel::removeFrame(){
     // checking if the frame is first one
     if(IndexToRemove >0){
         setCurrentFrame(IndexToRemove-1);
-    }else{
-        setCurrentFrame(IndexToRemove+1);
     }
     m_frames.remove(IndexToRemove);
 }

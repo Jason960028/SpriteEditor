@@ -3,7 +3,7 @@
 #include <QToolButton>
 #include <QButtonGroup>
 #include <QMessageBox>
-#include "spriteEditorModel.h"
+#include "SpriteEditorModel.h"
 #include "ui_SpriteEditorView.h"
 #include "canvas.h"
 #include "QVBoxLayout"
@@ -113,8 +113,9 @@ void SpriteEditorView::connectSignals()
 }
 
 void SpriteEditorView::updateFrameList(int currentIndex){
-    ui->frameListWidget->clear();
+    ui->frameListWidget->blockSignals(true);
 
+    ui->frameListWidget->clear();
     for (int i = 0; i < m_model->getFramesListSize(); ++i) {
         QListWidgetItem *item = new QListWidgetItem(
             QString("Frame %1").arg(i+1),
@@ -123,8 +124,7 @@ void SpriteEditorView::updateFrameList(int currentIndex){
         item->setIcon(QIcon(":/icons/frame.png"));
     }
 
-    // Block signals temporarily to prevent spurious emissions
-    ui->frameListWidget->blockSignals(true);
+
     // Set current selection
     ui->frameListWidget->setCurrentRow(currentIndex);
     // Restore signal handling
@@ -135,7 +135,6 @@ void SpriteEditorView::updateFrameList(int currentIndex){
 void SpriteEditorView::onAddFrameClicked()
 {
     emit addFrameRequested();
-    updateFrameList(m_model->getCurrentIndex());
 }
 
 void SpriteEditorView::onDeleteFrameClicked()
@@ -143,8 +142,8 @@ void SpriteEditorView::onDeleteFrameClicked()
     int index = m_model->getCurrentIndex();
     if (index >= 0) {
         emit deleteFrameRequested(index);
-        updateFrameList(m_model->getCurrentIndex());
     }
+    updateCanvasDisplay();
 }
 
 void SpriteEditorView::onMoveUpClicked()

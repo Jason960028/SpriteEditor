@@ -6,6 +6,7 @@
 #include "SpriteEditorController.h"
 #include "canvas.h"
 #include "tools.h"
+#include "Animation.h"
 #include <QListWidget>
 
 class QToolButton;
@@ -25,6 +26,8 @@ public:
     ~SpriteEditorView();
 
     void updateCanvasDisplay();
+
+
 
 
 signals:
@@ -58,6 +61,16 @@ private slots:
 
     void updateToolButtonStates();
 
+
+
+    // Slot to update the preview when Animation emits frameChanged signal
+    void updatePreviewFrame(const QImage &frame);
+
+    // Slots triggered when Play/Stop buttons are clicked
+    void onPlayButtonClicked();
+    void onStopButtonClicked();
+
+
 private:
     void setupUI();
     void setupTools();
@@ -86,6 +99,12 @@ private:
     QToolButton* m_playButton;
     QToolButton* m_stopButton;
     QListWidget* m_frameList;
+
+    // Animation object (for frame preview)
+    Animation* m_animation;
+    QImage m_previewImage;
+
+
 };
 
 #endif // SPRITEEDITORVIEW_H

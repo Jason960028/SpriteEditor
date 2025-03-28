@@ -9,16 +9,12 @@ SpriteEditorModel::SpriteEditorModel(QObject *parent)
     m_currentTool(Tools::ToolType::Pen),
     maxGridWidth(128),
     maxGridHeight(128),
-    m_frameSize(32, 32)  // Initialize frameSize FIRST
+    m_frameSize(32, 32)
 {
     // Initialize with one blank frame
     m_frames.append(QImage(m_frameSize, QImage::Format_ARGB32));
     m_frames.last().fill(Qt::transparent);
-    m_currentFrame = m_frames.first();  // Now safe to access
-
-    // In Model constructor:
-    qDebug() << "Model created - frame size:" << m_frameSize
-             << "frames:" << m_frames.size();
+    m_currentFrame = m_frames.first();
 }
 
 void SpriteEditorModel::createNewProject(int width, int height) {
@@ -30,7 +26,6 @@ void SpriteEditorModel::createNewProject(int width, int height) {
 void SpriteEditorModel::addFrame() {
     m_frames.append(QImage(m_frameSize, QImage::Format_ARGB32));
     m_frames.last().fill(Qt::transparent);
-    emit framesUpdated(); // tells UI to update the frame list
 }
 
 void SpriteEditorModel::removeFrame(){
@@ -42,11 +37,7 @@ void SpriteEditorModel::removeFrame(){
     }else{
         setCurrentFrame(IndexToRemove+1);
     }
-
-
     m_frames.remove(IndexToRemove);
-
-    emit frameChanged(); // tells Canvas to swicth to another frame
 }
 
 QImage SpriteEditorModel::getFrame(int index) const {
@@ -92,7 +83,6 @@ QSize SpriteEditorModel::getMaxSize () const{
 void SpriteEditorModel::setCurrentFrame(int index) {
     if(index >= 0 && index < m_frames.size()) {
         m_currentFrame = m_frames[index];
-        emit frameListChanged();
     }
 }
 

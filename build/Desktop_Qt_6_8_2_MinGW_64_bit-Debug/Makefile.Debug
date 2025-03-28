@@ -1904,7 +1904,12 @@ debug/spriteEditorView.o: ../../spriteEditorView.cpp ../../spriteEditorView.h \
 		E:/Qt/6.8.2/mingw_64/include/QtWidgets/QMessageBox \
 		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qmessagebox.h \
 		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qdialog.h \
-		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qdialogbuttonbox.h
+		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qdialogbuttonbox.h \
+		E:/Qt/6.8.2/mingw_64/include/QtWidgets/QVBoxLayout \
+		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qboxlayout.h \
+		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qlayout.h \
+		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qlayoutitem.h \
+		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qgridlayout.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\spriteEditorView.o ..\..\spriteEditorView.cpp
 
 debug/tools.o: ../../tools.cpp ../../tools.h \

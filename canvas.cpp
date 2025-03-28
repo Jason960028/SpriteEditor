@@ -74,6 +74,7 @@ void Canvas::paintEvent(QPaintEvent* event) {
     painter.translate(offsetX, offsetY);
     painter.scale(scale, scale);
 
+    qDebug() << "current image painted";
     // Draw the current image
     painter.drawImage(QPoint(0, 0), displayImage);
 
@@ -110,23 +111,8 @@ QPoint Canvas::screenToImagePos(const QPoint& screenPos) const {
 }
 
 void Canvas::updateCanvas(const QImage& frameImage) {
-    if (frameImage.width() != displayImage.width() ||
-        frameImage.height() != displayImage.height()) {
 
-        canvasWidth = qBound(32, frameImage.width(), maxGridWidth);
-        canvasHeight = qBound(32, frameImage.height(), maxGridHeight);
-
-        QImage newImage(canvasWidth, canvasHeight, QImage::Format_ARGB32);
-        newImage.fill(Qt::transparent);
-
-        QPainter painter(&newImage);
-        painter.drawImage(QPoint(0, 0), frameImage);
-
-        displayImage = newImage;
-    } else {
-        displayImage = frameImage;
-    }
-
+    displayImage = frameImage;
     update();
 }
 

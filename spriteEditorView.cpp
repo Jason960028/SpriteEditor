@@ -32,6 +32,7 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_frameList = ui->frameListWidget;
     connectSignals();
 
+
     // Set up layout for CanvasFrame
     QVBoxLayout* canvasLayout = new QVBoxLayout(ui->Canvas);
     canvasLayout->setContentsMargins(0, 0, 0, 0);
@@ -75,9 +76,11 @@ void SpriteEditorView::connectSignals()
     // Tool buttons
     connect(m_penButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onPenClicked);
     connect(m_eraserButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onEraserClicked);
+    connect(ui->moveUpFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::moveFrameUp);
+    connect(ui->moveDownFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::moveFrameDown);
 
     // Canvas updates
-    connect(m_model, &SpriteEditorModel::frameChanged, this, &SpriteEditorView::handleFrameChanged);
+    connect(m_controller, &SpriteEditorController::currentFrameChanged, this, &SpriteEditorView::handleFrameChanged);
 
     // Add frame update
     connect(m_addFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::addFrame);
@@ -99,7 +102,8 @@ void SpriteEditorView::connectSignals()
             m_controller, &SpriteEditorController::moveFrameDown);
     connect(this, &SpriteEditorView::frameSelected,
             m_controller, &SpriteEditorController::handleFrameSelected);
-
+    connect(m_frameList, &QListWidget::currentRowChanged,
+            this, &SpriteEditorView::onFrameSelectionChanged);
 
     // Connect canvas interaction signals
     connect(m_canvas, &Canvas::mousePressed, this, &SpriteEditorView::handleMousePressed);
@@ -148,6 +152,7 @@ void SpriteEditorView::onMoveUpClicked()
     int index = m_model->getCurrentIndex();
     if (index > 0) {
         emit moveFrameUpRequested(index);
+        ui->frameListWidget->setCurrentRow(index-1);
         updateFrameList(index-1);
     }
 }
@@ -157,12 +162,13 @@ void SpriteEditorView::onMoveDownClicked()
     int index = m_model->getCurrentIndex();
     if (index >= 0 && index < ui->frameListWidget->count()-1) {
         emit moveFrameDownRequested(index);
+        ui->frameListWidget->setCurrentRow(index+1);
         updateFrameList(index+1);
     }
 }
 
 void SpriteEditorView::handleFrameChanged(){
-    updateCanvasDisplay();
+    onFrameSelectionChanged();
 }
 
 void SpriteEditorView::handleMousePressed(const QPoint& pos) {
@@ -192,10 +198,14 @@ void SpriteEditorView::updateCanvasDisplay() {
 
 void SpriteEditorView::onFrameSelectionChanged()
 {
-    int selectedRow = ui->frameListWidget->currentRow();
+    int selectedRow = m_frameList->currentRow();
+    qDebug() << "current row changed";
     if (selectedRow >= 0) {
         emit frameSelected(selectedRow);
     }
+    m_currentFrame = m_model->getCurrentFrame();
+    qDebug() << "current Frame" << m_currentFrame;
+    updateCanvasDisplay();
 }
 
 void SpriteEditorView::updateToolButtonStates() {

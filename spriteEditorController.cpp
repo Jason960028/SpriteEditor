@@ -13,14 +13,22 @@ void SpriteEditorController::addFrame()
 {
     if (m_model) {
         m_model->addFrame();
+        emit frameListChanged(m_model->getFramesListSize());
+        qDebug() << "Frame added";
+        qDebug() << "Frame size " << m_model->getFramesListSize();
     }
+
+
 }
 
 void SpriteEditorController::removeCurrentFrame()
 {
     if (m_model && m_model->getFramesListSize() > 1) {
         m_model->removeFrame();
+        emit frameListChanged(m_model->getFramesListSize());
+         qDebug() << "Frame deleted";
     }
+
 }
 
 void SpriteEditorController::handlePlayPressed()
@@ -42,10 +50,14 @@ void SpriteEditorController::handleFrameSelected(int index){
 
 void SpriteEditorController::moveFrameUp(int index){
     m_model->setCurrentFrame(index-1);
+     qDebug() << "Frame moved up";
+    emit currentFrameChanged();
 }
 
 void SpriteEditorController::moveFrameDown(int index){
      m_model->setCurrentFrame(index+1);
+     qDebug() << "Frame moved down";
+     emit currentFrameChanged();
 }
 
 

@@ -69,10 +69,6 @@ public:
 
 
 signals:
-    // signal is sent to View to switch to selected frame
-    void frameChanged();
-    // signal is sent to View to update the FrameList
-    void framesUpdated();
     // signal is sent to View to update the selected color
     void colorChanged(QColor color);
     void frameListChanged();

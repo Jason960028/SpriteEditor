@@ -29,6 +29,8 @@ signals:
 
     void toolSelectSignal(Tools::ToolType& tool);
 
+    void currentFrameChanged();
+
 public slots:
     // slot to handle Play button
     void handlePlayPressed();

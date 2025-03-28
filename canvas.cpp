@@ -15,20 +15,19 @@
 
 Canvas::Canvas(QWidget* parent, SpriteEditorModel* model)
     : QWidget(parent),
-    canvasWidth(model->frameSize().width()),
-    canvasHeight(model->frameSize().height()),
-    maxGridWidth(model->getMaxSize().width()),
-    maxGridHeight(model->getMaxSize().height()),
-    model(model){
+    model(model)
+{
+    // Initialize with safe defaults
+    canvasWidth = 32;
+    canvasHeight = 32;
+    maxGridWidth = 128;
+    maxGridHeight = 128;
 
-
-    // Initialize with safe default values
-    canvasWidth = model ? model->frameSize().width() : 32;
-    canvasHeight = model ? model->frameSize().height() : 32;
-    maxGridWidth = model ? model->getMaxSize().width() : 128;
-    maxGridHeight = model ? model->getMaxSize().height() : 128;
-
-    if (model) {
+    if(model) {
+        canvasWidth = model->frameSize().width();
+        canvasHeight = model->frameSize().height();
+        maxGridWidth = model->getMaxSize().width();
+        maxGridHeight = model->getMaxSize().height();
         displayImage = model->getCurrentFrame();
     } else {
         displayImage = QImage(QSize(32, 32), QImage::Format_ARGB32);
@@ -37,12 +36,10 @@ Canvas::Canvas(QWidget* parent, SpriteEditorModel* model)
 
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
-    // Create initial empty display image
-    //displayImage = model->getCurrentFrame();
 
-    // Enable mouse tracking for drawing while dragging
-    //setMouseTracking(true);
-    //setFocusPolicy(Qt::StrongFocus);
+    // In Canvas constructor:
+    qDebug() << "Canvas created - model:" << model
+             << "size:" << canvasWidth << "x" << canvasHeight;
 }
 
 void Canvas::paintEvent(QPaintEvent* event) {

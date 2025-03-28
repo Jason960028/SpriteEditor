@@ -8,12 +8,17 @@ SpriteEditorModel::SpriteEditorModel(QObject *parent)
     m_currentColor(Qt::black),
     m_currentTool(Tools::ToolType::Pen),
     maxGridWidth(128),
-    maxGridHeight(128)
+    maxGridHeight(128),
+    m_frameSize(32, 32)  // Initialize frameSize FIRST
 {
-    //initialize the first frame
-    m_frames.append(QImage(m_defualSize, QImage::Format_ARGB32));
+    // Initialize with one blank frame
+    m_frames.append(QImage(m_frameSize, QImage::Format_ARGB32));
     m_frames.last().fill(Qt::transparent);
-    m_currentFrame = m_frames.first();
+    m_currentFrame = m_frames.first();  // Now safe to access
+
+    // In Model constructor:
+    qDebug() << "Model created - frame size:" << m_frameSize
+             << "frames:" << m_frames.size();
 }
 
 void SpriteEditorModel::createNewProject(int width, int height) {
@@ -83,9 +88,12 @@ QSize SpriteEditorModel::getMaxSize () const{
     return QSize(maxGridWidth, maxGridHeight);
 }
 
-void SpriteEditorModel::setCurrentFrame(int index){
-    m_currentFrame = m_frames[index];
-    emit frameListChanged();// tells the QPainter to render the color (QPainter.drawImage(x, y, image)) render the position with the color which stored by image
+// In spriteEditorModel.cpp
+void SpriteEditorModel::setCurrentFrame(int index) {
+    if(index >= 0 && index < m_frames.size()) {
+        m_currentFrame = m_frames[index];
+        emit frameListChanged();
+    }
 }
 
 QImage SpriteEditorModel::getCurrentFrame(){

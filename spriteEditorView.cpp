@@ -28,8 +28,8 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_deleteFrameButton = ui->DeleteFrame;
 
     setupUI();
-    connectSignals();
     m_frameList = ui->frameListWidget;
+    connectSignals();
 }
 
 SpriteEditorView::~SpriteEditorView()

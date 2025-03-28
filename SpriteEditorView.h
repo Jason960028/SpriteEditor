@@ -1,92 +1,92 @@
 #ifndef SPRITEEDITORVIEW_H
 #define SPRITEEDITORVIEW_H
 
-/**
- * @file spriteeditorview.h
- * @brief Declares the SpriteEditorView class, the main GUI controller for the sprite editor.
- *
- * SpriteEditorView manages user interaction with the editor window, including canvas drawing,
- * tool selection, and real-time sprite updates. It serves as the connection between UI components
- * and underlying pixel editing logic.
- *
- * @author Jason chang
- */
-
 #include <QMainWindow>
-#include <QVBoxLayout>
+#include "SpriteEditorModel.h"
+#include "SpriteEditorController.h"
+#include "canvas.h"
 #include "tools.h"
+#include <QListWidget>
+
+class QToolButton;
 
 namespace Ui {
 class SpriteEditorView;
 }
 
-class Canvas;
-
-/**
- * @class SpriteEditorView
- * @brief Main window class for the sprite editor GUI.
- */
-class SpriteEditorView : public QMainWindow {
+class SpriteEditorView : public QMainWindow
+{
     Q_OBJECT
 
 public:
-    /**
-     * @brief Constructs the SpriteEditorView.
-     * @param parent The parent widget (default is nullptr).
-     */
-    explicit SpriteEditorView(QWidget* parent = nullptr);
-
-    /**
-     * @brief Destructor for SpriteEditorView.
-     */
+    explicit SpriteEditorView(SpriteEditorModel* model,
+                              SpriteEditorController* controller,
+                              QWidget* parent = nullptr);
     ~SpriteEditorView();
 
-private slots:
-    /**
-     * @brief Handles mouse press events on the canvas.
-     * @param pos Position of the mouse press.
-     */
-    void handleMousePressed(const QPoint& pos);
-
-    /**
-     * @brief Handles mouse drag events on the canvas.
-     * @param pos Position of the mouse drag.
-     */
-    void handleMouseDragged(const QPoint& pos);
-
-    /**
-     * @brief Handles mouse release events on the canvas.
-     * @param pos Position of the mouse release.
-     */
-    void handleMouseReleased(const QPoint& pos);
-
-    // Tool selection slots
-    void onPenSelected();
-    void onEraserSelected();
-    void onFillSelected();
-
-private:
-    Ui::SpriteEditorView* ui;
-    Canvas* canvas;
-
-    // Currently selected tool (default: Pen)
-    Tools::ToolType currentTool = Tools::ToolType::Pen;
-
-    // Currently selected color (default: Black)
-    Tools::ColorType currentColor = Tools::ColorType::Black;
-
-    // Frame currently being edited
-    QImage currentFrame;
-
-    /**
-     * @brief Updates the canvas display based on the current frame image.
-     */
     void updateCanvasDisplay();
 
-    /**
-     * @brief Updates the tool button UI to reflect the selected tool.
-     */
+
+signals:
+    void addFrameRequested();
+    void deleteFrameRequested(int index);
+    void moveFrameUpRequested(int index);
+    void moveFrameDownRequested(int index);
+    void frameSelected(int index);
+
+private slots:
+
+    void handleMousePressed(const QPoint& pos);
+
+    void handleMouseDragged(const QPoint& pos);
+
+    void handleMouseReleased(const QPoint& pos);
+    //handle the Canvas update when frame changed
+    void handleFrameChanged();
+
+    void updateFrameList(int currentIndex);
+
+    void onAddFrameClicked();
+
+    void onDeleteFrameClicked();
+
+    void onMoveUpClicked();
+
+    void onMoveDownClicked();
+
+    void onFrameSelectionChanged();
+
     void updateToolButtonStates();
+
+private:
+    void setupUI();
+    void setupTools();
+    void connectSignals();
+
+    Ui::SpriteEditorView* ui;
+
+    SpriteEditorModel* m_model;
+    SpriteEditorController* m_controller;
+    Canvas* m_canvasWidget;
+
+    // Tool
+    Tools::ToolType m_currentTool;
+
+    QImage m_currentFrame;
+
+    QColor m_currentColor;
+
+    Canvas*  m_canvas;
+
+    // UI Elements
+    QToolButton* m_penButton;
+    QToolButton* m_eraserButton;
+    QToolButton* m_addFrameButton;
+    QToolButton* m_deleteFrameButton;
+    QToolButton* m_playButton;
+    QToolButton* m_stopButton;
+    QListWidget* m_frameList;
 };
 
 #endif // SPRITEEDITORVIEW_H
+

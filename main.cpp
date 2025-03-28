@@ -5,7 +5,14 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    SpriteEditorView w;
-    w.show();
+    SpriteEditorModel model;
+    SpriteEditorController controller(&model);
+    SpriteEditorView view(&model, &controller);
+
+    // Initialize with default project (32x32)
+    //model.createNewProject(32, 32);
+
+    // Show the main window
+    view.show();
     return a.exec();
 }

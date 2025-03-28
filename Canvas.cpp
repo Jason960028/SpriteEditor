@@ -13,20 +13,36 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 
-Canvas::Canvas(QWidget* parent)
+Canvas::Canvas(QWidget* parent, SpriteEditorModel* model)
     : QWidget(parent),
-    canvasWidth(32),
-    canvasHeight(32),
-    maxGridWidth(128),
-    maxGridHeight(128) {
+    model(model)
+{
+    // Initialize with safe defaults
+    canvasWidth = 32;
+    canvasHeight = 32;
+    maxGridWidth = 128;
+    maxGridHeight = 128;
 
-    // Create initial empty display image
-    displayImage = QImage(canvasWidth, canvasHeight, QImage::Format_ARGB32);
-    displayImage.fill(Qt::transparent);
+    if(model) {
+        qDebug() << "Canvas created - Model is NOT NULL";
+        canvasWidth = model->frameSize().width();
+        canvasHeight = model->frameSize().height();
+        maxGridWidth = model->getMaxSize().width();
+        maxGridHeight = model->getMaxSize().height();
+        displayImage = model->getCurrentFrame();
 
-    // Enable mouse tracking for drawing while dragging
+    } else {
+        qDebug() << "Canvas created - Model is NULL!";
+        displayImage = QImage(QSize(32, 32), QImage::Format_ARGB32);
+        displayImage.fill(Qt::transparent);
+    }
+
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
+
+    // In Canvas constructor:
+    qDebug() << "Canvas created - model:" << model
+             << "size:" << canvasWidth << "x" << canvasHeight;
 }
 
 void Canvas::paintEvent(QPaintEvent* event) {
@@ -58,6 +74,7 @@ void Canvas::paintEvent(QPaintEvent* event) {
     painter.translate(offsetX, offsetY);
     painter.scale(scale, scale);
 
+    qDebug() << "current image painted";
     // Draw the current image
     painter.drawImage(QPoint(0, 0), displayImage);
 
@@ -94,23 +111,8 @@ QPoint Canvas::screenToImagePos(const QPoint& screenPos) const {
 }
 
 void Canvas::updateCanvas(const QImage& frameImage) {
-    if (frameImage.width() != displayImage.width() ||
-        frameImage.height() != displayImage.height()) {
 
-        canvasWidth = qBound(32, frameImage.width(), 128);
-        canvasHeight = qBound(32, frameImage.height(), 128);
-
-        QImage newImage(canvasWidth, canvasHeight, QImage::Format_ARGB32);
-        newImage.fill(Qt::transparent);
-
-        QPainter painter(&newImage);
-        painter.drawImage(QPoint(0, 0), frameImage);
-
-        displayImage = newImage;
-    } else {
-        displayImage = frameImage;
-    }
-
+    displayImage = frameImage;
     update();
 }
 
@@ -134,3 +136,4 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event) {
         emit mouseReleased(pixelPos);
     }
 }
+

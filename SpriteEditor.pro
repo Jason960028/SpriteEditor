@@ -12,7 +12,7 @@ SOURCES += \
     Animation.cpp \
     Canvas.cpp \
     SaveLoad.cpp \
-    SpriteEditorControl.cpp \
+    SpriteEditorController.cpp \
     SpriteEditorModel.cpp \
     SpriteEditorView.cpp \
     Tools.cpp \
@@ -22,7 +22,7 @@ HEADERS += \
     Animation.h \
     Canvas.h \
     SaveLoad.h \
-    SpriteEditorControl.h \
+    SpriteEditorController.h \
     SpriteEditorModel.h \
     SpriteEditorView.h \
     Tools.h

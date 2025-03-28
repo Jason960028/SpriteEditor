@@ -1,3 +1,10 @@
+#include "tools.h"
+#include <QPainter>
+#include "spriteEditorModel.h"
+
+
+// Static tool instances
+QMap<Tools::ToolType, Tools*> Tools::m_tools;
 /**
  * @file tools.cpp
  * @brief Implements the Tools class, providing core drawing tool logic for the sprite editor.
@@ -13,7 +20,10 @@
 #include <QQueue>
 #include <QSet>
 
-Tools::Tools() {}
+Tools::Tools() {
+
+
+}
 
 QColor Tools::getQColor(ColorType colorType) {
     switch (colorType) {
@@ -37,14 +47,12 @@ QColor Tools::getQColor(ColorType colorType) {
     }
 }
 
-void Tools::applyTool(QImage& image, const QPoint& pos, ToolType toolType, ColorType colorType) {
+void Tools::applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color) {
     // Check if position is within image bounds
     if (pos.x() < 0 || pos.x() >= image.width() ||
         pos.y() < 0 || pos.y() >= image.height()) {
         return;
     }
-
-    QColor color = getQColor(colorType);
 
     switch (toolType) {
     case ToolType::Pen:

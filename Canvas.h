@@ -15,7 +15,7 @@
 #include <QImage>
 #include <QVector>
 #include <QColor>
-#include "tools.h"
+#include "spriteEditorModel.h"
 
 /**
  * @class Canvas
@@ -29,7 +29,7 @@ public:
      * @brief Constructs a Canvas object.
      * @param parent The parent QWidget (default is nullptr).
      */
-    explicit Canvas(QWidget* parent = nullptr);
+    explicit Canvas( QWidget* parent = nullptr, SpriteEditorModel* model = nullptr);
 
     /**
      * @brief Updates the displayed image on the canvas.
@@ -69,6 +69,8 @@ private:
     int canvasHeight;
     int maxGridWidth;
     int maxGridHeight;
+    SpriteEditorModel* model;
 };
 
 #endif // CANVAS_H
+

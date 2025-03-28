@@ -23,6 +23,8 @@
  */
 class Tools {
 public:
+
+
     /**
      * @enum ToolType
      * @brief Tool types available in the sprite editor.
@@ -75,7 +77,7 @@ public:
      * @param toolType The tool to use.
      * @param colorType The color to use (ignored for Eraser).
      */
-    static void applyTool(QImage& image, const QPoint& pos, ToolType toolType, ColorType colorType);
+    static void applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color);
 
     /**
      * @brief Gets the color at the specified position.
@@ -86,6 +88,7 @@ public:
     static QColor getColorAt(const QImage& image, const QPoint& pos);
 
 private:
+    static QMap<ToolType, Tools*> m_tools;
     /**
      * @brief Fills an area with a specified color using a flood-fill algorithm.
      * @param image The image to modify.

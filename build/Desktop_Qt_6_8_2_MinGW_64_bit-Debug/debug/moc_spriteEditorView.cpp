@@ -56,7 +56,8 @@ static constexpr auto qt_meta_stringdata_ZN16SpriteEditorViewE = QtMocHelpers::s
     "onDeleteFrameClicked",
     "onMoveUpClicked",
     "onMoveDownClicked",
-    "onFrameSelectionChanged"
+    "onFrameSelectionChanged",
+    "updateToolButtonStates"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -68,7 +69,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN16SpriteEditorViewE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      15,   14, // methods
+      16,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -76,23 +77,24 @@ Q_CONSTINIT static const uint qt_meta_data_ZN16SpriteEditorViewE[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,  104,    2, 0x06,    1 /* Public */,
-       3,    1,  105,    2, 0x06,    2 /* Public */,
-       5,    1,  108,    2, 0x06,    4 /* Public */,
-       6,    1,  111,    2, 0x06,    6 /* Public */,
-       7,    1,  114,    2, 0x06,    8 /* Public */,
+       1,    0,  110,    2, 0x06,    1 /* Public */,
+       3,    1,  111,    2, 0x06,    2 /* Public */,
+       5,    1,  114,    2, 0x06,    4 /* Public */,
+       6,    1,  117,    2, 0x06,    6 /* Public */,
+       7,    1,  120,    2, 0x06,    8 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       8,    1,  117,    2, 0x08,   10 /* Private */,
-      10,    1,  120,    2, 0x08,   12 /* Private */,
-      11,    1,  123,    2, 0x08,   14 /* Private */,
-      12,    0,  126,    2, 0x08,   16 /* Private */,
-      13,    1,  127,    2, 0x08,   17 /* Private */,
-      15,    0,  130,    2, 0x08,   19 /* Private */,
-      16,    0,  131,    2, 0x08,   20 /* Private */,
-      17,    0,  132,    2, 0x08,   21 /* Private */,
-      18,    0,  133,    2, 0x08,   22 /* Private */,
-      19,    0,  134,    2, 0x08,   23 /* Private */,
+       8,    1,  123,    2, 0x08,   10 /* Private */,
+      10,    1,  126,    2, 0x08,   12 /* Private */,
+      11,    1,  129,    2, 0x08,   14 /* Private */,
+      12,    0,  132,    2, 0x08,   16 /* Private */,
+      13,    1,  133,    2, 0x08,   17 /* Private */,
+      15,    0,  136,    2, 0x08,   19 /* Private */,
+      16,    0,  137,    2, 0x08,   20 /* Private */,
+      17,    0,  138,    2, 0x08,   21 /* Private */,
+      18,    0,  139,    2, 0x08,   22 /* Private */,
+      19,    0,  140,    2, 0x08,   23 /* Private */,
+      20,    0,  141,    2, 0x08,   24 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
@@ -107,6 +109,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN16SpriteEditorViewE[] = {
     QMetaType::Void, QMetaType::QPoint,    9,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,   14,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -162,6 +165,8 @@ Q_CONSTINIT const QMetaObject SpriteEditorView::staticMetaObject = { {
         // method 'onMoveDownClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onFrameSelectionChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'updateToolButtonStates'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -187,6 +192,7 @@ void SpriteEditorView::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 12: _t->onMoveUpClicked(); break;
         case 13: _t->onMoveDownClicked(); break;
         case 14: _t->onFrameSelectionChanged(); break;
+        case 15: _t->updateToolButtonStates(); break;
         default: ;
         }
     }
@@ -249,14 +255,14 @@ int SpriteEditorView::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 15)
+        if (_id < 16)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 15;
+        _id -= 16;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 15)
+        if (_id < 16)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 15;
+        _id -= 16;
     }
     return _id;
 }

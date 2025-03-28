@@ -52,8 +52,15 @@ void SpriteEditorController::moveFrameDown(int index){
 void SpriteEditorController::onPenClicked(){
 
     m_model->setCurrentTool(Tools::ToolType::Pen);
+    m_currentTool = m_model->getCurrentTool();
+    emit toolSelectSignal(m_currentTool);
 }
 
 void SpriteEditorController::onEraserClicked(){
+    qDebug() << "Eraser set";
     m_model->setCurrentTool(Tools::ToolType::Eraser);
+    m_currentTool = m_model->getCurrentTool();
+    emit toolSelectSignal(m_currentTool);
 }
+
+

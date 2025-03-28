@@ -56,6 +56,8 @@ private slots:
 
     void onFrameSelectionChanged();
 
+    void updateToolButtonStates();
+
 private:
     void setupUI();
     void setupTools();

@@ -6,6 +6,7 @@
 #include "spriteEditorModel.h"
 #include "ui_SpriteEditorView.h"
 #include "canvas.h"
+#include "QVBoxLayout"
 
 SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
                                    SpriteEditorController* m_controller,
@@ -30,6 +31,28 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     setupUI();
     m_frameList = ui->frameListWidget;
     connectSignals();
+
+    // Set up layout for CanvasFrame
+    QVBoxLayout* canvasLayout = new QVBoxLayout(ui->Canvas);
+    canvasLayout->setContentsMargins(0, 0, 0, 0);
+    canvasLayout->addWidget(m_canvas);
+
+    // Set layout policy to Fixed to maintain exact Canvas size
+    m_canvas->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    // Get canvas dimensions through accessors
+    int canvasWidth = m_canvas->getCanvasWidth();
+    int canvasHeight = m_canvas->getCanvasHeight();
+
+    // Adjust size to display the grid with scaling
+    int pixelScale = 10;
+    m_canvas->setFixedSize(canvasWidth * pixelScale, canvasHeight * pixelScale);
+
+
+    // Update canvas with initial frame
+    m_canvas->updateCanvas(m_currentFrame);
+
+
 }
 
 SpriteEditorView::~SpriteEditorView()
@@ -62,6 +85,8 @@ void SpriteEditorView::connectSignals()
     connect(m_deleteFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::removeCurrentFrame);
     // frame list update
     connect(m_controller, &SpriteEditorController::frameListChanged, this, &SpriteEditorView::updateFrameList);
+
+    connect(m_controller, &SpriteEditorController::toolSelectSignal, this, &SpriteEditorView::updateToolButtonStates);
 
     // In your main window or m_controller
     connect(this, &SpriteEditorView::addFrameRequested,
@@ -170,6 +195,29 @@ void SpriteEditorView::onFrameSelectionChanged()
     int selectedRow = ui->frameListWidget->currentRow();
     if (selectedRow >= 0) {
         emit frameSelected(selectedRow);
+    }
+}
+
+void SpriteEditorView::updateToolButtonStates() {
+    // Uncheck all tool buttons
+    ui->Pen->setChecked(false);
+    ui->Eraser->setChecked(false);
+    ui->Fill->setChecked(false);
+
+    // Check the button for the current tool
+    switch (m_currentTool) {
+    case Tools::ToolType::Pen:
+        qDebug() << "Pen checked";
+        ui->Pen->setChecked(true);
+        break;
+    case Tools::ToolType::Eraser:
+         qDebug() << "Eraser checked";
+        ui->Eraser->setChecked(true);
+        break;
+    case Tools::ToolType::Fill:
+         qDebug() << "fill checked";
+        ui->Fill->setChecked(true);
+        break;
     }
 }
 

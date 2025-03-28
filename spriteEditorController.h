@@ -27,6 +27,8 @@ signals:
     // signal to play or stop animation
     void animationStateChanged(bool playing);
 
+    void toolSelectSignal(Tools::ToolType& tool);
+
 public slots:
     // slot to handle Play button
     void handlePlayPressed();
@@ -55,7 +57,9 @@ public slots:
     // slot to move to next frame
     void moveFrameDown(int index);
 
+
 private:
+    void updateToolButtonStates();
     SpriteEditorModel* m_model;
     Tools::ToolType m_currentTool;
 };

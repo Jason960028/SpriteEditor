@@ -14,7 +14,7 @@ SpriteEditorModel::SpriteEditorModel(QObject *parent)
     // Initialize with one blank frame
     m_frames.append(QImage(m_frameSize, QImage::Format_ARGB32));
     m_frames.last().fill(Qt::transparent);
-    m_currentFrame = m_frames.first();
+    m_currentFrameIndex = 0;
 }
 
 void SpriteEditorModel::createNewProject(int width, int height) {
@@ -49,8 +49,9 @@ int SpriteEditorModel::getFramesListSize(){
 }
 
 void SpriteEditorModel::setPixel(int x, int y) {
+    QImage& currentFrame = getCurrentFrame();
     if(x >= 0 && y >= 0 && x < m_frameSize.width() && y < m_frameSize.height()) {
-        m_currentFrame.setPixelColor(x, y, m_currentColor);
+        currentFrame.setPixelColor(x, y, m_currentColor);
 
     }
 }
@@ -64,7 +65,7 @@ Tools::ToolType SpriteEditorModel::getCurrentTool(){
 }
 
 int SpriteEditorModel::getCurrentIndex(){
-    return m_frames.indexOf(m_currentFrame);
+    return m_currentFrameIndex;
 }
 
 QColor SpriteEditorModel::getCurrentColor(){
@@ -82,16 +83,24 @@ QSize SpriteEditorModel::getMaxSize () const{
 // In spriteEditorModel.cpp
 void SpriteEditorModel::setCurrentFrame(int index) {
     if(index >= 0 && index < m_frames.size()) {
-        m_currentFrame = m_frames[index];
+        m_currentFrameIndex = index;
     }
 }
 
-QImage SpriteEditorModel::getCurrentFrame(){
-    if (m_currentFrame.isNull()) {
-        return QImage(m_frameSize.isValid() ? m_frameSize : QSize(32, 32),
-                      QImage::Format_ARGB32);
+QImage& SpriteEditorModel::getCurrentFrame(){
+    return m_frames[m_currentFrameIndex];
+}
+
+void SpriteEditorModel::moveFrameUp(int index) {
+    if (index > 0 && index < m_frames.size()) {
+        m_currentFrameIndex = index - 1;
     }
-    return m_currentFrame;
+}
+
+void SpriteEditorModel::moveFrameDown(int index) {
+    if (index >= 0 && index < m_frames.size() - 1) {
+        m_currentFrameIndex = index + 1;
+    }
 }
 
 void SpriteEditorModel::setCurrentColor(const QColor &color){

@@ -50,12 +50,14 @@ void SpriteEditorController::handleFrameSelected(int index){
 
 void SpriteEditorController::moveFrameUp(int index){
     m_model->setCurrentFrame(index-1);
+    m_model->moveFrameUp(index);
      qDebug() << "Frame moved up";
     emit currentFrameChanged();
 }
 
 void SpriteEditorController::moveFrameDown(int index){
      m_model->setCurrentFrame(index+1);
+     m_model->moveFrameDown(index);
      qDebug() << "Frame moved down";
      emit currentFrameChanged();
 }

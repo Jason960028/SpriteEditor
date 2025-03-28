@@ -76,8 +76,8 @@ void SpriteEditorView::connectSignals()
     // Tool buttons
     connect(m_penButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onPenClicked);
     connect(m_eraserButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onEraserClicked);
-    connect(ui->moveUpFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::moveFrameUp);
-    connect(ui->moveDownFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::moveFrameDown);
+    connect(ui->moveUpFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveUpClicked);
+    connect(ui->moveDownFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveDownClicked);
 
     // Canvas updates
     connect(m_controller, &SpriteEditorController::currentFrameChanged, this, &SpriteEditorView::handleFrameChanged);
@@ -153,7 +153,7 @@ void SpriteEditorView::onMoveUpClicked()
     if (index > 0) {
         emit moveFrameUpRequested(index);
         ui->frameListWidget->setCurrentRow(index-1);
-        updateFrameList(index-1);
+
     }
 }
 
@@ -163,37 +163,37 @@ void SpriteEditorView::onMoveDownClicked()
     if (index >= 0 && index < ui->frameListWidget->count()-1) {
         emit moveFrameDownRequested(index);
         ui->frameListWidget->setCurrentRow(index+1);
-        updateFrameList(index+1);
+
     }
 }
 
 void SpriteEditorView::handleFrameChanged(){
-    onFrameSelectionChanged();
+    updateFrameList(m_model->getCurrentIndex());
 }
 
 void SpriteEditorView::handleMousePressed(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_currentFrame, pos, m_currentTool, m_currentColor);
+        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_currentColor);
         updateCanvasDisplay();
     }
 }
 
 void SpriteEditorView::handleMouseDragged(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_currentFrame, pos, m_currentTool, m_currentColor);
+        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_currentColor);
         updateCanvasDisplay();
     }
 }
 
 void SpriteEditorView::handleMouseReleased(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_currentFrame, pos, m_currentTool, m_currentColor);
+        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_currentColor);
         updateCanvasDisplay();
     }
 }
 
 void SpriteEditorView::updateCanvasDisplay() {
-    m_canvas->updateCanvas(m_currentFrame);
+    m_canvas->updateCanvas(m_model->getCurrentFrame());
 }
 
 void SpriteEditorView::onFrameSelectionChanged()
@@ -203,8 +203,6 @@ void SpriteEditorView::onFrameSelectionChanged()
     if (selectedRow >= 0) {
         emit frameSelected(selectedRow);
     }
-    m_currentFrame = m_model->getCurrentFrame();
-    qDebug() << "current Frame" << m_currentFrame;
     updateCanvasDisplay();
 }
 

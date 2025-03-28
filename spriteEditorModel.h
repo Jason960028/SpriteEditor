@@ -21,6 +21,10 @@ public:
 
     // remove the current frame
     void removeFrame();
+    // handle move up
+    void moveFrameUp(int index);
+    // handle move down
+    void moveFrameDown(int index);
 
     // get the selected frame by index
     QImage getFrame(int index) const;
@@ -44,7 +48,7 @@ public:
     void setCurrentFrame(int index);
 
     //get current frame
-    QImage getCurrentFrame();
+    QImage& getCurrentFrame();
 
     // slot to update the current selected color
     void setCurrentColor(const QColor &color);
@@ -63,9 +67,6 @@ public:
 
     //get current index
     int getCurrentIndex();
-
-
-
 
 
 signals:
@@ -90,7 +91,7 @@ private:
     Tools::ToolType m_currentTool;
 
     //current frame
-    QImage m_currentFrame;
+   int m_currentFrameIndex;
 
     // Canvas size
     int maxGridWidth;

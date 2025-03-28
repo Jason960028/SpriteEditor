@@ -24,12 +24,15 @@ Canvas::Canvas(QWidget* parent, SpriteEditorModel* model)
     maxGridHeight = 128;
 
     if(model) {
+        qDebug() << "Canvas created - Model is NOT NULL";
         canvasWidth = model->frameSize().width();
         canvasHeight = model->frameSize().height();
         maxGridWidth = model->getMaxSize().width();
         maxGridHeight = model->getMaxSize().height();
         displayImage = model->getCurrentFrame();
+
     } else {
+        qDebug() << "Canvas created - Model is NULL!";
         displayImage = QImage(QSize(32, 32), QImage::Format_ARGB32);
         displayImage.fill(Qt::transparent);
     }

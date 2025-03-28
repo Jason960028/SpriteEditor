@@ -17,8 +17,7 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     //m_canvasWidget(new canvas(this)),
     m_currentTool(Tools::ToolType::Pen),
     m_currentFrame(m_model->getCurrentFrame()),
-    m_currentColor(m_model->getCurrentColor()),
-    m_canvas(new Canvas(this))
+    m_currentColor(m_model->getCurrentColor())
 {
     ui->setupUi(this);
     m_penButton = findChild<QToolButton*>("Pen");
@@ -27,6 +26,7 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_addFrameButton = ui->AddFrame;
     m_deleteFrameButton = ui->DeleteFrame;
 
+    m_canvas = new Canvas(this, m_model);
     setupUI();
     m_frameList = ui->frameListWidget;
     connectSignals();

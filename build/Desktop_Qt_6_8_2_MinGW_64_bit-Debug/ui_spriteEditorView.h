@@ -111,7 +111,7 @@ public:
         CanvasFrame->setFrameShadow(QFrame::Shadow::Raised);
         Canvas = new QWidget(CanvasFrame);
         Canvas->setObjectName("Canvas");
-        Canvas->setGeometry(QRect(-1, -1, 512, 512));
+        Canvas->setGeometry(QRect(-1, -1, 511, 511));
         ColorPanelFram = new QFrame(centralwidget);
         ColorPanelFram->setObjectName("ColorPanelFram");
         ColorPanelFram->setGeometry(QRect(10, 280, 171, 281));

@@ -16,8 +16,19 @@ public:
     void updateFrame(const QImage& updatedImage);
     std::vector<QImage> getFrames();
 
+    void undo();
+    void redo();
+
 private:
     std::vector<QImage> m_frames;
+
+    // Stack to hold the history of frames for undo/redo
+    std::vector<std::vector<QImage>> m_undoStack;
+    std::vector<std::vector<QImage>> m_redoStack;
+
+    // Helper methods to save the current state to undo/redo stacks
+    void saveStateToUndoStack();
+    void clearRedoStack();
 };
 
 #endif // SPRITEEDITORMODEL_H

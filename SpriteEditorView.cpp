@@ -60,6 +60,8 @@ SpriteEditorView::SpriteEditorView(QWidget* parent, spriteEditorModel* model)
     connect(ui->Load, &QToolButton::clicked, this, &SpriteEditorView::onLoadButtonClicked);
     connect(ui->Save, &QToolButton::clicked, this, &SpriteEditorView::onSaveButtonClicked);
 
+    // Connect the redo and undo buttons
+
     // Set Pen button as default
     ui->Pen->setChecked(true);
     m_model->addFrames(currentFrame);

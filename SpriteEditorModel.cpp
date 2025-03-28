@@ -122,10 +122,41 @@ std::vector<QImage> spriteEditorModel::getFrames(){
     return m_frames;
 }
 
+void spriteEditorModel::saveStateToUndoStack()
+{
+    // Save a copy of the current state of m_frames to the undo stack
+    m_undoStack.push_back(m_frames);
+}
 
+void spriteEditorModel::clearRedoStack()
+{
+    // Clear the redo stack when a new action occurs after undo
+    m_redoStack.clear();
+}
 
+void spriteEditorModel::undo()
+{
+    if (m_undoStack.empty()) return;  // Nothing to undo
 
+    // Push the current state onto the redo stack before undoing
+    m_redoStack.push_back(m_frames);
 
+    // Pop the last state from the undo stack and set it as the current state
+    m_frames = m_undoStack.back();
+    m_undoStack.pop_back();
+}
+
+void spriteEditorModel::redo()
+{
+    if (m_redoStack.empty()) return;  // Nothing to redo
+
+    // Push the current state onto the undo stack before redoing
+    m_undoStack.push_back(m_frames);
+
+    // Pop the last state from the redo stack and set it as the current state
+    m_frames = m_redoStack.back();
+    m_redoStack.pop_back();
+}
 
 
 

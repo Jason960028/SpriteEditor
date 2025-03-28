@@ -43,7 +43,7 @@ public:
     QWidget *Preview;
     QSlider *FPS;
     QToolButton *Play;
-    QToolButton *S;
+    QToolButton *Stop;
     QFrame *Tool;
     QToolButton *Fill;
     QToolButton *Pen;
@@ -137,9 +137,9 @@ public:
         Play = new QToolButton(PreviewFrame);
         Play->setObjectName("Play");
         Play->setGeometry(QRect(10, 150, 31, 23));
-        S = new QToolButton(PreviewFrame);
-        S->setObjectName("S");
-        S->setGeometry(QRect(10, 180, 31, 23));
+        Stop = new QToolButton(PreviewFrame);
+        Stop->setObjectName("Stop");
+        Stop->setGeometry(QRect(10, 180, 31, 23));
         Tool = new QFrame(centralwidget);
         Tool->setObjectName("Tool");
         Tool->setGeometry(QRect(20, 30, 141, 241));
@@ -224,7 +224,7 @@ public:
         moveUpFrameButton->setText(QCoreApplication::translate("SpriteEditorView", "up", nullptr));
         moveDownFrameButton->setText(QCoreApplication::translate("SpriteEditorView", "down", nullptr));
         Play->setText(QCoreApplication::translate("SpriteEditorView", "Play", nullptr));
-        S->setText(QCoreApplication::translate("SpriteEditorView", "Stop", nullptr));
+        Stop->setText(QCoreApplication::translate("SpriteEditorView", "Stop", nullptr));
         Fill->setText(QCoreApplication::translate("SpriteEditorView", "Filling", nullptr));
         Pen->setText(QCoreApplication::translate("SpriteEditorView", "Pen", nullptr));
         Eraser->setText(QCoreApplication::translate("SpriteEditorView", "Eraser", nullptr));

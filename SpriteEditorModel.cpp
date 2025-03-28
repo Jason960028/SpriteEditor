@@ -110,30 +110,3 @@ void SpriteEditorModel::setCurrentColor(const QColor &color){
 bool SpriteEditorModel::saveProject(const QString &filename) {
     return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

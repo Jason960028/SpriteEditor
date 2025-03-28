@@ -71,7 +71,7 @@ void Animation::updateFrame()
     // Advance to the next frame and repaint the widget
     if (m_frames.isEmpty())
         return;
-    
+
     m_currentFrameIndex = (m_currentFrameIndex + 1) % m_frames.size();
     update();
 }
@@ -80,10 +80,10 @@ void Animation::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QPainter painter(this);
-    
+
     // Fill background
     painter.fillRect(rect(), Qt::gray);
-    
+
     if (!m_frames.isEmpty()) {
         // Draw the current frame, scaled and centered
         const QImage &currentFrame = m_frames[m_currentFrameIndex];
@@ -96,4 +96,3 @@ void Animation::paintEvent(QPaintEvent *event)
         painter.drawText(rect(), Qt::AlignCenter, "No frames to display");
     }
 }
-

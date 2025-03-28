@@ -8,7 +8,7 @@
 #include "SpriteEditorModel.h"
 #include "ui_SpriteEditorView.h"
 #include "canvas.h"
-#include "QVBoxLayout"
+#include <QVBoxLayout>
 #include "Animation.h"
 
 SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
@@ -26,7 +26,6 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
 
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
-
     m_addFrameButton = ui->AddFrame;
     m_deleteFrameButton = ui->DeleteFrame;
 
@@ -35,36 +34,28 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_frameList = ui->frameListWidget;
     connectSignals();
 
-    // Set up layout for CanvasFrame
     QVBoxLayout* canvasLayout = new QVBoxLayout(ui->Canvas);
     canvasLayout->setContentsMargins(0, 0, 0, 0);
     canvasLayout->addWidget(m_canvas);
 
     m_canvas->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
-    // Get canvas dimensions through accessors
     int canvasWidth = m_canvas->getCanvasWidth();
     int canvasHeight = m_canvas->getCanvasHeight();
-
-    // Adjust size to display the grid with scaling
     int pixelScale = 10;
     m_canvas->setFixedSize(canvasWidth * pixelScale, canvasHeight * pixelScale);
 
-    // Update canvas with initial frame
     m_canvas->updateCanvas(m_currentFrame);
     updateFrameList(m_model->getCurrentIndex());
 
-    // connecting animation
+    // Connect the animation widget to the Preview area
     m_animation = new Animation(ui->Preview);
     QVBoxLayout* previewLayout = new QVBoxLayout(ui->Preview);
     previewLayout->setContentsMargins(0, 0, 0, 0);
     previewLayout->addWidget(m_animation);
-
-
     m_animation->show();
-    m_animation->raise();  // Move it to the top so it's not obscured by other widgets
+    m_animation->raise(); // Ensure it appears on top
 
-    // Add all frames from the model to the animation
+    // Add existing frames to animation preview initially
     for (int i = 0; i < m_model->getFramesListSize(); ++i) {
         m_animation->addFrame(m_model->getFrame(i));
     }
@@ -83,25 +74,14 @@ void SpriteEditorView::setupTools() {
 
 void SpriteEditorView::connectSignals()
 {
-    // Tool buttons
     connect(m_penButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onPenClicked);
     connect(m_eraserButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onEraserClicked);
     connect(ui->moveUpFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveUpClicked);
     connect(ui->moveDownFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveDownClicked);
-
-    // Canvas updates
     connect(m_controller, &SpriteEditorController::currentFrameChanged, this, &SpriteEditorView::handleFrameChanged);
-
-    // Add frame update
     connect(m_addFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::addFrame);
-
-    // delete frame update
     connect(m_deleteFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::removeCurrentFrame);
-
-    // frame list update
     connect(m_controller, &SpriteEditorController::frameListChanged, this, &SpriteEditorView::updateFrameList);
-
-    // In your main window or m_controller
     connect(m_controller, &SpriteEditorController::toolSelectSignal, this, &SpriteEditorView::updateToolButtonStates);
     connect(this, &SpriteEditorView::addFrameRequested, m_controller, &SpriteEditorController::addFrame);
     connect(this, &SpriteEditorView::deleteFrameRequested, m_controller, &SpriteEditorController::removeCurrentFrame);
@@ -109,14 +89,10 @@ void SpriteEditorView::connectSignals()
     connect(this, &SpriteEditorView::moveFrameDownRequested, m_controller, &SpriteEditorController::moveFrameDown);
     connect(this, &SpriteEditorView::frameSelected, m_controller, &SpriteEditorController::handleFrameSelected);
     connect(m_frameList, &QListWidget::currentRowChanged, this, &SpriteEditorView::onFrameSelectionChanged);
-
-    // Connect canvas interaction signals
     connect(m_canvas, &Canvas::mousePressed, this, &SpriteEditorView::handleMousePressed);
     connect(m_canvas, &Canvas::mouseDragged, this, &SpriteEditorView::handleMouseDragged);
     connect(m_canvas, &Canvas::mouseReleased, this, &SpriteEditorView::handleMouseReleased);
 
-
-    // ------Animation part-----------
     // Connect the Play button to the slot that starts the animation
     connect(ui->Play, &QPushButton::clicked, this, &SpriteEditorView::onPlayButtonClicked);
 
@@ -128,29 +104,27 @@ void SpriteEditorView::connectSignals()
         if (value > 0)
             m_animation->setFrameDelay(1000 / value);  // Calculate delay in milliseconds from FPS
     });
-
 }
 
-void SpriteEditorView::updateFrameList(int currentIndex){
+void SpriteEditorView::updateFrameList(int currentIndex)
+{
     ui->frameListWidget->blockSignals(true);
-
     ui->frameListWidget->clear();
     for (int i = 0; i < m_model->getFramesListSize(); ++i) {
-        QListWidgetItem *item = new QListWidgetItem(
-            QString("Frame %1").arg(i+1),
-            ui->frameListWidget
-            );
+        QListWidgetItem *item = new QListWidgetItem(QString("Frame %1").arg(i + 1), ui->frameListWidget);
         item->setIcon(QIcon(":/icons/frame.png"));
     }
-
-
-    // Set current selection
     ui->frameListWidget->setCurrentRow(currentIndex);
-    // Restore signal handling
     ui->frameListWidget->blockSignals(false);
-
 }
 
+// Slot to update the preview when Animation emits frameChanged signal
+void SpriteEditorView::updatePreviewFrame(const QImage &frame) {
+    if (m_animation) {
+        m_animation->addFrame(frame);
+        m_animation->update();
+    }
+}
 
 // Slot called when the Play button is clicked
 void SpriteEditorView::onPlayButtonClicked() {
@@ -243,13 +217,11 @@ void SpriteEditorView::onFrameSelectionChanged()
 }
 
 void SpriteEditorView::updateToolButtonStates() {
-    // Uncheck all tool buttons
     ui->Pen->setChecked(false);
     ui->Eraser->setChecked(false);
     ui->Fill->setChecked(false);
     m_currentTool = m_model->getCurrentTool();
 
-    // Check the button for the current tool
     switch (m_currentTool) {
     case Tools::ToolType::Pen:
         qDebug() << "Pen checked";

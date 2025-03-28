@@ -69,6 +69,7 @@ public:
     int getCurrentIndex();
 
 
+
 signals:
     // signal is sent to View to update the selected color
     void colorChanged(QColor color);

@@ -26,8 +26,13 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
 
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
+    m_fillingButton = findChild<QToolButton*>("Fill");
     m_addFrameButton = ui->AddFrame;
     m_deleteFrameButton = ui->DeleteFrame;
+
+    //Load and save
+    m_loadButton = ui->loadButton;
+    m_saveButton = ui->saveButton;
 
     m_canvas = new Canvas(this, m_model);
     setupUI();
@@ -76,6 +81,7 @@ void SpriteEditorView::connectSignals()
 {
     connect(m_penButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onPenClicked);
     connect(m_eraserButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onEraserClicked);
+    connect(m_fillingButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onFillingClicked);
     connect(ui->moveUpFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveUpClicked);
     connect(ui->moveDownFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveDownClicked);
     connect(m_controller, &SpriteEditorController::currentFrameChanged, this, &SpriteEditorView::handleFrameChanged);
@@ -104,6 +110,11 @@ void SpriteEditorView::connectSignals()
         if (value > 0)
             m_animation->setFrameDelay(1000 / value);  // Calculate delay in milliseconds from FPS
     });
+
+    // Connect save and load
+    connect(m_loadButton, &QPushButton::clicked, this, &SpriteEditorView::onLoadButtonClicked);
+    connect(m_saveButton, &QPushButton::clicked, this, &SpriteEditorView::onSaveButtonClicked);
+
 }
 
 void SpriteEditorView::updateFrameList(int currentIndex)
@@ -117,7 +128,6 @@ void SpriteEditorView::updateFrameList(int currentIndex)
     ui->frameListWidget->setCurrentRow(currentIndex);
     updateCanvasDisplay();
     ui->frameListWidget->blockSignals(false);
-
 }
 
 // Slot to update the preview when Animation emits frameChanged signal
@@ -238,4 +248,22 @@ void SpriteEditorView::updateToolButtonStates() {
         ui->Fill->setChecked(true);
         break;
     }
+}
+
+void SpriteEditorView::onLoadButtonClicked(){
+    emit loadClicked();
+
+    // Sets the current frame to the first one and updates the GUI
+    QVector<QImage> m_frames = m_model->getFrames();
+    if (!m_frames.isEmpty()) {
+        m_currentFrame = m_frames[0];  // Set the first frame
+        updateFrameList(0);            // Update the frame list
+        updatePreviewFrame(m_currentFrame);
+        updateCanvasDisplay();         // Update the canvas with the first frame
+
+    }
+}
+
+void SpriteEditorView::onSaveButtonClicked(){
+    emit saveClicked();
 }

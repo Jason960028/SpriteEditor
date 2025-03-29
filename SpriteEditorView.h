@@ -8,6 +8,8 @@
 #include "tools.h"
 #include "Animation.h"
 #include <QListWidget>
+#include <QPushButton>
+
 
 class QToolButton;
 
@@ -36,6 +38,9 @@ signals:
     void moveFrameUpRequested(int index);
     void moveFrameDownRequested(int index);
     void frameSelected(int index);
+    void loadClicked();
+    void saveClicked();
+
 
 private slots:
 
@@ -70,6 +75,9 @@ private slots:
     void onPlayButtonClicked();
     void onStopButtonClicked();
 
+    // Save and Load Slots
+    void onLoadButtonClicked();
+    void onSaveButtonClicked();
 
 private:
     void setupUI();
@@ -94,11 +102,15 @@ private:
     // UI Elements
     QToolButton* m_penButton;
     QToolButton* m_eraserButton;
+    QToolButton* m_fillingButton;
     QToolButton* m_addFrameButton;
     QToolButton* m_deleteFrameButton;
     QToolButton* m_playButton;
     QToolButton* m_stopButton;
+    QPushButton* m_loadButton;
+    QPushButton* m_saveButton;
     QListWidget* m_frameList;
+    QWidget* m_ui;
 
     // Animation object (for frame preview)
     Animation* m_animation;

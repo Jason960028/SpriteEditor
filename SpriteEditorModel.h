@@ -35,11 +35,9 @@ public:
     // update the pixel color with the provided position
     void setPixel(int x, int y);
 
-    // save the current project to be Json file
-    bool saveProject(const QString &filename);
+    void loadSprite(const QString& fileName);
 
-    // load the project from Json file
-    bool loadProject(const QString &filename);
+    void saveSprite(const QString& fileName);
 
     // return current Canvas size (for new frame usage)
     QSize frameSize() const;
@@ -67,6 +65,8 @@ public:
 
     //get current index
     int getCurrentIndex();
+
+    QVector<QImage> getFrames();
 
 
 

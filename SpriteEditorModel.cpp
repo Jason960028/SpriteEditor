@@ -100,13 +100,3 @@ void SpriteEditorModel::moveFrameDown(int index) {
         m_currentFrameIndex = index + 1;
     }
 }
-
-void SpriteEditorModel::setCurrentColor(const QColor &color){
-    m_currentColor = color;
-    emit colorChanged(color); // tells the UI
-}
-
-
-bool SpriteEditorModel::saveProject(const QString &filename) {
-    return false;
-}

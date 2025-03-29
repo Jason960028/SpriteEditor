@@ -44,6 +44,9 @@ public slots:
     // slot to update current tool to Eraser
     void onEraserClicked();
 
+    // slot to update current tool to Filling
+    void onFillingClicked();
+
     // slot to handle addFrame button and update frame list
     void addFrame();
 

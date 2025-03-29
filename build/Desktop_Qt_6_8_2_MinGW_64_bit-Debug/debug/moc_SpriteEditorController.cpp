@@ -51,6 +51,7 @@ static constexpr auto qt_meta_stringdata_ZN22SpriteEditorControllerE = QtMocHelp
     "handleStopPressed",
     "onPenClicked",
     "onEraserClicked",
+    "onFillingClicked",
     "addFrame",
     "removeCurrentFrame",
     "handleFrameSelected",
@@ -68,7 +69,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN22SpriteEditorControllerE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      13,   14, // methods
+      14,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -76,21 +77,22 @@ Q_CONSTINIT static const uint qt_meta_data_ZN22SpriteEditorControllerE[] = {
        4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   92,    2, 0x06,    1 /* Public */,
-       4,    1,   95,    2, 0x06,    3 /* Public */,
-       6,    1,   98,    2, 0x06,    5 /* Public */,
-       9,    0,  101,    2, 0x06,    7 /* Public */,
+       1,    1,   98,    2, 0x06,    1 /* Public */,
+       4,    1,  101,    2, 0x06,    3 /* Public */,
+       6,    1,  104,    2, 0x06,    5 /* Public */,
+       9,    0,  107,    2, 0x06,    7 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-      10,    0,  102,    2, 0x0a,    8 /* Public */,
-      11,    0,  103,    2, 0x0a,    9 /* Public */,
-      12,    0,  104,    2, 0x0a,   10 /* Public */,
-      13,    0,  105,    2, 0x0a,   11 /* Public */,
-      14,    0,  106,    2, 0x0a,   12 /* Public */,
-      15,    0,  107,    2, 0x0a,   13 /* Public */,
-      16,    1,  108,    2, 0x0a,   14 /* Public */,
-      18,    1,  111,    2, 0x0a,   16 /* Public */,
-      19,    1,  114,    2, 0x0a,   18 /* Public */,
+      10,    0,  108,    2, 0x0a,    8 /* Public */,
+      11,    0,  109,    2, 0x0a,    9 /* Public */,
+      12,    0,  110,    2, 0x0a,   10 /* Public */,
+      13,    0,  111,    2, 0x0a,   11 /* Public */,
+      14,    0,  112,    2, 0x0a,   12 /* Public */,
+      15,    0,  113,    2, 0x0a,   13 /* Public */,
+      16,    0,  114,    2, 0x0a,   14 /* Public */,
+      17,    1,  115,    2, 0x0a,   15 /* Public */,
+      19,    1,  118,    2, 0x0a,   17 /* Public */,
+      20,    1,  121,    2, 0x0a,   19 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int,    3,
@@ -105,9 +107,10 @@ Q_CONSTINIT static const uint qt_meta_data_ZN22SpriteEditorControllerE[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   17,
-    QMetaType::Void, QMetaType::Int,   17,
-    QMetaType::Void, QMetaType::Int,   17,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   18,
+    QMetaType::Void, QMetaType::Int,   18,
+    QMetaType::Void, QMetaType::Int,   18,
 
        0        // eod
 };
@@ -140,6 +143,8 @@ Q_CONSTINIT const QMetaObject SpriteEditorController::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onEraserClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'onFillingClicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'addFrame'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'removeCurrentFrame'
@@ -170,11 +175,12 @@ void SpriteEditorController::qt_static_metacall(QObject *_o, QMetaObject::Call _
         case 5: _t->handleStopPressed(); break;
         case 6: _t->onPenClicked(); break;
         case 7: _t->onEraserClicked(); break;
-        case 8: _t->addFrame(); break;
-        case 9: _t->removeCurrentFrame(); break;
-        case 10: _t->handleFrameSelected((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 11: _t->moveFrameUp((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 12: _t->moveFrameDown((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 8: _t->onFillingClicked(); break;
+        case 9: _t->addFrame(); break;
+        case 10: _t->removeCurrentFrame(); break;
+        case 11: _t->handleFrameSelected((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 12: _t->moveFrameUp((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 13: _t->moveFrameDown((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         default: ;
         }
     }
@@ -230,14 +236,14 @@ int SpriteEditorController::qt_metacall(QMetaObject::Call _c, int _id, void **_a
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 13)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 13;
+        _id -= 14;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 13)
+        if (_id < 14)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 13;
+        _id -= 14;
     }
     return _id;
 }

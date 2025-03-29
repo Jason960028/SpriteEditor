@@ -13,9 +13,8 @@ void SpriteEditorController::addFrame()
 {
     if (m_model) {
         m_model->addFrame();
+        m_model->setCurrentFrame(m_model->getFramesListSize()-1);
         emit frameListChanged(m_model->getFramesListSize());
-        qDebug() << "Frame added";
-        qDebug() << "Frame size " << m_model->getFramesListSize();
     }
 
 
@@ -26,7 +25,6 @@ void SpriteEditorController::removeCurrentFrame()
     if (m_model && m_model->getFramesListSize() > 1) {
         m_model->removeFrame();
         emit frameListChanged(m_model->getCurrentIndex());
-        qDebug() << "Frame deleted";
     }
 
 }
@@ -51,14 +49,12 @@ void SpriteEditorController::handleFrameSelected(int index){
 void SpriteEditorController::moveFrameUp(int index){
     m_model->setCurrentFrame(index-1);
     m_model->moveFrameUp(index);
-    qDebug() << "Frame moved up";
     emit currentFrameChanged();
 }
 
 void SpriteEditorController::moveFrameDown(int index){
     m_model->setCurrentFrame(index+1);
     m_model->moveFrameDown(index);
-    qDebug() << "Frame moved down";
     emit currentFrameChanged();
 }
 
@@ -71,8 +67,13 @@ void SpriteEditorController::onPenClicked(){
 }
 
 void SpriteEditorController::onEraserClicked(){
-    qDebug() << "Eraser set";
     m_model->setCurrentTool(Tools::ToolType::Eraser);
+    m_currentTool = m_model->getCurrentTool();
+    emit toolSelectSignal(m_currentTool);
+}
+
+void SpriteEditorController::onFillingClicked(){
+    m_model->setCurrentTool(Tools::ToolType::Fill);
     m_currentTool = m_model->getCurrentTool();
     emit toolSelectSignal(m_currentTool);
 }

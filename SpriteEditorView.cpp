@@ -39,15 +39,19 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_frameList = ui->frameListWidget;
     connectSignals();
 
-    QVBoxLayout* canvasLayout = new QVBoxLayout(ui->Canvas);
+    QGridLayout* canvasLayout = new QGridLayout(ui->CanvasFrame);
     canvasLayout->setContentsMargins(0, 0, 0, 0);
-    canvasLayout->addWidget(m_canvas);
+    canvasLayout->addWidget(m_canvas, 0, 0, Qt::AlignCenter);
 
     m_canvas->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     int canvasWidth = m_canvas->getCanvasWidth();
     int canvasHeight = m_canvas->getCanvasHeight();
     int pixelScale = 10;
     m_canvas->setFixedSize(canvasWidth * pixelScale, canvasHeight * pixelScale);
+
+    if (ui->Canvas) {
+        ui->Canvas->deleteLater();
+    }
 
     m_canvas->updateCanvas(m_currentFrame);
     updateFrameList(m_model->getCurrentIndex());
@@ -64,6 +68,10 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     for (int i = 0; i < m_model->getFramesListSize(); ++i) {
         m_animation->addFrame(m_model->getFrame(i));
     }
+
+    m_sizeSpinBox = ui->SizeBox;
+    m_sizeSpinBox->setRange(32, 64);
+    m_sizeSpinBox->setValue(m_model->getFramesListSize());
 }
 
 SpriteEditorView::~SpriteEditorView()
@@ -114,6 +122,7 @@ void SpriteEditorView::connectSignals()
     // Connect save and load
     connect(m_loadButton, &QPushButton::clicked, this, &SpriteEditorView::onLoadButtonClicked);
     connect(m_saveButton, &QPushButton::clicked, this, &SpriteEditorView::onSaveButtonClicked);
+    connect(ui->ResizeButton, &QPushButton::clicked, this, &SpriteEditorView::onResizeClicked);
 
 }
 
@@ -267,3 +276,43 @@ void SpriteEditorView::onLoadButtonClicked(){
 void SpriteEditorView::onSaveButtonClicked(){
     emit saveClicked();
 }
+
+void SpriteEditorView::onResizeClicked(){
+    int newSize = m_sizeSpinBox->value();
+
+    if (newSize != m_model->getFrameSize().width()) {
+        applyResize(newSize);
+    }
+}
+
+void SpriteEditorView::applyResize(int size)
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Resize Canvas",
+                                  QString("Resizing to %1x%1 will scale all frames. Continue?")
+                                      .arg(size),
+                                  QMessageBox::Yes|QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        m_model->resizeAllFrames(size);
+        m_canvas->resetCanvasSize();
+
+        // Update the Canvas widget's fixed size based on the new dimensions
+        int pixelScale = 10; // Match the initial scale factor
+        m_canvas->setFixedSize(size * pixelScale, size * pixelScale);
+
+        updateCanvasDisplay();
+
+        // Update animation preview
+        if (m_animation) {
+            m_animation->clearFrames();
+            for (int i = 0; i < m_model->getFramesListSize(); ++i) {
+                m_animation->addFrame(m_model->getFrame(i));
+            }
+        }
+    } else {
+        // Reset spin box to current size
+        m_sizeSpinBox->setValue(m_model->getFrameSize().width());
+    }
+}
+

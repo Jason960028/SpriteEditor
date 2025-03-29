@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1008</width>
-    <height>589</height>
+    <width>1439</width>
+    <height>781</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -331,7 +331,7 @@
       <x>790</x>
       <y>280</y>
       <width>201</width>
-      <height>101</height>
+      <height>281</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -392,37 +392,21 @@
       <string>down</string>
      </property>
     </widget>
-    <widget class="QFrame" name="Layerlist">
+    <widget class="QListView" name="LayerList">
      <property name="geometry">
       <rect>
-       <x>9</x>
-       <y>60</y>
+       <x>10</x>
+       <y>50</y>
        <width>181</width>
-       <height>31</height>
+       <height>221</height>
       </rect>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::Shape::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Shadow::Raised</enum>
-     </property>
-     <widget class="QWidget" name="LayerContent" native="true">
-      <property name="geometry">
-       <rect>
-        <x>-1</x>
-        <y>-1</y>
-        <width>181</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
     </widget>
    </widget>
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>-1</x>
+      <x>0</x>
       <y>0</y>
       <width>991</width>
       <height>21</height>
@@ -498,6 +482,83 @@
      <property name="text">
       <string>Undo</string>
      </property>
+    </widget>
+    <widget class="QFrame" name="SizeFrame">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>0</y>
+       <width>171</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LayoutDirection::LeftToRight</enum>
+      </property>
+      <widget class="QLabel" name="SizeLabel">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>51</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string> Size :</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="SizeBox">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>0</y>
+         <width>31</width>
+         <height>21</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QPushButton" name="ResizeButton">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>0</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Confirm</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

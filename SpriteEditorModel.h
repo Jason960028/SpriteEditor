@@ -40,7 +40,9 @@ public:
     void saveSprite(const QString& fileName);
 
     // return current Canvas size (for new frame usage)
-    QSize frameSize() const;
+    QSize getFrameSize() const;
+
+    void setFrameSize(int size);
 
     // use index to change current frame
     void setCurrentFrame(int index);
@@ -67,6 +69,9 @@ public:
     int getCurrentIndex();
 
     QVector<QImage> getFrames();
+
+    void resizeAllFrames(int newSize);
+
 
 
 
@@ -95,8 +100,8 @@ private:
     int m_currentFrameIndex;
 
     // Canvas size
-    int maxGridWidth;
-    int maxGridHeight;
+    int maxSize;
+
 };
 
 #endif // SPRITEEDITORMODEL_H

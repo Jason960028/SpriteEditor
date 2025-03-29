@@ -42,6 +42,7 @@ signals:
     void frameSelected(int index);
     void loadClicked();
     void saveClicked();
+    void colorSelected(const QColor& color);
 
 
 
@@ -86,6 +87,10 @@ private slots:
     void onLoadButtonClicked();
     void onSaveButtonClicked();
 
+    void onColorSelected(int colorIndex);
+    void onModelColorChanged(const QColor& color);
+    void updateSelectedColorButton(int colorIndex);
+
 private:
     void setupUI();
     void setupTools();
@@ -124,6 +129,11 @@ private:
     // Animation object (for frame preview)
     Animation* m_animation;
     QImage m_previewImage;
+
+    QVector<QToolButton*> m_colorButtons;
+    QFrame* m_currentColorFrame;
+    void setupColorPalette();
+    QToolButton* createColorButton(const QColor& color, int index);
 
 
 };

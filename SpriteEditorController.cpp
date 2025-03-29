@@ -117,3 +117,9 @@ void SpriteEditorController::onSaveClicked(){
         m_model->saveSprite(fileName);
     }
 }
+
+void SpriteEditorController::onColorSelected(const QColor& color) {
+    if (m_model) {
+        m_model->setCurrentColor(color);
+    }
+}

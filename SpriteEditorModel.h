@@ -71,6 +71,7 @@ public:
 
     void undo();
     void redo();
+    void saveStateToUndoStack();
 
 
 signals:
@@ -105,7 +106,7 @@ private:
     QStack<QImage> m_redoStack;
 
     // Helper methods to save the current state to undo/redo stacks
-    void saveStateToUndoStack();
+    //void saveStateToUndoStack();
     void clearRedoStack();
 };
 

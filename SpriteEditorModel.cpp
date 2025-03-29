@@ -47,8 +47,6 @@ int SpriteEditorModel::getFramesListSize(){
 }
 
 void SpriteEditorModel::setPixel(int x, int y) {
-    saveStateToUndoStack(); // Saves before frame is changed
-
     QImage& currentFrame = getCurrentFrame();
     if(x >= 0 && y >= 0 && x < m_frameSize.width() && y < m_frameSize.height()) {
         currentFrame.setPixelColor(x, y, m_currentColor);
@@ -205,13 +203,13 @@ QVector<QImage> SpriteEditorModel::getFrames(){
 void SpriteEditorModel::undo() {
     qDebug() << "About to undo";
     if (!m_undoStack.isEmpty()) {
-         qDebug() << "In undo";
         // Push current frame to the redo stack before undo
-        m_redoStack.push(getCurrentFrame());
+        m_redoStack.push(getCurrentFrame().copy());
 
         // Pop the last state from undo stack and set it as the current frame
         QImage lastState = m_undoStack.pop();
-        getCurrentFrame() = lastState;
+        m_frames[m_currentFrameIndex] = lastState;
+        qDebug() << "Finish undo";
     }
 }
 
@@ -230,7 +228,9 @@ void SpriteEditorModel::redo() {
 
 void SpriteEditorModel::saveStateToUndoStack() {
     // Save a copy of the current frame to the undo stack
+    qDebug() << "In state saver";
     m_undoStack.push(getCurrentFrame().copy());
+    qDebug() << "Stack count: " << m_undoStack.count();
 }
 
 void SpriteEditorModel::clearRedoStack() {

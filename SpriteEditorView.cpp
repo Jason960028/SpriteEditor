@@ -68,6 +68,8 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     for (int i = 0; i < m_model->getFramesListSize(); ++i) {
         m_animation->addFrame(m_model->getFrame(i));
     }
+
+    m_model->saveStateToUndoStack();
 }
 
 SpriteEditorView::~SpriteEditorView()
@@ -218,6 +220,7 @@ void SpriteEditorView::handleMouseReleased(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
         Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_currentColor);
         updateCanvasDisplay();
+        m_model->saveStateToUndoStack();
     }
 }
 

@@ -116,11 +116,9 @@ void SpriteEditorController::onSaveClicked(){
 
 void SpriteEditorController::onRedoClicked(){
     m_model->redo();
-    emit frameListChanged(m_model->getCurrentIndex());
 }
 void SpriteEditorController::onUndoClicked(){
     m_model->undo();
-    emit frameListChanged(m_model->getCurrentIndex());
 }
 void SpriteEditorController::onCleanClicked(){
 

@@ -102,6 +102,7 @@ private:
     // UI Elements
     QToolButton* m_penButton;
     QToolButton* m_eraserButton;
+    QToolButton* m_fillingButton;
     QToolButton* m_addFrameButton;
     QToolButton* m_deleteFrameButton;
     QToolButton* m_playButton;

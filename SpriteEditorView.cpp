@@ -26,6 +26,7 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
 
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
+    m_fillingButton = findChild<QToolButton*>("Fill");
     m_addFrameButton = ui->AddFrame;
     m_deleteFrameButton = ui->DeleteFrame;
 
@@ -80,6 +81,7 @@ void SpriteEditorView::connectSignals()
 {
     connect(m_penButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onPenClicked);
     connect(m_eraserButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onEraserClicked);
+    connect(m_fillingButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onFillingClicked);
     connect(ui->moveUpFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveUpClicked);
     connect(ui->moveDownFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveDownClicked);
     connect(m_controller, &SpriteEditorController::currentFrameChanged, this, &SpriteEditorView::handleFrameChanged);
@@ -126,7 +128,6 @@ void SpriteEditorView::updateFrameList(int currentIndex)
     ui->frameListWidget->setCurrentRow(currentIndex);
     updateCanvasDisplay();
     ui->frameListWidget->blockSignals(false);
-
 }
 
 // Slot to update the preview when Animation emits frameChanged signal

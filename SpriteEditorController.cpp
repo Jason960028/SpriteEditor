@@ -21,6 +21,7 @@ void SpriteEditorController::addFrame()
 {
     if (m_model) {
         m_model->addFrame();
+        m_model->setCurrentFrame(m_model->getFramesListSize()-1);
         emit frameListChanged(m_model->getFramesListSize());
         qDebug() << "Frame added";
         qDebug() << "Frame size " << m_model->getFramesListSize();
@@ -79,6 +80,12 @@ void SpriteEditorController::onPenClicked(){
 void SpriteEditorController::onEraserClicked(){
     qDebug() << "Eraser set";
     m_model->setCurrentTool(Tools::ToolType::Eraser);
+    m_currentTool = m_model->getCurrentTool();
+    emit toolSelectSignal(m_currentTool);
+}
+
+void SpriteEditorController::onFillingClicked(){
+    m_model->setCurrentTool(Tools::ToolType::Fill);
     m_currentTool = m_model->getCurrentTool();
     emit toolSelectSignal(m_currentTool);
 }

@@ -24,6 +24,8 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
 {
     ui->setupUi(this);
 
+    setupColorPalette();
+
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
     m_fillingButton = findChild<QToolButton*>("Fill");
@@ -124,6 +126,10 @@ void SpriteEditorView::connectSignals()
     connect(m_saveButton, &QPushButton::clicked, this, &SpriteEditorView::onSaveButtonClicked);
     connect(ui->ResizeButton, &QPushButton::clicked, this, &SpriteEditorView::onResizeClicked);
 
+    connect(this, &SpriteEditorView::colorSelected, m_controller, &SpriteEditorController::onColorSelected);
+    connect(m_model, &SpriteEditorModel::colorChanged, this, &SpriteEditorView::onModelColorChanged);
+
+
 }
 
 void SpriteEditorView::updateFrameList(int currentIndex)
@@ -203,21 +209,21 @@ void SpriteEditorView::handleFrameChanged(){
 
 void SpriteEditorView::handleMousePressed(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_currentColor);
+        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_model->getCurrentColor());
         updateCanvasDisplay();
     }
 }
 
 void SpriteEditorView::handleMouseDragged(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_currentColor);
+        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_model->getCurrentColor());
         updateCanvasDisplay();
     }
 }
 
 void SpriteEditorView::handleMouseReleased(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_currentColor);
+        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_model->getCurrentColor());
         updateCanvasDisplay();
     }
 }
@@ -313,6 +319,182 @@ void SpriteEditorView::applyResize(int size)
     } else {
         // Reset spin box to current size
         m_sizeSpinBox->setValue(m_model->getFrameSize().width());
+    }
+}
+
+void SpriteEditorView::setupColorPalette() {
+    // Create a grid layout for the color palette
+    QGridLayout* colorLayout = new QGridLayout(ui->ColorPanelFram);
+
+    // Set consistent spacing and margins
+    colorLayout->setContentsMargins(8, 8, 8, 8);
+    colorLayout->setSpacing(6);
+    colorLayout->setAlignment(Qt::AlignCenter);
+
+
+
+    // Add label
+    QLabel* colorLabel = new QLabel("Color Palette", ui->ColorPanelFram);
+    colorLabel->setAlignment(Qt::AlignCenter);
+    QFont labelFont = colorLabel->font();
+    labelFont.setBold(true);
+    colorLabel->setFont(labelFont);
+    colorLayout->addWidget(colorLabel, 0, 0, 1, 4);
+
+    // Create color buttons for each color in the Tools::ColorType enum
+    int row = 1;
+    int col = 0;
+    const int numColumns = 4;
+
+    // Calculate button size based on panel width
+    int frameWidth = ui->ColorPanelFram->width();
+    int buttonSize = (frameWidth - 40) / numColumns; // 40 pixels for margins and spacing
+    buttonSize = qMin(buttonSize, 36); // Cap size to prevent overly large buttons
+
+    for (int i = 0; i < 16; i++) {
+        // Convert from index to ColorType enum value
+        Tools::ColorType colorType = static_cast<Tools::ColorType>(i);
+        QColor color = Tools::getQColor(colorType);
+
+        QToolButton* colorBtn = new QToolButton(ui->ColorPanelFram);
+        colorBtn->setFixedSize(buttonSize, buttonSize);
+
+        // Create a pixmap with the color
+        QPixmap pixmap(buttonSize - 4, buttonSize - 4); // Slightly smaller for border
+        pixmap.fill(color);
+
+        // Set the pixmap as an icon with proper sizing
+        colorBtn->setIcon(QIcon(pixmap));
+        colorBtn->setIconSize(pixmap.size());
+        colorBtn->setProperty("colorIndex", i);
+
+        // Make it checkable and set style
+        colorBtn->setCheckable(true);
+        colorBtn->setStyleSheet("QToolButton { border: 1px solid darkgray; } "
+                                "QToolButton:checked { border: 2px solid black; background-color: lightgray; }");
+
+        // Connect the button click to color selection
+        connect(colorBtn, &QToolButton::clicked, this, [this, i]() {
+            onColorSelected(i);
+        });
+
+        // Add to layout with proper position
+        colorLayout->addWidget(colorBtn, row, col);
+        m_colorButtons.append(colorBtn);
+
+        col++;
+        if (col >= numColumns) {
+            col = 0;
+            row++;
+        }
+    }
+
+
+
+    // Add "Current Color" label on its own row, centered and spanning all columns
+    QLabel* currentLabel = new QLabel("Current Color", ui->ColorPanelFram);
+    currentLabel->setAlignment(Qt::AlignCenter);
+    colorLayout->addWidget(currentLabel, row + 1, 0, 1, 4);
+
+    // Create a frame to display the current color in the row below the label
+    QFrame* currentColorFrame = new QFrame(ui->ColorPanelFram);
+    // Make it wider since it spans all columns
+    currentColorFrame->setFixedSize(frameWidth - 20, buttonSize);
+    currentColorFrame->setFrameShape(QFrame::Box);
+    currentColorFrame->setFrameShadow(QFrame::Sunken);
+    currentColorFrame->setAutoFillBackground(true);
+
+    // Set initial color
+    QPalette pal = currentColorFrame->palette();
+    pal.setColor(QPalette::Window, m_currentColor);
+    currentColorFrame->setPalette(pal);
+
+    // Place color frame below the label
+    colorLayout->addWidget(currentColorFrame, row + 2, 0, 1, 4);
+
+    // Store the current color frame for updates
+    m_currentColorFrame = currentColorFrame;
+
+    // Set equal stretch for all columns to ensure even spacing
+    for (int i = 0; i < numColumns; i++) {
+        colorLayout->setColumnStretch(i, 1);
+    }
+
+    // Initialize by selecting the first color (black)
+    updateSelectedColorButton(0);
+}
+
+// Note: With this implementation, you can remove the createColorButton method
+// since we're creating the buttons directly in the setupColorPalette method
+
+QToolButton* SpriteEditorView::createColorButton(const QColor& color, int index) {
+    QToolButton* button = new QToolButton(ui->ColorPanelFram);
+    button->setFixedSize(30, 30);
+
+    // Create a pixmap with the color
+    QPixmap pixmap(24, 24);
+    pixmap.fill(color);
+
+    // Set the pixmap as an icon
+    button->setIcon(QIcon(pixmap));
+    button->setIconSize(pixmap.size());
+    button->setProperty("colorIndex", index);
+
+    // Make it checkable for the selection indicator
+    button->setCheckable(true);
+
+    // Connect the button click to color selection
+    connect(button, &QToolButton::clicked, this, [this, index]() {
+        onColorSelected(index);
+    });
+
+    return button;
+}
+
+void SpriteEditorView::updateSelectedColorButton(int colorIndex) {
+    // Uncheck all buttons
+    for (QToolButton* btn : m_colorButtons) {
+        btn->setChecked(false);
+    }
+
+    // Check the selected button
+    if (colorIndex >= 0 && colorIndex < m_colorButtons.size()) {
+        m_colorButtons[colorIndex]->setChecked(true);
+    }
+
+    // Update the current color frame
+    if (m_currentColorFrame) {
+        QPalette pal = m_currentColorFrame->palette();
+        pal.setColor(QPalette::Window, m_currentColor);
+        m_currentColorFrame->setPalette(pal);
+    }
+}
+
+void SpriteEditorView::onColorSelected(int colorIndex) {
+    // Convert from index to ColorType enum value
+    Tools::ColorType colorType = static_cast<Tools::ColorType>(colorIndex);
+    QColor newColor = Tools::getQColor(colorType);
+
+    // Update internal state
+    m_currentColor = newColor;
+
+    // Update the visual indicator
+    updateSelectedColorButton(colorIndex);
+
+    // Update the model through the controller
+    emit colorSelected(newColor);
+}
+
+void SpriteEditorView::onModelColorChanged(const QColor& color) {
+    m_currentColor = color;
+
+    // Find the button that matches this color and select it
+    for (int i = 0; i < m_colorButtons.size(); i++) {
+        Tools::ColorType colorType = static_cast<Tools::ColorType>(i);
+        if (Tools::getQColor(colorType) == color) {
+            updateSelectedColorButton(i);
+            break;
+        }
     }
 }
 

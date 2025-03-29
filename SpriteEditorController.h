@@ -68,6 +68,8 @@ public slots:
     void onLoadClicked();
     void onSaveClicked();
 
+    void onColorSelected(const QColor& color);
+
 
 private:
     void updateToolButtonStates();

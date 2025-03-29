@@ -23,7 +23,16 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_currentColor(m_model->getCurrentColor())
 {
     ui->setupUi(this);
+    setupUI();
+    connectSignals();
+}
 
+SpriteEditorView::~SpriteEditorView()
+{
+    delete ui;
+}
+
+void SpriteEditorView::setupUI() {
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
     m_fillingButton = findChild<QToolButton*>("Fill");
@@ -31,13 +40,13 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_deleteFrameButton = ui->DeleteFrame;
 
     m_canvas = new Canvas(this, m_model);
-    setupUI();
-    m_frameList = ui->frameListWidget;
-    connectSignals();
 
-    QVBoxLayout* canvasLayout = new QVBoxLayout(ui->Canvas);
+    m_frameList = ui->frameListWidget;
+
+
+    QGridLayout* canvasLayout = new QGridLayout(ui->CanvasFrame);
     canvasLayout->setContentsMargins(0, 0, 0, 0);
-    canvasLayout->addWidget(m_canvas);
+    canvasLayout->addWidget(m_canvas, 0, 0, Qt::AlignCenter);
 
     m_canvas->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     int canvasWidth = m_canvas->getCanvasWidth();
@@ -45,7 +54,9 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     int pixelScale = 10;
     m_canvas->setFixedSize(canvasWidth * pixelScale, canvasHeight * pixelScale);
 
-    m_canvas->updateCanvas(m_currentFrame);
+    if (ui->Canvas) {
+        ui->Canvas->deleteLater();
+    }
     updateFrameList(m_model->getCurrentIndex());
 
     // Connect the animation widget to the Preview area
@@ -60,14 +71,13 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     for (int i = 0; i < m_model->getFramesListSize(); ++i) {
         m_animation->addFrame(m_model->getFrame(i));
     }
-}
 
-SpriteEditorView::~SpriteEditorView()
-{
-    delete ui;
-}
+    m_resizeButton = ui->ResizeButton;
 
-void SpriteEditorView::setupUI() {}
+    m_sizeSpinBox = ui->SizeBox;
+    m_sizeSpinBox->setRange(32, 64);
+    m_sizeSpinBox->setValue(m_model->getFramesListSize());
+}
 
 void SpriteEditorView::setupTools() {
     m_currentTool = m_model->getCurrentTool();
@@ -75,24 +85,44 @@ void SpriteEditorView::setupTools() {
 
 void SpriteEditorView::connectSignals()
 {
+    connect(m_resizeButton, &QPushButton::clicked, this, &SpriteEditorView::onResizeClicked);
+
     connect(m_penButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onPenClicked);
+
     connect(m_eraserButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onEraserClicked);
+
     connect(m_fillingButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onFillingClicked);
+
     connect(ui->moveUpFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveUpClicked);
+
     connect(ui->moveDownFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveDownClicked);
+
     connect(m_controller, &SpriteEditorController::currentFrameChanged, this, &SpriteEditorView::handleFrameChanged);
+
     connect(m_addFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::addFrame);
+
     connect(m_deleteFrameButton, &QToolButton::clicked, m_controller, &SpriteEditorController::removeCurrentFrame);
+
     connect(m_controller, &SpriteEditorController::frameListChanged, this, &SpriteEditorView::updateFrameList);
+
     connect(m_controller, &SpriteEditorController::toolSelectSignal, this, &SpriteEditorView::updateToolButtonStates);
+
     connect(this, &SpriteEditorView::addFrameRequested, m_controller, &SpriteEditorController::addFrame);
+
     connect(this, &SpriteEditorView::deleteFrameRequested, m_controller, &SpriteEditorController::removeCurrentFrame);
+
     connect(this, &SpriteEditorView::moveFrameUpRequested, m_controller, &SpriteEditorController::moveFrameUp);
+
     connect(this, &SpriteEditorView::moveFrameDownRequested, m_controller, &SpriteEditorController::moveFrameDown);
+
     connect(this, &SpriteEditorView::frameSelected, m_controller, &SpriteEditorController::handleFrameSelected);
+
     connect(m_frameList, &QListWidget::currentRowChanged, this, &SpriteEditorView::onFrameSelectionChanged);
+
     connect(m_canvas, &Canvas::mousePressed, this, &SpriteEditorView::handleMousePressed);
+
     connect(m_canvas, &Canvas::mouseDragged, this, &SpriteEditorView::handleMouseDragged);
+
     connect(m_canvas, &Canvas::mouseReleased, this, &SpriteEditorView::handleMouseReleased);
 
     // Connect the Play button to the slot that starts the animation
@@ -238,5 +268,44 @@ void SpriteEditorView::updateToolButtonStates() {
         qDebug() << "fill checked";
         ui->Fill->setChecked(true);
         break;
+    }
+}
+
+void SpriteEditorView::onResizeClicked(){
+    int newSize = m_sizeSpinBox->value();
+
+    if (newSize != m_model->getFrameSize().width()) {
+        applyResize(newSize);
+    }
+}
+
+void SpriteEditorView::applyResize(int size)
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Resize Canvas",
+                                  QString("Resizing to %1x%1 will scale all frames. Continue?")
+                                      .arg(size),
+                                  QMessageBox::Yes|QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        m_model->resizeAllFrames(size);
+        m_canvas->resetCanvasSize();
+
+        // Update the Canvas widget's fixed size based on the new dimensions
+        int pixelScale = 10; // Match the initial scale factor
+        m_canvas->setFixedSize(size * pixelScale, size * pixelScale);
+
+        updateCanvasDisplay();
+
+        // Update animation preview
+        if (m_animation) {
+            m_animation->clearFrames();
+            for (int i = 0; i < m_model->getFramesListSize(); ++i) {
+                m_animation->addFrame(m_model->getFrame(i));
+            }
+        }
+    } else {
+        // Reset spin box to current size
+        m_sizeSpinBox->setValue(m_model->getFrameSize().width());
     }
 }

@@ -8,6 +8,8 @@
 #include "tools.h"
 #include "Animation.h"
 #include <QListWidget>
+#include <QSpinBox>
+#include <QPushButton>
 
 class QToolButton;
 
@@ -27,8 +29,7 @@ public:
 
     void updateCanvasDisplay();
 
-
-
+    void applyResize(int size);
 
 signals:
     void addFrameRequested();
@@ -61,13 +62,15 @@ private slots:
 
     void updateToolButtonStates();
 
-
+    // slot to handle resize
+    void onResizeClicked();
 
     // Slot to update the preview when Animation emits frameChanged signal
     void updatePreviewFrame(const QImage &frame);
 
     // Slots triggered when Play/Stop buttons are clicked
     void onPlayButtonClicked();
+
     void onStopButtonClicked();
 
 
@@ -100,6 +103,8 @@ private:
     QToolButton* m_playButton;
     QToolButton* m_stopButton;
     QListWidget* m_frameList;
+    QSpinBox* m_sizeSpinBox;
+    QPushButton* m_resizeButton;
 
     // Animation object (for frame preview)
     Animation* m_animation;

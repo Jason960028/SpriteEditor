@@ -77,3 +77,4 @@ void SpriteEditorController::onFillingClicked(){
     m_currentTool = m_model->getCurrentTool();
     emit toolSelectSignal(m_currentTool);
 }
+

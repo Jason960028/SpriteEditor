@@ -44,6 +44,10 @@ public:
      */
     QPoint screenToImagePos(const QPoint& screenPos) const;
 
+    void resetCanvasSize();
+
+    void setFixedCanvasSize(int size);
+
     // Accessors for canvas properties
     int getCanvasWidth() const { return canvasWidth; }
     int getCanvasHeight() const { return canvasHeight; }

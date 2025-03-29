@@ -42,7 +42,9 @@ public:
     bool loadProject(const QString &filename);
 
     // return current Canvas size (for new frame usage)
-    QSize frameSize() const;
+    QSize getFrameSize() const;
+
+    void setFrameSize(int size);
 
     // use index to change current frame
     void setCurrentFrame(int index);
@@ -55,6 +57,8 @@ public:
 
     // set the tool to current tool
     void setCurrentTool(Tools::ToolType tool);
+
+    void resizeAllFrames(int newSize);
 
     //get the maxium size of canvas
     QSize getMaxSize() const;
@@ -95,8 +99,8 @@ private:
     int m_currentFrameIndex;
 
     // Canvas size
-    int maxGridWidth;
-    int maxGridHeight;
+    int maxSize;
+
 };
 
 #endif // SPRITEEDITORMODEL_H

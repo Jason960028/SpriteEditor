@@ -68,6 +68,10 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     for (int i = 0; i < m_model->getFramesListSize(); ++i) {
         m_animation->addFrame(m_model->getFrame(i));
     }
+
+    m_sizeSpinBox = ui->SizeBox;
+    m_sizeSpinBox->setRange(32, 64);
+    m_sizeSpinBox->setValue(m_model->getFramesListSize());
 }
 
 SpriteEditorView::~SpriteEditorView()
@@ -118,6 +122,7 @@ void SpriteEditorView::connectSignals()
     // Connect save and load
     connect(m_loadButton, &QPushButton::clicked, this, &SpriteEditorView::onLoadButtonClicked);
     connect(m_saveButton, &QPushButton::clicked, this, &SpriteEditorView::onSaveButtonClicked);
+    connect(ui->ResizeButton, &QPushButton::clicked, this, &SpriteEditorView::onResizeClicked);
 
 }
 
@@ -271,3 +276,43 @@ void SpriteEditorView::onLoadButtonClicked(){
 void SpriteEditorView::onSaveButtonClicked(){
     emit saveClicked();
 }
+
+void SpriteEditorView::onResizeClicked(){
+    int newSize = m_sizeSpinBox->value();
+
+    if (newSize != m_model->getFrameSize().width()) {
+        applyResize(newSize);
+    }
+}
+
+void SpriteEditorView::applyResize(int size)
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Resize Canvas",
+                                  QString("Resizing to %1x%1 will scale all frames. Continue?")
+                                      .arg(size),
+                                  QMessageBox::Yes|QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        m_model->resizeAllFrames(size);
+        m_canvas->resetCanvasSize();
+
+        // Update the Canvas widget's fixed size based on the new dimensions
+        int pixelScale = 10; // Match the initial scale factor
+        m_canvas->setFixedSize(size * pixelScale, size * pixelScale);
+
+        updateCanvasDisplay();
+
+        // Update animation preview
+        if (m_animation) {
+            m_animation->clearFrames();
+            for (int i = 0; i < m_model->getFramesListSize(); ++i) {
+                m_animation->addFrame(m_model->getFrame(i));
+            }
+        }
+    } else {
+        // Reset spin box to current size
+        m_sizeSpinBox->setValue(m_model->getFrameSize().width());
+    }
+}
+

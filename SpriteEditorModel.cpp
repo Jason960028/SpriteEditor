@@ -2,14 +2,15 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QFile>
+#include <QPainter>
+
 
 SpriteEditorModel::SpriteEditorModel(QObject *parent)
     : QObject(parent),
     m_currentColor(Qt::black),
     m_currentTool(Tools::ToolType::Pen),
-    maxGridWidth(128),
-    maxGridHeight(128),
-    m_frameSize(32, 32)
+    m_frameSize(32, 32),
+    maxSize(64)
 {
     // Initialize with one blank frame
     m_frames.append(QImage(m_frameSize, QImage::Format_ARGB32));
@@ -70,12 +71,12 @@ QColor SpriteEditorModel::getCurrentColor(){
     return m_currentColor;
 }
 
-QSize SpriteEditorModel::frameSize() const{
+QSize SpriteEditorModel::getFrameSize() const{
     return m_frameSize;
 }
 
 QSize SpriteEditorModel::getMaxSize () const{
-    return QSize(maxGridWidth, maxGridHeight);
+    return QSize(maxSize, maxSize);
 }
 
 // In spriteEditorModel.cpp
@@ -104,6 +105,26 @@ void SpriteEditorModel::moveFrameDown(int index) {
 void SpriteEditorModel::setCurrentColor(const QColor &color){
     m_currentColor = color;
     emit colorChanged(color); // tells the UI
+}
+
+void SpriteEditorModel::resizeAllFrames(int newSize) {
+    if (newSize < 8 || newSize > maxSize) {
+        return;
+    }
+
+    QSize newFrameSize(newSize, newSize);
+    for (QImage& oldFrame : m_frames) {
+        QImage newFrame(newFrameSize, QImage::Format_ARGB32);
+        newFrame.fill(Qt::transparent);
+
+        QPainter painter(&newFrame);
+        painter.drawImage(0, 0, oldFrame);
+        painter.end();
+
+        oldFrame = newFrame;
+    }
+
+    m_frameSize = newFrameSize;
 }
 
 
@@ -198,3 +219,4 @@ void SpriteEditorModel::saveSprite(const QString& fileName)
 QVector<QImage> SpriteEditorModel::getFrames(){
     return m_frames;
 }
+

@@ -9,7 +9,8 @@
 #include "Animation.h"
 #include <QListWidget>
 #include <QPushButton>
-
+#include <QSpinBox>
+#include <QPushButton>
 
 class QToolButton;
 
@@ -28,6 +29,7 @@ public:
     ~SpriteEditorView();
 
     void updateCanvasDisplay();
+    void applyResize(int size);
 
 
 
@@ -40,6 +42,8 @@ signals:
     void frameSelected(int index);
     void loadClicked();
     void saveClicked();
+
+
 
 
 private slots:
@@ -65,6 +69,9 @@ private slots:
     void onFrameSelectionChanged();
 
     void updateToolButtonStates();
+
+    // slot to handle resize
+    void onResizeClicked();
 
 
 
@@ -110,6 +117,8 @@ private:
     QPushButton* m_loadButton;
     QPushButton* m_saveButton;
     QListWidget* m_frameList;
+    QSpinBox* m_sizeSpinBox;
+    QPushButton* m_resizeButton;
     QWidget* m_ui;
 
     // Animation object (for frame preview)

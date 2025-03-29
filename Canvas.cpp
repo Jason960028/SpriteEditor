@@ -20,13 +20,13 @@ Canvas::Canvas(QWidget* parent, SpriteEditorModel* model)
     // Initialize with safe defaults
     canvasWidth = 32;
     canvasHeight = 32;
-    maxGridWidth = 128;
-    maxGridHeight = 128;
+    maxGridWidth = 64;
+    maxGridHeight = 64;
 
     if(model) {
         qDebug() << "Canvas created - Model is NOT NULL";
-        canvasWidth = model->frameSize().width();
-        canvasHeight = model->frameSize().height();
+        canvasWidth = model->getFrameSize().width();
+        canvasHeight = model->getFrameSize().height();
         maxGridWidth = model->getMaxSize().width();
         maxGridHeight = model->getMaxSize().height();
         displayImage = model->getCurrentFrame();
@@ -102,12 +102,11 @@ QPoint Canvas::screenToImagePos(const QPoint& screenPos) const {
     int imageX = static_cast<int>((screenPos.x() - offsetX) / scale);
     int imageY = static_cast<int>((screenPos.y() - offsetY) / scale);
 
-    if (imageX >= 0 && imageX < canvasWidth && imageY >= 0 && imageY < canvasHeight) {
-        return QPoint(imageX, imageY);
-    }
+    imageX = qBound(0, imageX, canvasWidth - 1);
+    imageY = qBound(0, imageY, canvasHeight - 1);
 
     // Return (-1, -1) if outside image bounds
-    return QPoint(-1, -1);
+    return QPoint(imageX, imageY);
 }
 
 void Canvas::updateCanvas(const QImage& frameImage) {
@@ -134,6 +133,21 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         QPoint pixelPos = screenToImagePos(event->pos());
         emit mouseReleased(pixelPos);
+    }
+}
+
+void Canvas::resetCanvasSize()
+{
+    if(model) {
+        canvasWidth = model->getFrameSize().width();
+        canvasHeight = model->getFrameSize().height();
+        maxGridWidth = model->getMaxSize().width();
+        maxGridHeight = model->getMaxSize().height();
+        displayImage = model->getCurrentFrame();
+        update();
+    } else {
+        displayImage = QImage(QSize(32, 32), QImage::Format_ARGB32);
+        displayImage.fill(Qt::transparent);
     }
 }
 

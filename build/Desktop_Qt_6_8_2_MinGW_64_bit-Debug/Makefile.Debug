@@ -2087,14 +2087,6 @@ debug/SpriteEditorView.o: ../../SpriteEditorView.cpp ../../spriteEditorView.h \
 		E:/Qt/6.8.2/mingw_64/include/QtGui/QPixmap \
 		E:/Qt/6.8.2/mingw_64/include/QtCore/QDebug \
 		ui_SpriteEditorView.h \
-		E:/Qt/6.8.2/mingw_64/include/QtCore/QVariant \
-		E:/Qt/6.8.2/mingw_64/include/QtGui/QAction \
-		E:/Qt/6.8.2/mingw_64/include/QtWidgets/QApplication \
-		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qapplication.h \
-		E:/Qt/6.8.2/mingw_64/include/QtWidgets/QFrame \
-		E:/Qt/6.8.2/mingw_64/include/QtWidgets/QPushButton \
-		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qpushbutton.h \
-		E:/Qt/6.8.2/mingw_64/include/QtWidgets/QSlider \
 		E:/Qt/6.8.2/mingw_64/include/QtWidgets/QVBoxLayout \
 		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qboxlayout.h \
 		E:/Qt/6.8.2/mingw_64/include/QtWidgets/qlayout.h \

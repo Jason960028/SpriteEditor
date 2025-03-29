@@ -74,12 +74,14 @@ void Canvas::paintEvent(QPaintEvent* event) {
     painter.translate(offsetX, offsetY);
     painter.scale(scale, scale);
 
-    qDebug() << "current image painted";
+
     // Draw the current image
     painter.drawImage(QPoint(0, 0), displayImage);
 
     // Draw pixel grid for editing
     painter.setPen(QColor(100, 100, 100, 100));
+
+
     for (int x = 0; x <= canvasWidth; ++x) {
         painter.drawLine(x, 0, x, canvasHeight);
     }

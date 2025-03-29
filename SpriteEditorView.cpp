@@ -39,15 +39,19 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_frameList = ui->frameListWidget;
     connectSignals();
 
-    QVBoxLayout* canvasLayout = new QVBoxLayout(ui->Canvas);
+    QGridLayout* canvasLayout = new QGridLayout(ui->CanvasFrame);
     canvasLayout->setContentsMargins(0, 0, 0, 0);
-    canvasLayout->addWidget(m_canvas);
+    canvasLayout->addWidget(m_canvas, 0, 0, Qt::AlignCenter);
 
     m_canvas->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     int canvasWidth = m_canvas->getCanvasWidth();
     int canvasHeight = m_canvas->getCanvasHeight();
     int pixelScale = 10;
     m_canvas->setFixedSize(canvasWidth * pixelScale, canvasHeight * pixelScale);
+
+    if (ui->Canvas) {
+        ui->Canvas->deleteLater();
+    }
 
     m_canvas->updateCanvas(m_currentFrame);
     updateFrameList(m_model->getCurrentIndex());

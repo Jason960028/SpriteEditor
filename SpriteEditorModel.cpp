@@ -199,16 +199,23 @@ QVector<QImage> SpriteEditorModel::getFrames(){
     return m_frames;
 }
 
-
+// TODO: Get the undo and redo working with multiple frames
 void SpriteEditorModel::undo() {
     qDebug() << "About to undo";
     if (!m_undoStack.isEmpty()) {
         // Push current frame to the redo stack before undo
-        m_redoStack.push(getCurrentFrame().copy());
+        StoreChange redoState;
+        redoState.m_frame = getCurrentFrame().copy();
+        redoState.m_frameIndex = getCurrentIndex();
+        m_redoStack.push(redoState);
+        //m_redoStack.push(getCurrentFrame().copy());
 
+        StoreChange lastState = m_undoStack.pop();
+        m_frames[lastState.m_frameIndex] = lastState.m_frame;
+        //setCurrentFrame(lastState.m_frameIndex);
         // Pop the last state from undo stack and set it as the current frame
-        QImage lastState = m_undoStack.pop();
-        m_frames[m_currentFrameIndex] = lastState;
+        // QImage lastState = m_undoStack.pop();
+        // m_frames[m_currentFrameIndex] = lastState;
         qDebug() << "Finish undo";
     }
 }
@@ -220,16 +227,23 @@ void SpriteEditorModel::redo() {
         // Push current frame to undo stack before redo
         saveStateToUndoStack();
 
+        StoreChange nextState = m_redoStack.pop();
+        m_frames[nextState.m_frameIndex] = nextState.m_frame;
+        //setCurrentFrame(nextState.m_frameIndex);
         // Pop the last state from redo stack and set it as the current frame
-        QImage nextState = m_redoStack.pop();
-        getCurrentFrame() = nextState;
+        // QImage nextState = m_redoStack.pop();
+        // getCurrentFrame() = nextState;
     }
 }
 
 void SpriteEditorModel::saveStateToUndoStack() {
     // Save a copy of the current frame to the undo stack
     qDebug() << "In state saver";
-    m_undoStack.push(getCurrentFrame().copy());
+    StoreChange change;
+    change.m_frame = getCurrentFrame().copy();
+    change.m_frameIndex = getCurrentIndex();
+    m_undoStack.push(change);
+   // m_undoStack.push(getCurrentFrame().copy());
     qDebug() << "Stack count: " << m_undoStack.count();
 }
 

@@ -220,7 +220,7 @@ void SpriteEditorView::handleMouseReleased(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
         Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_currentColor);
         updateCanvasDisplay();
-        m_model->saveStateToUndoStack();
+        m_model->saveStateToUndoStack(); // TODO: Important, this allows you to undo a whole mouse event
     }
 }
 

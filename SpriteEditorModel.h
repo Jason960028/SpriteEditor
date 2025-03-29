@@ -102,8 +102,14 @@ private:
     int maxGridWidth;
     int maxGridHeight;
 
-    QStack<QImage> m_undoStack;
-    QStack<QImage> m_redoStack;
+    // TODO: This struct allows us to store the frame with the frameIndex it belongs to
+    struct StoreChange {
+        int m_frameIndex;
+        QImage m_frame;  // or whatever data represents the change
+    };
+
+    QStack<StoreChange> m_undoStack;
+    QStack<StoreChange> m_redoStack;
 
     // Helper methods to save the current state to undo/redo stacks
     //void saveStateToUndoStack();

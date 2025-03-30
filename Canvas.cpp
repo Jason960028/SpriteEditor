@@ -9,6 +9,7 @@
  */
 
 #include "canvas.h"
+#include "RedoUndo.h"
 #include <QPainter>
 #include <QMouseEvent>
 #include <QPaintEvent>
@@ -20,13 +21,13 @@ Canvas::Canvas(QWidget* parent, SpriteEditorModel* model)
     // Initialize with safe defaults
     canvasWidth = 32;
     canvasHeight = 32;
-    maxGridWidth = 128;
-    maxGridHeight = 128;
+    maxGridWidth = 64;
+    maxGridHeight = 64;
 
     if(model) {
         qDebug() << "Canvas created - Model is NOT NULL";
-        canvasWidth = model->frameSize().width();
-        canvasHeight = model->frameSize().height();
+        canvasWidth = model->getFrameSize().width();
+        canvasHeight = model->getFrameSize().height();
         maxGridWidth = model->getMaxSize().width();
         maxGridHeight = model->getMaxSize().height();
         displayImage = model->getCurrentFrame();
@@ -49,6 +50,10 @@ void Canvas::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 
     QPainter painter(this);
+
+    if(model) {
+        displayImage = model->getCurrentFrame(); // Refresh image reference
+    }
 
     // Draw checkerboard background for transparency visualization
     const int checkerSize = 8;
@@ -102,12 +107,11 @@ QPoint Canvas::screenToImagePos(const QPoint& screenPos) const {
     int imageX = static_cast<int>((screenPos.x() - offsetX) / scale);
     int imageY = static_cast<int>((screenPos.y() - offsetY) / scale);
 
-    if (imageX >= 0 && imageX < canvasWidth && imageY >= 0 && imageY < canvasHeight) {
-        return QPoint(imageX, imageY);
-    }
+    imageX = qBound(0, imageX, canvasWidth - 1);
+    imageY = qBound(0, imageY, canvasHeight - 1);
 
     // Return (-1, -1) if outside image bounds
-    return QPoint(-1, -1);
+    return QPoint(imageX, imageY);
 }
 
 void Canvas::updateCanvas(const QImage& frameImage) {
@@ -118,22 +122,76 @@ void Canvas::updateCanvas(const QImage& frameImage) {
 
 void Canvas::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
+        m_isDrawing = true;
         QPoint pixelPos = screenToImagePos(event->pos());
+        m_lastPos = pixelPos;
+        m_modifiedPixels.clear();
+        m_modifiedPixels.append(pixelPos);
+        m_oldColors.clear();
+
+        // Get tool-specific color
+        if (model->getCurrentTool() == Tools::ToolType::Eraser) {
+            m_newColor = Qt::transparent;
+        } else {
+            m_newColor = model->getCurrentColor();
+        }
+
+        // Record original color
+        QImage& frame = model->getCurrentFrame();
+        m_oldColors.append(frame.pixelColor(pixelPos));
         emit mousePressed(pixelPos);
     }
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons() & Qt::LeftButton) {
+    if ((event->buttons() & Qt::LeftButton) && m_isDrawing) {
         QPoint pixelPos = screenToImagePos(event->pos());
-        emit mouseDragged(pixelPos);
+        if (pixelPos != m_lastPos) {
+            QImage& frame = model->getCurrentFrame();
+
+
+            if (!m_modifiedPixels.contains(pixelPos)) {
+                m_oldColors.append(frame.pixelColor(pixelPos));
+                m_modifiedPixels.append(pixelPos);
+            }
+
+            emit mouseDragged(pixelPos);
+            m_lastPos = pixelPos;
+        }
     }
 }
 
 void Canvas::mouseReleaseEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
-        QPoint pixelPos = screenToImagePos(event->pos());
-        emit mouseReleased(pixelPos);
+    if(event->button() == Qt::LeftButton && m_isDrawing) {
+        m_isDrawing = false;
+
+        if(!m_modifiedPixels.isEmpty() && model && model->currentUndoStack()) {
+            model->currentUndoStack()->push(
+                new RedoUndoCommand(
+                    model,
+                    m_modifiedPixels,
+                    m_oldColors,
+                    m_newColor,
+                    model->getCurrentIndex())
+                );
+        }
+
+        emit mouseReleased(screenToImagePos(event->pos()));
+    }
+}
+
+void Canvas::resetCanvasSize()
+{
+    if(model) {
+        canvasWidth = model->getFrameSize().width();
+        canvasHeight = model->getFrameSize().height();
+        maxGridWidth = model->getMaxSize().width();
+        maxGridHeight = model->getMaxSize().height();
+        displayImage = model->getCurrentFrame();
+        update();
+    } else {
+        displayImage = QImage(QSize(32, 32), QImage::Format_ARGB32);
+        displayImage.fill(Qt::transparent);
     }
 }
 

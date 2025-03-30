@@ -1,17 +1,27 @@
 #ifndef SPRITEEDITORMODEL_H
 #define SPRITEEDITORMODEL_H
 
+/**
+ * @file SpriteEditorModel.h
+ * @brief
+ *
+ * @author Arthur Mo(main), Kirra Kostenburg(save/load), Jay Lee(Animation)
+ */
+
 #include <QObject>
 #include <QImage>
 #include <QVector>
 #include <QColor>
 #include <QJsonObject>
 #include "tools.h"
+#include <QUndoStack>
 
 class SpriteEditorModel : public QObject {
     Q_OBJECT
+
+
 public:
-    explicit SpriteEditorModel(QObject *parent = nullptr);
+    explicit SpriteEditorModel(QObject* parent = nullptr);
 
     // create a new project
     void createNewProject(int width, int height);
@@ -27,7 +37,7 @@ public:
     void moveFrameDown(int index);
 
     // get the selected frame by index
-    QImage getFrame(int index) const;
+    QImage& getFrame(int index);
 
     //get the framesList size
     int getFramesListSize();
@@ -35,14 +45,15 @@ public:
     // update the pixel color with the provided position
     void setPixel(int x, int y);
 
-    // save the current project to be Json file
-    bool saveProject(const QString &filename);
+    void extracted(int &width, int &height, QJsonArray &framesArray);
+    void loadSprite(const QString &fileName);
 
-    // load the project from Json file
-    bool loadProject(const QString &filename);
+    void saveSprite(const QString& fileName);
 
     // return current Canvas size (for new frame usage)
-    QSize frameSize() const;
+    QSize getFrameSize() const;
+
+    void setFrameSize(int size);
 
     // use index to change current frame
     void setCurrentFrame(int index);
@@ -56,8 +67,20 @@ public:
     // set the tool to current tool
     void setCurrentTool(Tools::ToolType tool);
 
+    // a method only serves for Redo/Undo stack
+    void setUndoPixelColor(const QPoint& pos, const QColor& color);
+
+    // a method that flip current frame
+    void flipCurrentFrame(bool horizontal, bool vertical);
+
     //get the maxium size of canvas
     QSize getMaxSize() const;
+
+    // set the limitation for undo stack
+    void setUndoLimit(int limit);
+
+    // access the currentUndoStack
+    QUndoStack* currentUndoStack() const;
 
     // get the Tool from model
     Tools::ToolType getCurrentTool();
@@ -68,12 +91,22 @@ public:
     //get current index
     int getCurrentIndex();
 
+    // return the frame list
+    QVector<QImage> getFrames();
+
+    // resize all frames
+    void resizeAllFrames(int newSize);
+
+
+
 
 
 signals:
     // signal is sent to View to update the selected color
     void colorChanged(QColor color);
     void frameListChanged();
+    void undoStackChanged();
+    void pixelsChanged();
 
 private:
     // current frame
@@ -92,11 +125,16 @@ private:
     Tools::ToolType m_currentTool;
 
     //current frame
-    int m_currentFrameIndex;
+    int m_currentFrameIndex = 0;
 
     // Canvas size
-    int maxGridWidth;
-    int maxGridHeight;
+    int maxSize;
+    // undo storage
+    QList<QUndoStack*> m_frameUndoStacks;
+
+    // undo limitations
+    int m_undoLimit = 10;
+
 };
 
 #endif // SPRITEEDITORMODEL_H

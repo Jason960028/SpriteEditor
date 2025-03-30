@@ -94,6 +94,9 @@ public:
     // resize all frames
     void resizeAllFrames(int newSize);
 
+    //Create copy of currently selected frame
+    void duplicateFrame(int index);
+
 
 
 

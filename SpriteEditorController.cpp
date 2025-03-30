@@ -142,3 +142,17 @@ void SpriteEditorController::onColorSelected(const QColor& color) {
         m_model->setCurrentColor(color);
     }
 }
+
+void SpriteEditorController::onFlipHorizontalClicked() {
+    if (m_model) {
+        m_model->flipHorizontal();
+        emit currentFrameChanged();
+    }
+}
+
+void SpriteEditorController::onCleanButtonClicked() {
+    if (m_model) {
+        m_model->clearCurrentFrame();
+        emit currentFrameChanged();
+    }
+}

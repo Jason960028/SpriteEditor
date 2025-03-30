@@ -275,3 +275,15 @@ void SpriteEditorModel::duplicateFrame(int index) {
         emit frameListChanged();
     }
 }
+
+void SpriteEditorModel::flipHorizontal() {
+    QImage& currentFrame = getCurrentFrame();
+    currentFrame = currentFrame.mirrored(true, false);
+    emit pixelsChanged();
+}
+
+void SpriteEditorModel::clearCurrentFrame() {
+    QImage& currentFrame = getCurrentFrame();
+    currentFrame.fill(Qt::transparent);
+    emit pixelsChanged();
+}

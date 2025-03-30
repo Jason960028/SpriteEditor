@@ -10,7 +10,7 @@
  * on a QImage-based canvas.
  *
  *
- * @author Jason Chang
+ * @author Jason Chang(main)
  */
 
 #include <QImage>
@@ -87,8 +87,6 @@ public:
      */
     static QColor getColorAt(const QImage& image, const QPoint& pos);
 
-private:
-    static QMap<ToolType, Tools*> m_tools;
     /**
      * @brief Fills an area with a specified color using a flood-fill algorithm.
      * @param image The image to modify.
@@ -96,6 +94,11 @@ private:
      * @param fillColor The color to fill with.
      */
     static void fillArea(QImage& image, const QPoint& startPos, const QColor& fillColor);
+
+private:
+    static QMap<ToolType, Tools*> m_tools;
+
+
 };
 
 #endif // TOOLS_H

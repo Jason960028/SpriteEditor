@@ -260,5 +260,5 @@ void SpriteEditorModel::setUndoLimit(int limit) {
 void SpriteEditorModel::flipCurrentFrame(bool horizontal, bool vertical) {
     QImage& frame = getCurrentFrame();
     frame = frame.mirrored(horizontal, vertical);
-    emit pixelsChanged(); // redraw cavas
+    emit pixelsChanged(); // 캔버스를 다시 그리도록 알림
 }

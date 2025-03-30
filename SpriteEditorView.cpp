@@ -57,6 +57,12 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     ui->Eraser->setCheckable(true);
     ui->Fill->setCheckable(true);
 
+    // Set up FPS slider and spinbox
+    ui->FPSBox->setRange(1, 60);  // Set reasonable range for FPS (1-30)
+    ui->FPS->setRange(1, 60);     // Match the slider range
+    ui->FPSBox->setValue(10);     // Default to 10 FPS
+    ui->FPS->setValue(10);        // Set matching default for slider
+
     QString toolButtonStyle =
         "QToolButton { border: 1px solid darkgray; } "
         "QToolButton:checked { border: 2px solid blue; }";
@@ -152,6 +158,8 @@ void SpriteEditorView::connectSignals()
     // Connect the Stop button to the slot that stops the animation
     connect(ui->Stop, &QPushButton::clicked, this, &SpriteEditorView::onStopButtonClicked);
 
+    connect(ui->FPS, &QSlider::valueChanged, ui->FPSBox, &QSpinBox::setValue);
+    connect(ui->FPSBox, &QSpinBox::valueChanged, ui->FPS, &QSlider::setValue);
     // Connect the FPS slider to update the animation frame delay dynamically
     connect(ui->FPS, &QSlider::valueChanged, this, [this](int value) {
         if (value > 0)

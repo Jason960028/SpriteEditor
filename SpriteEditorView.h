@@ -1,6 +1,13 @@
 #ifndef SPRITEEDITORVIEW_H
 #define SPRITEEDITORVIEW_H
 
+/**
+ * @file SpriteEditorView.h
+ * @brief
+ *
+ * @author Arthur(main), Jason Chang(Canvas implementations, Color panel), Kirra Kostenburg(save/load), Jay Lee(Animation, Layer)
+ */
+
 #include <QMainWindow>
 #include "SpriteEditorModel.h"
 #include "SpriteEditorController.h"
@@ -8,6 +15,9 @@
 #include "tools.h"
 #include "Animation.h"
 #include <QListWidget>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QPushButton>
 
 class QToolButton;
 
@@ -25,7 +35,10 @@ public:
                               QWidget* parent = nullptr);
     ~SpriteEditorView();
 
+    // method to update Canvas
     void updateCanvasDisplay();
+    // method to resize Canvas
+    void applyResize(int size);
 
 
 
@@ -36,6 +49,12 @@ signals:
     void moveFrameUpRequested(int index);
     void moveFrameDownRequested(int index);
     void frameSelected(int index);
+    void loadClicked();
+    void saveClicked();
+    void colorSelected(const QColor& color);
+
+
+
 
 private slots:
 
@@ -61,6 +80,11 @@ private slots:
 
     void updateToolButtonStates();
 
+    // slot to handle resize
+    void onResizeClicked();
+
+    void onFlipButtonClicked();  // 🔄 flip 버튼 클릭 시 실행
+
 
 
     // Slot to update the preview when Animation emits frameChanged signal
@@ -70,6 +94,15 @@ private slots:
     void onPlayButtonClicked();
     void onStopButtonClicked();
 
+    // Save and Load Slots
+    void onLoadButtonClicked();
+    void onSaveButtonClicked();
+
+    void onColorSelected(int colorIndex);
+    void onModelColorChanged(const QColor& color);
+    void updateSelectedColorButton(int colorIndex);
+
+    void updateUndoRedoConnections();
 
 private:
     void setupUI();
@@ -91,21 +124,37 @@ private:
 
     Canvas*  m_canvas;
 
+    QAction* undoAction;
+    QAction* redoAction;
+
     // UI Elements
     QToolButton* m_penButton;
     QToolButton* m_eraserButton;
+    QToolButton* m_fillingButton;
     QToolButton* m_addFrameButton;
     QToolButton* m_deleteFrameButton;
     QToolButton* m_playButton;
     QToolButton* m_stopButton;
+    QPushButton* m_loadButton;
+    QPushButton* m_saveButton;
     QListWidget* m_frameList;
+    QSpinBox* m_sizeSpinBox;
+    QPushButton* m_resizeButton;
+    QWidget* m_ui;
+    QUndoStack* m_currentUndoStack;
 
     // Animation object (for frame preview)
     Animation* m_animation;
     QImage m_previewImage;
 
+    QVector<QToolButton*> m_colorButtons;
+    QFrame* m_currentColorFrame;
+    void setupColorPalette();
+    QToolButton* createColorButton(const QColor& color, int index);
+
 
 };
 
 #endif // SPRITEEDITORVIEW_H
+
 

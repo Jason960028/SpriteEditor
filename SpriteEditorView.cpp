@@ -48,6 +48,25 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     ui->undoButton->setEnabled(m_model->currentUndoStack()->canUndo());
     ui->redoButton->setEnabled(m_model->currentUndoStack()->canRedo());
 
+    // Logic for currently selected tool visual indicator.
+    ui->Pen->setCheckable(true);
+    ui->Eraser->setCheckable(true);
+    ui->Fill->setCheckable(true);
+
+    QString toolButtonStyle =
+        "QToolButton { border: 1px solid darkgray; } "
+        "QToolButton:checked { border: 2px solid blue; }";
+
+    ui->Pen->setStyleSheet(toolButtonStyle);
+    ui->Eraser->setStyleSheet(toolButtonStyle);
+    ui->Fill->setStyleSheet(toolButtonStyle);
+
+    // Initial condition, pen selected
+    ui->Pen->setChecked(true);
+
+    ui->CanvasFrame->setStyleSheet("QFrame { border: none; }");
+    ui->SizeFrame->setStyleSheet("QFrame { border: none; }");
+
     // Canvas setup
     m_canvas = new Canvas(this, m_model);
     setupUI();

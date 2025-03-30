@@ -1,10 +1,19 @@
 #ifndef SPRITEEDITORCONTROLLER_H
 #define SPRITEEDITORCONTROLLER_H
 
+/**
+ * @file SpriteEditorController.h
+ * @brief
+ *
+ * @author Arthur(main)
+ */
+
 #include <QObject>
 #include "tools.h"
+#include <QFileDialog>
 
 class SpriteEditorModel;
+class SpriteEditorView;
 
 class SpriteEditorController : public QObject
 {
@@ -19,6 +28,7 @@ public:
     // Animation control
     void playAnimation();
     void stopAnimation();
+    void setView(SpriteEditorView* view);
 
 signals:
     // signal to change frame list
@@ -44,6 +54,9 @@ public slots:
     // slot to update current tool to Eraser
     void onEraserClicked();
 
+    //slot to update current tool to Filling
+    void onFillingClicked();
+
     // slot to handle addFrame button and update frame list
     void addFrame();
 
@@ -59,11 +72,22 @@ public slots:
     // slot to move to next frame
     void moveFrameDown(int index);
 
+    void onLoadClicked();
+    void onSaveClicked();
+
+    void onColorSelected(const QColor& color);
+
+    void flipHorizontal();
+
+    void flipVertical();
+
 
 private:
     void updateToolButtonStates();
     SpriteEditorModel* m_model;
     Tools::ToolType m_currentTool;
+    QWidget* m_parentWidget;
+    SpriteEditorView* m_view = nullptr;
 };
 
 #endif // SPRITEEDITORCONTROLLER_H

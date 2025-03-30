@@ -1,6 +1,13 @@
 #ifndef SPRITEEDITORMODEL_H
 #define SPRITEEDITORMODEL_H
 
+/**
+ * @file SpriteEditorModel.h
+ * @brief
+ *
+ * @author Arthur Mo(main), Kirra Kostenburg(save/load), Jay Lee(Animation)
+ */
+
 #include <QObject>
 #include <QImage>
 #include <QVector>
@@ -81,8 +88,10 @@ public:
     //get current index
     int getCurrentIndex();
 
+    // return the frame list
     QVector<QImage> getFrames();
 
+    // resize all frames
     void resizeAllFrames(int newSize);
 
 

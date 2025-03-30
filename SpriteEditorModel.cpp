@@ -250,9 +250,9 @@ QUndoStack* SpriteEditorModel::currentUndoStack() const {
 }
 
 void SpriteEditorModel::setUndoLimit(int limit) {
-    m_undoLimit = qBound(10, limit, 100); // Keep between 10-100 steps
+    m_undoLimit = qBound(10, limit, 100);
 
-    for(QUndoStack* stack : m_frameUndoStacks) {
+    for(QUndoStack* stack : std::as_const(m_frameUndoStacks)) {
         stack->setUndoLimit(m_undoLimit);
     }
 }

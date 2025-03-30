@@ -1,6 +1,13 @@
 #ifndef REDOUNDO_H
 #define REDOUNDO_H
 
+/**
+ * @file RedoUndo.h
+ * @brief
+ *
+ * @author Arthur(main)
+ */
+
 #include <QUndoCommand>
 #include <QColor>
 #include <QPoint>

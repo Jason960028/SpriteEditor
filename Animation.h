@@ -1,6 +1,11 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
-
+/**
+ * @file SpriteEditorController.h
+ * @brief
+ *
+ * @author Jay Lee(main)
+ */
 #include <QWidget>
 #include <QImage>
 #include <QVector>

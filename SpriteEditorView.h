@@ -1,6 +1,13 @@
 #ifndef SPRITEEDITORVIEW_H
 #define SPRITEEDITORVIEW_H
 
+/**
+ * @file SpriteEditorView.h
+ * @brief
+ *
+ * @author Arthur(main), Jason Chang(Canvas implementations, Color panel), Kirra Kostenburg(save/load), Jay Lee(Animation, Layer)
+ */
+
 #include <QMainWindow>
 #include "SpriteEditorModel.h"
 #include "SpriteEditorController.h"
@@ -28,7 +35,9 @@ public:
                               QWidget* parent = nullptr);
     ~SpriteEditorView();
 
+    // method to update Canvas
     void updateCanvasDisplay();
+    // method to resize Canvas
     void applyResize(int size);
 
 

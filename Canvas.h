@@ -75,6 +75,12 @@ private:
     int maxGridWidth;
     int maxGridHeight;
     SpriteEditorModel* model;
+
+    bool m_isDrawing = false;
+    QPoint m_lastPos;
+    QVector<QPoint> m_modifiedPixels;
+    QVector<QColor> m_oldColors;
+    QColor m_newColor;
 };
 
 #endif // CANVAS_H

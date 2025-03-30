@@ -91,6 +91,8 @@ private slots:
     void onModelColorChanged(const QColor& color);
     void updateSelectedColorButton(int colorIndex);
 
+    void updateUndoRedoConnections();
+
 private:
     void setupUI();
     void setupTools();
@@ -111,6 +113,9 @@ private:
 
     Canvas*  m_canvas;
 
+    QAction* undoAction;
+    QAction* redoAction;
+
     // UI Elements
     QToolButton* m_penButton;
     QToolButton* m_eraserButton;
@@ -125,6 +130,7 @@ private:
     QSpinBox* m_sizeSpinBox;
     QPushButton* m_resizeButton;
     QWidget* m_ui;
+    QUndoStack* m_currentUndoStack;
 
     // Animation object (for frame preview)
     Animation* m_animation;

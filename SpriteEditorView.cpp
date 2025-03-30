@@ -20,7 +20,8 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_controller(m_controller),
     m_currentTool(Tools::ToolType::Pen),
     m_currentFrame(m_model->getCurrentFrame()),
-    m_currentColor(m_model->getCurrentColor())
+    m_currentColor(m_model->getCurrentColor()),
+    m_currentUndoStack(m_model->currentUndoStack())
 {
     ui->setupUi(this);
 
@@ -36,6 +37,18 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_loadButton = ui->loadButton;
     m_saveButton = ui->saveButton;
 
+    // Undo/Redo button
+    undoAction = m_model->currentUndoStack()->createUndoAction(this, tr("Undo"));
+    redoAction = m_model->currentUndoStack()->createRedoAction(this, tr("Redo"));
+
+    // Set shortcuts
+    undoAction->setShortcut(QKeySequence::Undo);
+    redoAction->setShortcut(QKeySequence::Redo);
+
+    ui->undoButton->setEnabled(m_model->currentUndoStack()->canUndo());
+    ui->redoButton->setEnabled(m_model->currentUndoStack()->canRedo());
+
+    // Canvas setup
     m_canvas = new Canvas(this, m_model);
     setupUI();
     m_frameList = ui->frameListWidget;
@@ -129,6 +142,20 @@ void SpriteEditorView::connectSignals()
     connect(this, &SpriteEditorView::colorSelected, m_controller, &SpriteEditorController::onColorSelected);
     connect(m_model, &SpriteEditorModel::colorChanged, this, &SpriteEditorView::onModelColorChanged);
 
+    //Redo/Undo connections
+    connect(ui->undoButton, &QPushButton::clicked, m_model->currentUndoStack(), &QUndoStack::undo);
+    connect(ui->redoButton, &QPushButton::clicked, m_model->currentUndoStack(), &QUndoStack::redo);
+
+    connect(m_model->currentUndoStack(), &QUndoStack::canUndoChanged, ui->undoButton, &QPushButton::setEnabled);
+    connect(m_model->currentUndoStack(), &QUndoStack::canRedoChanged, ui->redoButton, &QPushButton::setEnabled);
+
+    connect(m_model, &SpriteEditorModel::pixelsChanged, m_canvas, QOverload<>::of(&Canvas::update));
+    connect(m_model->currentUndoStack(), &QUndoStack::indexChanged, m_canvas, QOverload<>::of(&Canvas::update));
+
+    connect(m_model, &SpriteEditorModel::undoStackChanged,
+            this, &SpriteEditorView::updateUndoRedoConnections);
+
+    updateUndoRedoConnections();
 
 }
 
@@ -496,5 +523,37 @@ void SpriteEditorView::onModelColorChanged(const QColor& color) {
             break;
         }
     }
+}
+
+void SpriteEditorView::updateUndoRedoConnections(){
+    QUndoStack* stack = m_model->currentUndoStack();
+
+    // Disconnect previous stack's signals
+    if (m_currentUndoStack) {
+        disconnect(m_currentUndoStack, &QUndoStack::canUndoChanged,
+                   ui->undoButton, nullptr);
+        disconnect(m_currentUndoStack, &QUndoStack::canRedoChanged,
+                   ui->redoButton, nullptr);
+        disconnect(ui->undoButton, &QPushButton::clicked,
+                   m_currentUndoStack, &QUndoStack::undo);
+        disconnect(ui->redoButton, &QPushButton::clicked,
+                   m_currentUndoStack, &QUndoStack::redo);
+    }
+
+    // Connect new stack's signals
+    connect(stack, &QUndoStack::canUndoChanged,
+            ui->undoButton, &QPushButton::setEnabled);
+    connect(stack, &QUndoStack::canRedoChanged,
+            ui->redoButton, &QPushButton::setEnabled);
+    connect(ui->undoButton, &QPushButton::clicked,
+            stack, &QUndoStack::undo);
+    connect(ui->redoButton, &QPushButton::clicked,
+            stack, &QUndoStack::redo);
+
+    // Update button states
+    ui->undoButton->setEnabled(stack->canUndo());
+    ui->redoButton->setEnabled(stack->canRedo());
+
+    m_currentUndoStack = stack;
 }
 

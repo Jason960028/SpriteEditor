@@ -1,4 +1,4 @@
-#include "spriteeditormodel.h"
+#include "SpriteEditorModel.h"
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QFile>
@@ -8,13 +8,12 @@
 SpriteEditorModel::SpriteEditorModel(QObject *parent)
     : QObject(parent),
     m_currentColor(Qt::black),
-    m_currentTool(Tools::ToolType::Pen),
     m_frameSize(32, 32),
+    m_currentTool(Tools::ToolType::Pen),
     maxSize(64)
 {
-    // Initialize with one blank frame
-    m_frames.append(QImage(m_frameSize, QImage::Format_ARGB32));
-    m_frames.last().fill(Qt::transparent);
+    // Initialize first Frame and Undo Stack
+    addFrame();
     m_currentFrameIndex = 0;
 }
 
@@ -27,20 +26,32 @@ void SpriteEditorModel::createNewProject(int width, int height) {
 void SpriteEditorModel::addFrame() {
     m_frames.append(QImage(m_frameSize, QImage::Format_ARGB32));
     m_frames.last().fill(Qt::transparent);
+
+    QUndoStack* newStack = new QUndoStack(this);
+    newStack->setUndoLimit(m_undoLimit); // Apply limit to new stack
+    m_frameUndoStacks.append(newStack);
 }
 
 void SpriteEditorModel::removeFrame(){
-    int IndexToRemove = getCurrentIndex();
+    if(m_frames.size() <= 1) return;
 
-    // checking if the frame is first one
-    if(IndexToRemove >0){
-        setCurrentFrame(IndexToRemove-1);
-    }
-    m_frames.remove(IndexToRemove);
+    const int index = m_currentFrameIndex;
+
+    // Properly delete undo stack
+    delete m_frameUndoStacks.takeAt(index);
+    m_frames.removeAt(index);
+
+    // Update current index before emitting signals
+    if(index >= m_frames.size())
+        m_currentFrameIndex = m_frames.size() - 1;
+
+    emit undoStackChanged();
+    emit frameListChanged();
 }
 
-QImage SpriteEditorModel::getFrame(int index) const {
-    return index < m_frames.size() ? m_frames[index] : QImage();
+QImage& SpriteEditorModel::getFrame(int index){
+    Q_ASSERT(index >= 0 && index < m_frames.size());
+    return m_frames[index];
 }
 
 int SpriteEditorModel::getFramesListSize(){
@@ -52,6 +63,13 @@ void SpriteEditorModel::setPixel(int x, int y) {
     if(x >= 0 && y >= 0 && x < m_frameSize.width() && y < m_frameSize.height()) {
         currentFrame.setPixelColor(x, y, m_currentColor);
 
+    }
+}
+
+void SpriteEditorModel::setUndoPixelColor(const QPoint& pos, const QColor& color){
+    if(getCurrentFrame().rect().contains(pos)) {
+        getCurrentFrame().setPixelColor(pos, color);
+        emit pixelsChanged();
     }
 }
 
@@ -79,10 +97,11 @@ QSize SpriteEditorModel::getMaxSize () const{
     return QSize(maxSize, maxSize);
 }
 
-// In spriteEditorModel.cpp
 void SpriteEditorModel::setCurrentFrame(int index) {
     if(index >= 0 && index < m_frames.size()) {
         m_currentFrameIndex = index;
+        emit undoStackChanged();
+        emit frameListChanged();
     }
 }
 
@@ -148,7 +167,7 @@ void SpriteEditorModel::loadSprite(const QString& fileName)
 
     m_frames.clear();
 
-    for (const QJsonValue &frameVal : framesArray) {
+    for (const QJsonValue &frameVal : std::as_const(framesArray)) {
         QImage frame(width, height, QImage::Format_ARGB32);
         QJsonArray rows = frameVal.toArray();
 
@@ -185,7 +204,7 @@ void SpriteEditorModel::saveSprite(const QString& fileName)
 
     QJsonArray framesArray;
 
-    for (const QImage &frame : m_frames) {
+    for (const QImage &frame : std::as_const(m_frames)) {
         QJsonArray framePixels;
 
         for (int y = 0; y < height; ++y) {
@@ -220,3 +239,20 @@ QVector<QImage> SpriteEditorModel::getFrames(){
     return m_frames;
 }
 
+QUndoStack* SpriteEditorModel::currentUndoStack() const {
+    if(m_currentFrameIndex >= 0 &&
+        m_currentFrameIndex < m_frameUndoStacks.size()) {
+        return m_frameUndoStacks[m_currentFrameIndex];
+    }
+    // Create stack if missing (safety check)
+    qWarning() << "Missing undo stack for frame" << m_currentFrameIndex;
+    return new QUndoStack(const_cast<SpriteEditorModel*>(this));
+}
+
+void SpriteEditorModel::setUndoLimit(int limit) {
+    m_undoLimit = qBound(10, limit, 100); // Keep between 10-100 steps
+
+    for(QUndoStack* stack : m_frameUndoStacks) {
+        stack->setUndoLimit(m_undoLimit);
+    }
+}

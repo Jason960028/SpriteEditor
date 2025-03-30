@@ -1,5 +1,7 @@
 #include "SpriteEditorController.h"
 #include "SpriteEditorModel.h"
+#include "SpriteEditorView.h"
+
 
 SpriteEditorController::SpriteEditorController(SpriteEditorModel* model, QObject* parent)
     : QObject(parent),
@@ -9,23 +11,28 @@ SpriteEditorController::SpriteEditorController(SpriteEditorModel* model, QObject
 
 }
 
+void SpriteEditorController::setView(SpriteEditorView* view) {
+    m_view = view;
+    connect(m_view, &SpriteEditorView::loadClicked, this, &SpriteEditorController::onLoadClicked);
+    connect(m_view, &SpriteEditorView::saveClicked, this, &SpriteEditorController::onSaveClicked);
+}
+
 void SpriteEditorController::addFrame()
 {
     if (m_model) {
         m_model->addFrame();
+        m_model->setCurrentFrame(m_model->getFramesListSize()-1);
         emit frameListChanged(m_model->getFramesListSize());
         qDebug() << "Frame added";
         qDebug() << "Frame size " << m_model->getFramesListSize();
     }
-
-
 }
 
 void SpriteEditorController::removeCurrentFrame()
 {
     if (m_model && m_model->getFramesListSize() > 1) {
         m_model->removeFrame();
-        emit frameListChanged(m_model->getFramesListSize());
+        emit frameListChanged(m_model->getCurrentIndex());
         qDebug() << "Frame deleted";
     }
 
@@ -71,8 +78,59 @@ void SpriteEditorController::onPenClicked(){
 }
 
 void SpriteEditorController::onEraserClicked(){
-    qDebug() << "Eraser set";
     m_model->setCurrentTool(Tools::ToolType::Eraser);
     m_currentTool = m_model->getCurrentTool();
     emit toolSelectSignal(m_currentTool);
+}
+
+void SpriteEditorController::onFillingClicked(){
+    m_model->setCurrentTool(Tools::ToolType::Fill);
+    m_currentTool = m_model->getCurrentTool();
+    emit toolSelectSignal(m_currentTool);
+}
+
+void SpriteEditorController::onLoadClicked() {
+    QString fileName = QFileDialog::getOpenFileName(
+        m_view,  // the QWidget* view passed in
+        tr("Open SSP File"),
+        "",
+        tr("SSP Files (*.ssp)")
+        );
+
+    if (!fileName.isEmpty()) {
+        // Call load function that is inside the model
+        m_model->loadSprite(fileName);
+    }
+}
+
+void SpriteEditorController::onSaveClicked(){
+
+    QString fileName = QFileDialog::getSaveFileName(
+        m_view,
+        tr("Save File"),
+        "", // Optional default filename, e.g., "untitled.ssp"
+        tr("Spreadsheet Files (*.ssp)")
+        );
+
+    if (!fileName.isEmpty()) {
+        m_model->saveSprite(fileName);
+    }
+}
+
+void SpriteEditorController::onColorSelected(const QColor& color) {
+    if (m_model) {
+        m_model->setCurrentColor(color);
+    }
+}
+
+void SpriteEditorController::flipHorizontal() {
+    if (m_model) {
+        m_model->flipCurrentFrame(true, false);
+    }
+}
+
+void SpriteEditorController::flipVertical() {
+    if (m_model) {
+        m_model->flipCurrentFrame(false, true);
+    }
 }

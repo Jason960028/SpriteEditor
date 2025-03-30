@@ -1,6 +1,13 @@
 #ifndef SPRITEEDITORCONTROLLER_H
 #define SPRITEEDITORCONTROLLER_H
 
+/**
+ * @file SpriteEditorController.h
+ * @brief
+ *
+ * @author Arthur(main)
+ */
+
 #include <QObject>
 #include "tools.h"
 #include <QFileDialog>

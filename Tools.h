@@ -10,7 +10,7 @@
  * on a QImage-based canvas.
  *
  *
- * @author Jason Chang
+ * @author Jason Chang(main)
  */
 
 #include <QImage>

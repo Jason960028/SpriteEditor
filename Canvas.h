@@ -8,7 +8,7 @@
  * The Canvas class provides a QWidget-based drawable surface for editing sprites. It supports mouse interaction,
  * zoom-scaling, grid rendering, and updating pixel images with external frame data.
  *
- * @author Jason Chang
+ * @author Jason Chang(main), Arthur(Adjustments for redo/undo, Canvas Resizing)
  */
 
 #include <QWidget>
@@ -75,6 +75,12 @@ private:
     int maxGridWidth;
     int maxGridHeight;
     SpriteEditorModel* model;
+
+    bool m_isDrawing = false;
+    QPoint m_lastPos;
+    QVector<QPoint> m_modifiedPixels;
+    QVector<QColor> m_oldColors;
+    QColor m_newColor;
 };
 
 #endif // CANVAS_H

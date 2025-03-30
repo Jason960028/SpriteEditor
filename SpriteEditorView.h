@@ -1,6 +1,13 @@
 #ifndef SPRITEEDITORVIEW_H
 #define SPRITEEDITORVIEW_H
 
+/**
+ * @file SpriteEditorView.h
+ * @brief
+ *
+ * @author Arthur(main), Jason Chang(Canvas implementations, Color panel), Kirra Kostenburg(save/load), Jay Lee(Animation, Layer)
+ */
+
 #include <QMainWindow>
 #include "SpriteEditorModel.h"
 #include "SpriteEditorController.h"
@@ -28,7 +35,9 @@ public:
                               QWidget* parent = nullptr);
     ~SpriteEditorView();
 
+    // method to update Canvas
     void updateCanvasDisplay();
+    // method to resize Canvas
     void applyResize(int size);
 
 
@@ -91,6 +100,8 @@ private slots:
     void onModelColorChanged(const QColor& color);
     void updateSelectedColorButton(int colorIndex);
 
+    void updateUndoRedoConnections();
+
 private:
     void setupUI();
     void setupTools();
@@ -111,6 +122,9 @@ private:
 
     Canvas*  m_canvas;
 
+    QAction* undoAction;
+    QAction* redoAction;
+
     // UI Elements
     QToolButton* m_penButton;
     QToolButton* m_eraserButton;
@@ -125,6 +139,7 @@ private:
     QSpinBox* m_sizeSpinBox;
     QPushButton* m_resizeButton;
     QWidget* m_ui;
+    QUndoStack* m_currentUndoStack;
 
     // Animation object (for frame preview)
     Animation* m_animation;

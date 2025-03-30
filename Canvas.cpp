@@ -126,13 +126,19 @@ void Canvas::mousePressEvent(QMouseEvent* event) {
         QPoint pixelPos = screenToImagePos(event->pos());
         m_lastPos = pixelPos;
         m_modifiedPixels.clear();
+        m_modifiedPixels.append(pixelPos);
         m_oldColors.clear();
-        m_newColor = model->getCurrentColor();
 
-        // Record first pixel
+        // Get tool-specific color
+        if (model->getCurrentTool() == Tools::ToolType::Eraser) {
+            m_newColor = Qt::transparent;
+        } else {
+            m_newColor = model->getCurrentColor();
+        }
+
+        // Record original color
         QImage& frame = model->getCurrentFrame();
         m_oldColors.append(frame.pixelColor(pixelPos));
-        m_modifiedPixels.append(pixelPos);
         emit mousePressed(pixelPos);
     }
 }
@@ -143,7 +149,7 @@ void Canvas::mouseMoveEvent(QMouseEvent* event) {
         if (pixelPos != m_lastPos) {
             QImage& frame = model->getCurrentFrame();
 
-            // Record pixel only if it's new
+
             if (!m_modifiedPixels.contains(pixelPos)) {
                 m_oldColors.append(frame.pixelColor(pixelPos));
                 m_modifiedPixels.append(pixelPos);

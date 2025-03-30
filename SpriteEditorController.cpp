@@ -78,7 +78,6 @@ void SpriteEditorController::onPenClicked(){
 }
 
 void SpriteEditorController::onEraserClicked(){
-    qDebug() << "Eraser set";
     m_model->setCurrentTool(Tools::ToolType::Eraser);
     m_currentTool = m_model->getCurrentTool();
     emit toolSelectSignal(m_currentTool);

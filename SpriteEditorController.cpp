@@ -1,6 +1,8 @@
 #include "SpriteEditorController.h"
 #include "SpriteEditorModel.h"
 #include "SpriteEditorView.h"
+#include <QMessageBox>
+#include <QPushButton>
 
 
 SpriteEditorController::SpriteEditorController(SpriteEditorModel* model, QObject* parent)
@@ -20,7 +22,25 @@ void SpriteEditorController::setView(SpriteEditorView* view) {
 void SpriteEditorController::addFrame()
 {
     if (m_model) {
-        m_model->addFrame();
+
+        //User selction message box
+        QMessageBox msgBox(m_view);
+        msgBox.setWindowTitle(tr("Add Frame"));
+        msgBox.setText(tr("Choose an option?"));
+        QPushButton *emptyButton = msgBox.addButton(tr("Empty Frame"), QMessageBox::ActionRole);
+        QPushButton *duplicateButton = msgBox.addButton(tr("Copy Current frame"), QMessageBox::ActionRole);
+        msgBox.setDefaultButton(emptyButton);
+
+        msgBox.exec();
+
+        if (msgBox.clickedButton() == duplicateButton) {
+            // Copy current frame
+            m_model->duplicateFrame(m_model->getCurrentIndex());
+        } else {
+            // Add empty frame
+            m_model->addFrame();
+        }
+
         m_model->setCurrentFrame(m_model->getFramesListSize()-1);
         emit frameListChanged(m_model->getFramesListSize());
         qDebug() << "Frame added";

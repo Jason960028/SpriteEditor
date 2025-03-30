@@ -256,3 +256,22 @@ void SpriteEditorModel::setUndoLimit(int limit) {
         stack->setUndoLimit(m_undoLimit);
     }
 }
+
+void SpriteEditorModel::duplicateFrame(int index) {
+    if (index >= 0 && index < m_frames.size()) {
+        // Create copy of currently selected frame
+        QImage duplicatedFrame = m_frames[index].copy();
+        m_frames.append(duplicatedFrame);
+
+        // Create new undo stack
+        QUndoStack* newStack = new QUndoStack(this);
+        newStack->setUndoLimit(m_undoLimit);
+        m_frameUndoStacks.append(newStack);
+
+        // Change current index to newly created frame
+        m_currentFrameIndex = m_frames.size() - 1;
+
+        emit undoStackChanged();
+        emit frameListChanged();
+    }
+}

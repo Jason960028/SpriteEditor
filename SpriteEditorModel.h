@@ -97,6 +97,13 @@ public:
     //Create copy of currently selected frame
     void duplicateFrame(int index);
 
+    //Horizontal flip
+    void flipHorizontal();
+
+    // Clear the current frame (set all pixels to transparent)
+    void clearCurrentFrame();
+
+
 
 
 

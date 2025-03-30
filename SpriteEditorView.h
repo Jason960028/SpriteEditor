@@ -133,13 +133,16 @@ private:
     QToolButton* m_deleteFrameButton;
     QToolButton* m_playButton;
     QToolButton* m_stopButton;
+    QToolButton* m_flipButton;
     QPushButton* m_loadButton;
     QPushButton* m_saveButton;
+    QPushButton* m_cleanButton;
     QListWidget* m_frameList;
     QSpinBox* m_sizeSpinBox;
     QPushButton* m_resizeButton;
     QWidget* m_ui;
     QUndoStack* m_currentUndoStack;
+
 
     // Animation object (for frame preview)
     Animation* m_animation;
@@ -149,8 +152,6 @@ private:
     QFrame* m_currentColorFrame;
     void setupColorPalette();
     QToolButton* createColorButton(const QColor& color, int index);
-
-
 };
 
 #endif // SPRITEEDITORVIEW_H

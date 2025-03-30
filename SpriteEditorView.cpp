@@ -30,12 +30,16 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
     m_fillingButton = findChild<QToolButton*>("Fill");
+    m_flipButton = findChild<QToolButton*>("Flip");
     m_addFrameButton = ui->AddFrame;
     m_deleteFrameButton = ui->DeleteFrame;
 
     //Load and save
     m_loadButton = ui->loadButton;
     m_saveButton = ui->saveButton;
+
+    //Clean
+    m_cleanButton = ui->CleanButton;
 
     // Undo/Redo button
     undoAction = m_model->currentUndoStack()->createUndoAction(this, tr("Undo"));
@@ -124,6 +128,7 @@ void SpriteEditorView::connectSignals()
     connect(m_penButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onPenClicked);
     connect(m_eraserButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onEraserClicked);
     connect(m_fillingButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onFillingClicked);
+    connect(m_flipButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onFlipHorizontalClicked);
     connect(ui->moveUpFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveUpClicked);
     connect(ui->moveDownFrameButton, &QToolButton::clicked, this, &SpriteEditorView::onMoveDownClicked);
     connect(m_controller, &SpriteEditorController::currentFrameChanged, this, &SpriteEditorView::handleFrameChanged);
@@ -157,6 +162,10 @@ void SpriteEditorView::connectSignals()
     connect(m_loadButton, &QPushButton::clicked, this, &SpriteEditorView::onLoadButtonClicked);
     connect(m_saveButton, &QPushButton::clicked, this, &SpriteEditorView::onSaveButtonClicked);
     connect(ui->ResizeButton, &QPushButton::clicked, this, &SpriteEditorView::onResizeClicked);
+
+    // Clean button connection
+    connect(m_cleanButton, &QPushButton::clicked, m_controller, &SpriteEditorController::onCleanButtonClicked);
+
 
     connect(this, &SpriteEditorView::colorSelected, m_controller, &SpriteEditorController::onColorSelected);
     connect(m_model, &SpriteEditorModel::colorChanged, this, &SpriteEditorView::onModelColorChanged);

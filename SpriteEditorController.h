@@ -77,6 +77,12 @@ public slots:
 
     void onColorSelected(const QColor& color);
 
+    void onFlipHorizontalClicked();
+
+    void onCleanButtonClicked();
+
+
+
 
 private:
     void updateToolButtonStates();

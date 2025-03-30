@@ -146,7 +146,7 @@
       </property>
      </widget>
     </widget>
-    <widget class="QToolButton" name="Fill_2">
+    <widget class="QToolButton" name="Flip">
      <property name="geometry">
       <rect>
        <x>10</x>

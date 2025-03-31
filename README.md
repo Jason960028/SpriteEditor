@@ -20,9 +20,6 @@
   - **Flip Canvas:** Flip the image of the current canvas. (Extra Features)
   - **Redo and Undo:** Revert one action to a previous step. (Extra Features)
 
-## Requirements
-
-
 ## How to run
 This program is a QT-based program.
 To run the program, install QT and clone this repo as a new project.

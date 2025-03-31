@@ -4,8 +4,10 @@
 /**
  * @file SpriteEditorModel.h
  * @brief Header file for the sprite editor model
- * @details Contains the core data and business logic for the sprite editor
+ * @details Contains the core data and logic for the sprite editor
  * @author Arthur Mo (main), Kirra Kostenburg (save/load), Jay Lee (Animation)
+ *
+ * Checked by Jason Chang
  */
 
 #include <QObject>
@@ -24,11 +26,14 @@
 class SpriteEditorModel : public QObject {
     Q_OBJECT
 
-
 public:
+    /**
+     * @brief Constructor for the sprite editor model
+     * @param parent Parent QObject
+     */
     explicit SpriteEditorModel(QObject* parent = nullptr);
 
-    // Project Management
+    // -------------Project Management-------------
     /**
      * @brief Creates a new sprite project with specified dimensions
      * @param width Width of the sprite canvas
@@ -48,7 +53,7 @@ public:
      */
     void removeFrame();
 
-    // Frame Navigation
+    // -------------Frame Navigation-------------
     /**
      * @brief Moves frame focus up in the sequence
      * @param index Current frame index
@@ -88,9 +93,9 @@ public:
      * @param pos Pixel position
      * @param color Color to set
      */
-    void extracted(int &width, int &height, QJsonArray &framesArray);
+    void setUndoPixelColor(const QPoint& pos, const QColor& color);
 
-    // File I/O
+    // -------------File I/O-------------
     /**
      * @brief Loads sprite from JSON file
      * @param fileName Path to sprite file
@@ -103,7 +108,7 @@ public:
      */
     void saveSprite(const QString& fileName);
 
-    // Getters
+    // -------------Getters-------------
     /**
      * @brief Gets current canvas dimensions
      * @return Size of frames in pixels
@@ -158,76 +163,88 @@ public:
      */
     QUndoStack* currentUndoStack() const;
 
-    // slot to update the current selected color
+    /**
+     * @brief Updates the current selected color
+     * @param color New color to set
+     */
     void setCurrentColor(const QColor &color);
 
+    /**
+     * @brief Sets the frame size
+     * @param size New size value
+     */
     void setFrameSize(int size);
 
-    // set the tool to current tool
+    /**
+     * @brief Sets the current tool
+     * @param tool Tool type to set
+     */
     void setCurrentTool(Tools::ToolType tool);
 
-    // a method only serves for Redo/Undo stack
-    void setUndoPixelColor(const QPoint& pos, const QColor& color);
-
-
-
-    // set the limitation for undo stack
+    /**
+     * @brief Sets the undo limit
+     * @param limit Maximum number of undo operations
+     */
     void setUndoLimit(int limit);
 
-
-
-
-
-    // resize all frames
+    /**
+     * @brief Resizes all frames to a new size
+     * @param newSize New size in pixels
+     */
     void resizeAllFrames(int newSize);
 
-    //Create copy of currently selected frame
+    /**
+     * @brief Creates a copy of the currently selected frame
+     * @param index Frame index to duplicate
+     */
     void duplicateFrame(int index);
 
-    //Horizontal flip
+    /**
+     * @brief Flips the current frame horizontally
+     */
     void flipHorizontal();
 
-    // Clear the current frame (set all pixels to transparent)
+    /**
+     * @brief Clears the current frame (all pixels transparent)
+     */
     void clearCurrentFrame();
 
-
-
-
-
 signals:
-    // signal is sent to View to update the selected color
+    /**
+     * @brief Signal sent when the color changes
+     * @param color New color value
+     */
     void colorChanged(QColor color);
+
+    /**
+     * @brief Signal sent when the frame list changes
+     */
     void frameListChanged();
+
+    /**
+     * @brief Signal sent when the undo stack changes
+     */
     void undoStackChanged();
+
+    /**
+     * @brief Signal sent when pixels change
+     */
     void pixelsChanged();
 
 private:
-    // current frame
-    QVector<QImage> m_frames;
-    // current color
-    QColor m_currentColor = Qt::black;
-    // setting size
-    QSize m_frameSize;
-    // defualt size
-    QSize m_defualSize = QSize(32,32);
+    QVector<QImage> m_frames;              // Collection of frames
+    QColor m_currentColor = Qt::black;     // Current drawing color
+    QSize m_frameSize;                     // Current frame dimensions
+    QSize m_defaultSize = QSize(32, 32);   // Default frame size
 
     QJsonObject frameToJson(const QImage &frame) const;
     QImage jsonToFrame(const QJsonObject &json) const;
 
-    // current tool
-    Tools::ToolType m_currentTool;
-
-    //current frame
-    int m_currentFrameIndex = 0;
-
-    // Canvas size
-    int maxSize;
-    // undo storage
-    QList<QUndoStack*> m_frameUndoStacks;
-
-    // undo limitations
-    int m_undoLimit = 10;
-
+    Tools::ToolType m_currentTool;         // Current drawing tool
+    int m_currentFrameIndex = 0;           // Active frame index
+    int m_maxSize;                         // Maximum canvas size
+    QList<QUndoStack*> m_frameUndoStacks;  // Undo stacks for each frame
+    int m_undoLimit = 10;                  // Maximum undo operations
 };
 
 #endif // SPRITEEDITORMODEL_H

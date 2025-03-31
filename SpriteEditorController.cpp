@@ -4,13 +4,17 @@
 #include <QMessageBox>
 #include <QPushButton>
 
+/**
+ * @file SpriteEditorController.cpp
+ * @brief Implementation file for the sprite editor controller
+ * @details Implements user interaction handling and coordinates model-view communication
+ * @author Arthur (main), Jason Chang(Modification for additional features)
+ */
 
 SpriteEditorController::SpriteEditorController(SpriteEditorModel* model, QObject* parent)
     : QObject(parent),
     m_model(model),
-    m_currentTool(Tools::ToolType::Pen)
-{
-
+    m_currentTool(Tools::ToolType::Pen) {
 }
 
 void SpriteEditorController::setView(SpriteEditorView* view) {
@@ -19,16 +23,15 @@ void SpriteEditorController::setView(SpriteEditorView* view) {
     connect(m_view, &SpriteEditorView::saveClicked, this, &SpriteEditorController::onSaveClicked);
 }
 
-void SpriteEditorController::addFrame()
-{
+void SpriteEditorController::addFrame() {
     if (m_model) {
-
-        //User selction message box
+        //User selection message box
         QMessageBox msgBox(m_view);
         msgBox.setWindowTitle(tr("Add Frame"));
         msgBox.setText(tr("Choose an option?"));
         QPushButton *emptyButton = msgBox.addButton(tr("Empty Frame"), QMessageBox::ActionRole);
-        QPushButton *duplicateButton = msgBox.addButton(tr("Copy Current frame"), QMessageBox::ActionRole);
+        QPushButton *duplicateButton = msgBox.addButton(tr("Copy Current frame"),
+                                                        QMessageBox::ActionRole);
         msgBox.setDefaultButton(emptyButton);
 
         msgBox.exec();
@@ -48,62 +51,56 @@ void SpriteEditorController::addFrame()
     }
 }
 
-void SpriteEditorController::removeCurrentFrame()
-{
+void SpriteEditorController::removeCurrentFrame() {
     if (m_model && m_model->getFramesListSize() > 1) {
         m_model->removeFrame();
         emit frameListChanged(m_model->getCurrentIndex());
         qDebug() << "Frame deleted";
     }
-
 }
 
-void SpriteEditorController::handlePlayPressed()
-{
+void SpriteEditorController::handlePlayPressed() {
     if (m_model && m_model->getFramesListSize() > 1) {
         emit animationStateChanged(true);
         // Actual animation logic would go here
     }
 }
 
-void SpriteEditorController::handleStopPressed()
-{
+void SpriteEditorController::handleStopPressed() {
     emit animationStateChanged(false);
 }
 
-void SpriteEditorController::handleFrameSelected(int index){
+void SpriteEditorController::handleFrameSelected(int index) {
     m_model->setCurrentFrame(index);
 }
 
-void SpriteEditorController::moveFrameUp(int index){
+void SpriteEditorController::moveFrameUp(int index) {
     m_model->setCurrentFrame(index-1);
     m_model->moveFrameUp(index);
     qDebug() << "Frame moved up";
     emit currentFrameChanged();
 }
 
-void SpriteEditorController::moveFrameDown(int index){
+void SpriteEditorController::moveFrameDown(int index) {
     m_model->setCurrentFrame(index+1);
     m_model->moveFrameDown(index);
     qDebug() << "Frame moved down";
     emit currentFrameChanged();
 }
 
-
-void SpriteEditorController::onPenClicked(){
-
+void SpriteEditorController::onPenClicked() {
     m_model->setCurrentTool(Tools::ToolType::Pen);
     m_currentTool = m_model->getCurrentTool();
     emit toolSelectSignal(m_currentTool);
 }
 
-void SpriteEditorController::onEraserClicked(){
+void SpriteEditorController::onEraserClicked() {
     m_model->setCurrentTool(Tools::ToolType::Eraser);
     m_currentTool = m_model->getCurrentTool();
     emit toolSelectSignal(m_currentTool);
 }
 
-void SpriteEditorController::onFillingClicked(){
+void SpriteEditorController::onFillingClicked() {
     m_model->setCurrentTool(Tools::ToolType::Fill);
     m_currentTool = m_model->getCurrentTool();
     emit toolSelectSignal(m_currentTool);
@@ -123,12 +120,11 @@ void SpriteEditorController::onLoadClicked() {
     }
 }
 
-void SpriteEditorController::onSaveClicked(){
-
+void SpriteEditorController::onSaveClicked() {
     QString fileName = QFileDialog::getSaveFileName(
         m_view,
         tr("Save File"),
-        "", // Optional default filename, e.g., "untitled.ssp"
+        "",
         tr("Spreadsheet Files (*.ssp)")
         );
 

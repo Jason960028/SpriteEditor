@@ -15,7 +15,7 @@
 #include <QSet>
 #include "SpriteEditorModel.h"
 
-// Static tool instances
+
 QMap<Tools::ToolType, Tools*> Tools::m_tools;
 
 Tools::Tools() {
@@ -73,7 +73,7 @@ QColor Tools::getColorAt(const QImage& image, const QPoint& pos) {
 }
 
 void Tools::fillArea(QImage& image, const QPoint& startPos, const QColor& fillColor) {
-    // Get the color at the starting position
+    // Get the color at the starting position — this is the target color to be replaced
     QColor targetColor = image.pixelColor(startPos);
 
     // If the target color is the same as the fill color, there's nothing to do

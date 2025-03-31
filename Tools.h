@@ -6,9 +6,12 @@
  * @brief Declares the Tools class, which provides basic drawing functionality for the sprite editor.
  *
  * This class includes definitions for available tool types and color palettes,
- * along with static utility functions to apply drawing actions on a canvas.
+ * along with static utility functions to apply drawing actions (pen, eraser, fill)
+ * on a QImage-based canvas.
  *
  * @author Jason Chang (main)
+ *
+ * Checked by Arthur Mo
  */
 
 #include <QImage>

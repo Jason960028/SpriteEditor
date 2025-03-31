@@ -5,7 +5,9 @@
  * @file SpriteEditorController.h
  * @brief Header file for the sprite editor controller
  * @details Handles user input and coordinates between model and view components
- * @author Arthur (main)
+ * @author Arthur (main), Jason Chang(Modification for additional features)
+ *
+ * Checked by Jay Lee
  */
 
 #include <QObject>
@@ -20,8 +22,7 @@ class SpriteEditorView;
  * @brief Controller class for the sprite editor application
  * @details Manages user interactions and coordinates between model and view
  */
-class SpriteEditorController : public QObject
-{
+class SpriteEditorController : public QObject {
     Q_OBJECT
 public:
     /**
@@ -31,94 +32,136 @@ public:
      */
     explicit SpriteEditorController(SpriteEditorModel* model, QObject* parent = nullptr);
 
-
-    // Animation control methods
-
-    // Starts the animation playback
+    /**
+     * @brief Starts the animation playback
+     */
     void playAnimation();
 
-    // Stops the animation playback
+    /**
+     * @brief Stops the animation playback
+     */
     void stopAnimation();
 
-    // Sets the view component
+    /**
+     * @brief Sets the view component
+     * @param view Pointer to the view
+     */
     void setView(SpriteEditorView* view);
 
 signals:
-    // signal to change frame list
+    /**
+     * @brief Signal to update frame list size
+     * @param size New frame list size
+     */
     void frameListChanged(int size);
 
-    // signal to play or stop animation
+    /**
+     * @brief Signal to update animation state
+     * @param playing True if playing, false if stopped
+     */
     void animationStateChanged(bool playing);
 
+    /**
+     * @brief Signal to update selected tool
+     * @param tool New tool type
+     */
     void toolSelectSignal(Tools::ToolType& tool);
 
+    /**
+     * @brief Signal when current frame has changed
+     */
     void currentFrameChanged();
 
 public slots:
-    // slot to handle Play button
+    /**
+     * @brief Handles play button press
+     */
     void handlePlayPressed();
 
-    // slot to handle stop button
+    /**
+     * @brief Handles stop button press
+     */
     void handleStopPressed();
 
-    // slot to update current tool to Pen
+    /**
+     * @brief Updates current tool to Pen
+     */
     void onPenClicked();
 
-    // slot to update current tool to Eraser
+    /**
+     * @brief Updates current tool to Eraser
+     */
     void onEraserClicked();
 
-    //slot to update current tool to Filling
+    /**
+     * @brief Updates current tool to Fill
+     */
     void onFillingClicked();
 
-    // slot to handle addFrame button and update frame list
+    /**
+     * @brief Adds a new frame
+     */
     void addFrame();
 
-    // slot to handle remove button and update frame list
+    /**
+     * @brief Removes the current frame
+     */
     void removeCurrentFrame();
 
-    // slot to update current frame by selected index
+    /**
+     * @brief Updates the selected frame
+     * @param index Selected frame index
+     */
     void handleFrameSelected(int index);
 
-    // slot to move to previous frame
+    /**
+     * @brief Moves frame up in sequence
+     * @param index Current frame index
+     */
     void moveFrameUp(int index);
 
-    // slot to move to next frame
+    /**
+     * @brief Moves frame down in sequence
+     * @param index Current frame index
+     */
     void moveFrameDown(int index);
 
-    // slot to handle load clicked
+    /**
+     * @brief Handles load button click
+     */
     void onLoadClicked();
 
-    // slot to handle save clicked
+    /**
+     * @brief Handles save button click
+     */
     void onSaveClicked();
 
-    // slot to handle color selection
+    /**
+     * @brief Handles color selection
+     * @param color Selected color
+     */
     void onColorSelected(const QColor& color);
 
-    // slot to handle filp clicked
+    /**
+     * @brief Handles horizontal flip button click
+     */
     void onFlipHorizontalClicked();
 
-    // slot to handle clean clicked
+    /**
+     * @brief Handles clean button click
+     */
     void onCleanButtonClicked();
 
-
-
-
 private:
-
-    // Updates the state of tool buttons in the UI
+    /**
+     * @brief Updates tool button states in UI
+     */
     void updateToolButtonStates();
 
-    // Pointer to the model component
-    SpriteEditorModel* m_model;
-
-    // Currently selected tool
-    Tools::ToolType m_currentTool;
-
-    // Parent widget
-    QWidget* m_parentWidget;
-
-    // Pointer to the view component
-    SpriteEditorView* m_view = nullptr;
+    SpriteEditorModel* m_model;       // Pointer to model component
+    Tools::ToolType m_currentTool;    // Currently selected tool
+    QWidget* m_parentWidget;          // Parent widget
+    SpriteEditorView* m_view = nullptr; // Pointer to view component
 };
 
 #endif // SPRITEEDITORCONTROLLER_H

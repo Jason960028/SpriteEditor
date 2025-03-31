@@ -11,122 +11,117 @@
 #include <QVBoxLayout>
 #include "Animation.h"
 
+/**
+ * @file SpriteEditorView.cpp
+ * @brief Implementation file for the sprite editor view
+ * @details Implements the user interface and UI event handling
+ * @author Arthur (main), Jason Chang (Canvas implementations, Color panel),
+ *         Kirra Kostenburg (save/load), Jay Lee (Animation, Layer)
+ */
+
 SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
-                                   SpriteEditorController* m_controller,
+                                   SpriteEditorController* controller,
                                    QWidget* parent)
     : QMainWindow(parent),
     ui(new Ui::SpriteEditorView),
     m_model(model),
-    m_controller(m_controller),
+    m_controller(controller),
     m_currentTool(Tools::ToolType::Pen),
     m_currentFrame(m_model->getCurrentFrame()),
     m_currentColor(m_model->getCurrentColor()),
     m_currentUndoStack(m_model->currentUndoStack())
 {
     ui->setupUi(this);
-
+    setupUI();
     setupColorPalette();
     setupButtonIcons();
+    connectSignals();
     applyTheme();
+    updateFrameList(m_model->getCurrentIndex());
+}
 
+SpriteEditorView::~SpriteEditorView() {
+    delete ui;
+}
+
+void SpriteEditorView::setupUI() {
+    // Initialize UI component references
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
     m_fillingButton = findChild<QToolButton*>("Fill");
     m_flipButton = findChild<QToolButton*>("Flip");
     m_addFrameButton = ui->AddFrame;
     m_deleteFrameButton = ui->DeleteFrame;
-
-    //Load and save
     m_loadButton = ui->loadButton;
     m_saveButton = ui->saveButton;
-
-    //Clean
     m_cleanButton = ui->CleanButton;
+    m_frameList = ui->frameListWidget;
 
-    // Undo/Redo button
+    // Configure Undo/Redo actions
     undoAction = m_model->currentUndoStack()->createUndoAction(this, tr("Undo"));
     redoAction = m_model->currentUndoStack()->createRedoAction(this, tr("Redo"));
-
-    // Set shortcuts
     undoAction->setShortcut(QKeySequence::Undo);
     redoAction->setShortcut(QKeySequence::Redo);
-
     ui->undoButton->setEnabled(m_model->currentUndoStack()->canUndo());
     ui->redoButton->setEnabled(m_model->currentUndoStack()->canRedo());
 
-    // Logic for currently selected tool visual indicator.
+    // Initialize tool button states
     ui->Pen->setCheckable(true);
     ui->Eraser->setCheckable(true);
     ui->Fill->setCheckable(true);
+    ui->Pen->setChecked(true); // Set Pen as initially selected tool
 
-    // Set up FPS slider and spinbox
-    ui->FPSBox->setRange(1, 60);  // Set reasonable range for FPS (1-)
-    ui->FPS->setRange(1, 60);     // Match the slider range
-    ui->FPSBox->setValue(10);     // Default to 10 FPS
-    ui->FPS->setValue(10);        // Set matching default for slider
+    // Configure FPS controls
+    ui->FPSBox->setRange(1, 60);
+    ui->FPS->setRange(1, 60);
+    ui->FPSBox->setValue(10);
+    ui->FPS->setValue(10);
 
-
-
-    // Initial condition, pen selected
-    ui->Pen->setChecked(true);
-
+    // Remove canvas frame border
     ui->CanvasFrame->setStyleSheet("QFrame { border: none; }");
 
-
-    // Canvas setup
+    // Setup canvas and layout
     m_canvas = new Canvas(this, m_model);
-    setupUI();
-    m_frameList = ui->frameListWidget;
-    connectSignals();
-
     QGridLayout* canvasLayout = new QGridLayout(ui->CanvasFrame);
     canvasLayout->setContentsMargins(0, 0, 0, 0);
     canvasLayout->addWidget(m_canvas, 0, 0, Qt::AlignCenter);
 
+    // Set canvas size
     m_canvas->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     int canvasWidth = m_canvas->getCanvasWidth();
     int canvasHeight = m_canvas->getCanvasHeight();
     int pixelScale = 10;
     m_canvas->setFixedSize(canvasWidth * pixelScale, canvasHeight * pixelScale);
 
+    // Remove existing canvas if present
     if (ui->Canvas) {
         ui->Canvas->deleteLater();
     }
 
-    m_canvas->updateCanvas(m_currentFrame);
-    updateFrameList(m_model->getCurrentIndex());
-
-    // Connect the animation widget to the Preview area
+    // Setup animation preview
     m_animation = new Animation(ui->Preview);
     QVBoxLayout* previewLayout = new QVBoxLayout(ui->Preview);
     previewLayout->setContentsMargins(0, 0, 0, 0);
     previewLayout->addWidget(m_animation);
     m_animation->show();
-    m_animation->raise(); // Ensure it appears on top
+    m_animation->raise();
 
-    // Add existing frames to animation preview initially
+    // Add existing frames to animation preview
     for (int i = 0; i < m_model->getFramesListSize(); ++i) {
         m_animation->addFrame(m_model->getFrame(i));
     }
 
+    // Configure size spinner
     m_sizeSpinBox = ui->SizeBox;
     m_sizeSpinBox->setRange(32, 64);
     m_sizeSpinBox->setValue(m_model->getFramesListSize());
 }
 
-SpriteEditorView::~SpriteEditorView()
-{
-    delete ui;
-}
-
-void SpriteEditorView::setupUI() {}
-
 void SpriteEditorView::setupTools() {
     m_currentTool = m_model->getCurrentTool();
 }
 
-void SpriteEditorView::connectSignals()
-{
+void SpriteEditorView::connectSignals() {
     connect(m_penButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onPenClicked);
     connect(m_eraserButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onEraserClicked);
     connect(m_fillingButton, &QToolButton::clicked, m_controller, &SpriteEditorController::onFillingClicked);
@@ -156,10 +151,12 @@ void SpriteEditorView::connectSignals()
 
     connect(ui->FPS, &QSlider::valueChanged, ui->FPSBox, &QSpinBox::setValue);
     connect(ui->FPSBox, &QSpinBox::valueChanged, ui->FPS, &QSlider::setValue);
+
     // Connect the FPS slider to update the animation frame delay dynamically
     connect(ui->FPS, &QSlider::valueChanged, this, [this](int value) {
-        if (value > 0)
+        if (value > 0) {
             m_animation->setFrameRate(1000 / value);  // Calculate delay in milliseconds from FPS
+        }
     });
 
     // Connect save and load
@@ -170,11 +167,10 @@ void SpriteEditorView::connectSignals()
     // Clean button connection
     connect(m_cleanButton, &QPushButton::clicked, m_controller, &SpriteEditorController::onCleanButtonClicked);
 
-
     connect(this, &SpriteEditorView::colorSelected, m_controller, &SpriteEditorController::onColorSelected);
     connect(m_model, &SpriteEditorModel::colorChanged, this, &SpriteEditorView::onModelColorChanged);
 
-    //Redo/Undo connections
+    // Redo/Undo connections
     connect(ui->undoButton, &QPushButton::clicked, m_model->currentUndoStack(), &QUndoStack::undo);
     connect(ui->redoButton, &QPushButton::clicked, m_model->currentUndoStack(), &QUndoStack::redo);
 
@@ -188,31 +184,30 @@ void SpriteEditorView::connectSignals()
             this, &SpriteEditorView::updateUndoRedoConnections);
 
     updateUndoRedoConnections();
-
 }
 
-void SpriteEditorView::updateFrameList(int currentIndex)
-{
+void SpriteEditorView::updateFrameList(int currentIndex) {
     ui->frameListWidget->blockSignals(true);
     ui->frameListWidget->clear();
+
     for (int i = 0; i < m_model->getFramesListSize(); ++i) {
-        QListWidgetItem *item = new QListWidgetItem(QString("Frame %1").arg(i + 1), ui->frameListWidget);
+        QListWidgetItem* item = new QListWidgetItem(QString("Frame %1").arg(i + 1),
+                                                    ui->frameListWidget);
         item->setIcon(QIcon(":/icons/frame.png"));
     }
+
     ui->frameListWidget->setCurrentRow(currentIndex);
     updateCanvasDisplay();
     ui->frameListWidget->blockSignals(false);
 }
 
-// Slot to update the preview when Animation emits frameChanged signal
-void SpriteEditorView::updatePreviewFrame(const QImage &frame) {
+void SpriteEditorView::updatePreviewFrame(const QImage& frame) {
     if (m_animation) {
         m_animation->addFrame(frame);
         m_animation->update();
     }
 }
 
-// Slot called when the Play button is clicked
 void SpriteEditorView::onPlayButtonClicked() {
     if (m_animation) {
         m_animation->clearFrames();  // Clear any previously loaded frames
@@ -227,10 +222,10 @@ void SpriteEditorView::onPlayButtonClicked() {
     }
 }
 
-// Slot called when the Stop button is clicked
 void SpriteEditorView::onStopButtonClicked() {
-    if (m_animation)
+    if (m_animation) {
         m_animation->stop();  // Stop the animation playback
+    }
 }
 
 void SpriteEditorView::onAddFrameClicked() {
@@ -239,14 +234,17 @@ void SpriteEditorView::onAddFrameClicked() {
 
 void SpriteEditorView::onDeleteFrameClicked() {
     int index = m_model->getCurrentIndex();
+
     if (index >= 0) {
         emit deleteFrameRequested(index);
     }
+
     updateCanvasDisplay();
 }
 
 void SpriteEditorView::onMoveUpClicked() {
     int index = m_model->getCurrentIndex();
+
     if (index > 0) {
         emit moveFrameUpRequested(index);
         ui->frameListWidget->setCurrentRow(index - 1);
@@ -255,34 +253,38 @@ void SpriteEditorView::onMoveUpClicked() {
 
 void SpriteEditorView::onMoveDownClicked() {
     int index = m_model->getCurrentIndex();
+
     if (index >= 0 && index < ui->frameListWidget->count() - 1) {
         emit moveFrameDownRequested(index);
         ui->frameListWidget->setCurrentRow(index + 1);
     }
 }
 
-void SpriteEditorView::handleFrameChanged(){
+void SpriteEditorView::handleFrameChanged() {
     updateFrameList(m_model->getCurrentIndex());
     updateCanvasDisplay();
 }
 
 void SpriteEditorView::handleMousePressed(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_model->getCurrentColor());
+        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool,
+                         m_model->getCurrentColor());
         updateCanvasDisplay();
     }
 }
 
 void SpriteEditorView::handleMouseDragged(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_model->getCurrentColor());
+        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool,
+                         m_model->getCurrentColor());
         updateCanvasDisplay();
     }
 }
 
 void SpriteEditorView::handleMouseReleased(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool, m_model->getCurrentColor());
+        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool,
+                         m_model->getCurrentColor());
         updateCanvasDisplay();
     }
 }
@@ -292,13 +294,14 @@ void SpriteEditorView::updateCanvasDisplay() {
     ui->frameListWidget->setCurrentRow(m_model->getCurrentIndex());
 }
 
-void SpriteEditorView::onFrameSelectionChanged()
-{
+void SpriteEditorView::onFrameSelectionChanged() {
     int selectedRow = m_frameList->currentRow();
     qDebug() << "current row changed";
+
     if (selectedRow >= 0) {
         emit frameSelected(selectedRow);
     }
+
     updateCanvasDisplay();
 }
 
@@ -306,6 +309,7 @@ void SpriteEditorView::updateToolButtonStates() {
     ui->Pen->setChecked(false);
     ui->Eraser->setChecked(false);
     ui->Fill->setChecked(false);
+
     m_currentTool = m_model->getCurrentTool();
 
     switch (m_currentTool) {
@@ -313,10 +317,12 @@ void SpriteEditorView::updateToolButtonStates() {
         qDebug() << "Pen checked";
         ui->Pen->setChecked(true);
         break;
+
     case Tools::ToolType::Eraser:
         qDebug() << "Eraser checked";
         ui->Eraser->setChecked(true);
         break;
+
     case Tools::ToolType::Fill:
         qDebug() << "fill checked";
         ui->Fill->setChecked(true);
@@ -324,25 +330,25 @@ void SpriteEditorView::updateToolButtonStates() {
     }
 }
 
-void SpriteEditorView::onLoadButtonClicked(){
+void SpriteEditorView::onLoadButtonClicked() {
     emit loadClicked();
 
     // Sets the current frame to the first one and updates the GUI
-    QVector<QImage> m_frames = m_model->getFrames();
-    if (!m_frames.isEmpty()) {
-        m_currentFrame = m_frames[0];  // Set the first frame
-        updateFrameList(0);            // Update the frame list
-        updatePreviewFrame(m_currentFrame);
-        updateCanvasDisplay();         // Update the canvas with the first frame
+    QVector<QImage> frames = m_model->getFrames();
 
+    if (!frames.isEmpty()) {
+        m_currentFrame = frames[0];  // Set the first frame
+        updateFrameList(0);          // Update the frame list
+        updatePreviewFrame(m_currentFrame);
+        updateCanvasDisplay();       // Update the canvas with the first frame
     }
 }
 
-void SpriteEditorView::onSaveButtonClicked(){
+void SpriteEditorView::onSaveButtonClicked() {
     emit saveClicked();
 }
 
-void SpriteEditorView::onResizeClicked(){
+void SpriteEditorView::onResizeClicked() {
     int newSize = m_sizeSpinBox->value();
 
     if (newSize != m_model->getFrameSize().width()) {
@@ -350,8 +356,7 @@ void SpriteEditorView::onResizeClicked(){
     }
 }
 
-void SpriteEditorView::applyResize(int size)
-{
+void SpriteEditorView::applyResize(int size) {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Resize Canvas",
                                   QString("Resizing to %1x%1 will scale all frames. Continue?")
@@ -389,8 +394,6 @@ void SpriteEditorView::setupColorPalette() {
     colorLayout->setContentsMargins(8, 8, 8, 8);
     colorLayout->setSpacing(6);
     colorLayout->setAlignment(Qt::AlignCenter);
-
-
 
     // Add label
     QLabel* colorLabel = new QLabel("Color Palette", ui->ColorPanelFram);
@@ -430,7 +433,8 @@ void SpriteEditorView::setupColorPalette() {
         // Make it checkable and set style
         colorBtn->setCheckable(true);
         colorBtn->setStyleSheet("QToolButton { border: 1px solid darkgray; } "
-                                "QToolButton:checked { border: 2px solid black; background-color: lightgray; }");
+                                "QToolButton:checked { border: 2px solid black; "
+                                "background-color: lightgray; }");
 
         // Connect the button click to color selection
         connect(colorBtn, &QToolButton::clicked, this, [this, i]() {
@@ -447,8 +451,6 @@ void SpriteEditorView::setupColorPalette() {
             row++;
         }
     }
-
-
 
     // Add "Current Color" label on its own row, centered and spanning all columns
     QLabel* currentLabel = new QLabel("Current Color", ui->ColorPanelFram);
@@ -483,37 +485,9 @@ void SpriteEditorView::setupColorPalette() {
     updateSelectedColorButton(0);
 }
 
-// Note: With this implementation, you can remove the createColorButton method
-// since we're creating the buttons directly in the setupColorPalette method
-
-QToolButton* SpriteEditorView::createColorButton(const QColor& color, int index) {
-    QToolButton* button = new QToolButton(ui->ColorPanelFram);
-    button->setFixedSize(30, 30);
-
-    // Create a pixmap with the color
-    QPixmap pixmap(24, 24);
-    pixmap.fill(color);
-
-    // Set the pixmap as an icon
-    button->setIcon(QIcon(pixmap));
-    button->setIconSize(pixmap.size());
-    button->setProperty("colorIndex", index);
-
-    // Make it checkable for the selection indicator
-    button->setCheckable(true);
-
-    // Connect the button click to color selection
-    connect(button, &QToolButton::clicked, this, [this, index]() {
-        onColorSelected(index);
-    });
-
-    return button;
-}
-
-void SpriteEditorView::updateSelectedColorButton(int colorIndex)
-{
+void SpriteEditorView::updateSelectedColorButton(int colorIndex) {
     // Uncheck all buttons
-    for (QToolButton *btn : m_colorButtons) {
+    for (QToolButton* btn : m_colorButtons) {
         btn->setChecked(false);
     }
 
@@ -564,7 +538,7 @@ void SpriteEditorView::onModelColorChanged(const QColor& color) {
     }
 }
 
-void SpriteEditorView::updateUndoRedoConnections(){
+void SpriteEditorView::updateUndoRedoConnections() {
     QUndoStack* stack = m_model->currentUndoStack();
 
     // Disconnect previous stack's signals
@@ -596,75 +570,71 @@ void SpriteEditorView::updateUndoRedoConnections(){
     m_currentUndoStack = stack;
 }
 
-void SpriteEditorView::setupButtonIcons(){
+void SpriteEditorView::setupButtonIcons() {
     // Define icon size
     QSize iconSize(24, 24);
 
-    // Create icons from resource files
-    // You'll need to add these icons to a resources.qrc file
-
     // Tools
-    ui->Pen->setIcon(QIcon("://pen.png"));     // Image 7
+    ui->Pen->setIcon(QIcon("://pen.png"));
     ui->Pen->setText("");
     ui->Pen->setIconSize(iconSize);
     ui->Pen->setToolTip("Pen Tool");
 
-    ui->Eraser->setIcon(QIcon("://eraser.png"));   // Image 6
+    ui->Eraser->setIcon(QIcon("://eraser.png"));
     ui->Eraser->setText("");
     ui->Eraser->setIconSize(iconSize);
     ui->Eraser->setToolTip("Eraser Tool");
 
-    ui->Fill->setIcon(QIcon("://fill.png"));   // Image 8
+    ui->Fill->setIcon(QIcon("://fill.png"));
     ui->Fill->setText("");
     ui->Fill->setIconSize(iconSize);
     ui->Fill->setToolTip("Fill Tool");
 
     // Frame controls
-    ui->AddFrame->setIcon(QIcon("://plus.png"));    // Image 5
+    ui->AddFrame->setIcon(QIcon("://plus.png"));
     ui->AddFrame->setText("");
     ui->AddFrame->setIconSize(iconSize);
     ui->AddFrame->setToolTip("Add Frame");
 
-    ui->DeleteFrame->setIcon(QIcon("://minus.png"));  // Image 4
+    ui->DeleteFrame->setIcon(QIcon("://minus.png"));
     ui->DeleteFrame->setText("");
     ui->DeleteFrame->setIconSize(iconSize);
     ui->DeleteFrame->setToolTip("Delete Frame");
 
-    ui->moveUpFrameButton->setIcon(QIcon("://arrowUp.png"));    // Image 3
+    ui->moveUpFrameButton->setIcon(QIcon("://arrowUp.png"));
     ui->moveUpFrameButton->setText("");
     ui->moveUpFrameButton->setIconSize(iconSize);
     ui->moveUpFrameButton->setToolTip("Move Frame Up");
 
-    ui->moveDownFrameButton->setIcon(QIcon("://arrowDown.png"));    // Image 2
+    ui->moveDownFrameButton->setIcon(QIcon("://arrowDown.png"));
     ui->moveDownFrameButton->setText("");
     ui->moveDownFrameButton->setIconSize(iconSize);
     ui->moveDownFrameButton->setToolTip("Move Frame Down");
 
-    // Flip button
-    ui->Flip->setIcon(QIcon("://flip.png"));   // (You could use Image 1 for this)
+    ui->Flip->setIcon(QIcon("://flip.png"));
     ui->Flip->setText("");
     ui->Flip->setIconSize(iconSize);
     ui->Flip->setToolTip("Flip Horizontally");
 }
 
-
 void SpriteEditorView::applyTheme() {
+    // Font settings
     QFont arialFont("Arial", 9);
+    QFont mediumArialFont("Arial", 11);
+    QFont largeArialFont("Arial", 15);
     QApplication::setFont(arialFont);
-    QFont mediumArialFont("Arial", 11);  // Medium size
-    QFont largeArialFont("Arial", 15);   // Large size
 
-    // Color definition
-    QColor bgDark = QColor(35, 39, 42);         // Dark gray background
-    QColor bgMedium = QColor(44, 47, 51);       // Medium gray panels
-    QColor bgLight = QColor(54, 57, 63);        // Light gray elements
-    QColor accentPink = QColor(255, 115, 179);  // Pink accent for primary actions
-    QColor accentCyan = QColor(124, 232, 255);  // Cyan accent for secondary actions
-    QColor accentPurple = QColor(177, 158, 248);// Purple accent for highlights
-    QColor textLight = QColor(220, 224, 227);   // Light text
-    QColor borderDark = QColor(26, 29, 31);     // Dark border
+    // Color definitions
+    QColor bgDark = QColor(35, 39, 42);           // Dark gray background
+    QColor bgMedium = QColor(44, 47, 51);         // Medium gray panel
+    QColor bgLight = QColor(54, 57, 63);          // Light gray elements
+    QColor accentPink = QColor(255, 115, 179);    // Pink accent (primary action)
+    QColor accentCyan = QColor(124, 232, 255);    // Cyan accent (secondary action)
+    QColor accentPurple = QColor(177, 158, 248);  // Purple accent (highlight)
+    QColor textLight = QColor(220, 224, 227);     // Light text
+    QColor borderDark = QColor(26, 29, 31);       // Dark border
 
-    // Set the application palette
+    // Application palette setup
     QPalette palette;
     palette.setColor(QPalette::Window, bgDark);
     palette.setColor(QPalette::WindowText, textLight);
@@ -677,7 +647,7 @@ void SpriteEditorView::applyTheme() {
     palette.setColor(QPalette::HighlightedText, QColor(255, 255, 255));
     this->setPalette(palette);
 
-    // Frame styling with glowing accents
+    // Frame style - glow effect
     QString mainFrameStyle = QString("QFrame { "
                                      "  background-color: %1; "
                                      "  border: 1px solid %2; "
@@ -699,14 +669,12 @@ void SpriteEditorView::applyTheme() {
                                         "}")
                                     .arg(bgMedium.name(), accentCyan.name());
 
-    // Special styling for the color panel frame to make text visible
     QString colorPanelFrameStyle = QString("QFrame { "
                                            "  background-color: %1; "
                                            "  border: 1px solid %2; "
                                            "  border-radius: 5px; "
                                            "}")
                                        .arg(bgMedium.name(), accentPurple.name());
-
 
     // Apply frame styles
     ui->MainFrame->setStyleSheet(mainFrameStyle);
@@ -717,13 +685,13 @@ void SpriteEditorView::applyTheme() {
     ui->Tool->setStyleSheet(colorPanelFrameStyle);
     ui->frame->setStyleSheet(mainFrameStyle);
 
-    // Make color palette title more visible with specific styling
+    // Apply color palette title style
     QList<QLabel*> colorPanelLabels = ui->ColorPanelFram->findChildren<QLabel*>();
     for (QLabel* label : colorPanelLabels) {
         label->setStyleSheet("QLabel { color: rgb(255, 255, 255); font-weight: bold; font-size: 12px; }");
     }
 
-    // Style color buttons specifically for dark theme
+    // Apply color button styles
     QList<QToolButton*> colorButtons = ui->ColorPanelFram->findChildren<QToolButton*>();
     for (QToolButton* btn : colorButtons) {
         btn->setStyleSheet(
@@ -742,14 +710,12 @@ void SpriteEditorView::applyTheme() {
             );
     }
 
-
-
-
-    // Tool button styling with neon-like glow effects
+    // Tool button style - neon effect
     QString toolButtonStyle = QString("QToolButton { "
                                       "  background-color: %1; "
                                       "  border: 1px solid %2; "
                                       "  border-radius: 5px; "
+                                      "  color: white; "
                                       "} "
                                       "QToolButton:hover { "
                                       "  background-color: %3; "
@@ -780,8 +746,7 @@ void SpriteEditorView::applyTheme() {
     ui->Play->setStyleSheet(toolButtonStyle);
     ui->Stop->setStyleSheet(toolButtonStyle);
 
-
-    // Primary action button styling (pink)
+    // Main action button style (pink)
     QString pinkButtonStyle = QString("QPushButton { "
                                       "  background-color: %1; "
                                       "  color: rgb(35, 39, 42); "
@@ -800,11 +765,11 @@ void SpriteEditorView::applyTheme() {
                                        accentPink.lighter(110).name(),
                                        accentPink.darker(110).name());
 
-    // Apply to primary action buttons
+    // Apply to main action buttons
     ui->saveButton->setStyleSheet(pinkButtonStyle);
     ui->loadButton->setStyleSheet(pinkButtonStyle);
 
-    // Secondary action button styling (cyan)
+    // Secondary action button style (cyan)
     QString cyanButtonStyle = QString("QPushButton { "
                                       "  background-color: %1; "
                                       "  color: rgb(35, 39, 42); "
@@ -826,8 +791,7 @@ void SpriteEditorView::applyTheme() {
     // Apply to secondary action buttons
     ui->ResizeButton->setStyleSheet(cyanButtonStyle);
 
-
-    // Tertiary action button styling (purple)
+    // Tertiary action button style (purple)
     QString purpleButtonStyle = QString("QPushButton { "
                                         "  background-color: %1; "
                                         "  color: rgb(35, 39, 42); "
@@ -846,11 +810,12 @@ void SpriteEditorView::applyTheme() {
                                          accentPurple.lighter(110).name(),
                                          accentPurple.darker(110).name());
 
+    // Apply to tertiary action buttons
     ui->CleanButton->setStyleSheet(purpleButtonStyle);
     ui->undoButton->setStyleSheet(purpleButtonStyle);
     ui->redoButton->setStyleSheet(purpleButtonStyle);
 
-    // Style list widget with dark theme and glowing selection
+    // List widget style - dark theme with glow effect
     ui->frameListWidget->setStyleSheet(
         QString("QListWidget { "
                 "  background-color: %1; "
@@ -874,7 +839,7 @@ void SpriteEditorView::applyTheme() {
                  textLight.name(), accentPink.name(), bgLight.name())
         );
 
-    // Style spinboxes with dark theme
+    // Spinbox style - dark theme
     QString spinBoxStyle = QString(
                                "QSpinBox { "
                                "  background-color: %1; "
@@ -891,8 +856,7 @@ void SpriteEditorView::applyTheme() {
     ui->FPSBox->setStyleSheet(spinBoxStyle);
     ui->FPSFrame->setStyleSheet("QFrame { border: none; }");
 
-
-    // Style sliders with glowing effect
+    // Slider style - glow effect
     QString sliderStyle = QString("QSlider::groove:horizontal { "
                                   "  height: 6px; "
                                   "  background: %1; "
@@ -911,21 +875,19 @@ void SpriteEditorView::applyTheme() {
     ui->SizeLabel->setFont(largeArialFont);
     ui->FPS->setStyleSheet(sliderStyle);
 
-
     if (QLabel* fpsLabel = ui->FPSFrame->findChild<QLabel*>()) {
         fpsLabel->setFont(largeArialFont);
     }
 
-    // For the confirm button
-    if (ui->ResizeButton) ui->ResizeButton->setFont(mediumArialFont);
+    // Set confirm button font
+    if (ui->ResizeButton) {
+        ui->ResizeButton->setFont(mediumArialFont);
+    }
 
-
-    // Make labels stand out with bright text
+    // Label style - light text
     QList<QLabel*> labels = findChildren<QLabel*>();
     for (QLabel* label : labels) {
-
-        label->setStyleSheet("QLabel { color: rgb(255, 255, 255); font-weight: bold; border: none}");
+        label->setStyleSheet("QLabel { color: rgb(255, 255, 255); "
+                             "font-weight: bold; border: none}");
     }
 }
-
-

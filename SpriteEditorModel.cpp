@@ -4,13 +4,19 @@
 #include <QFile>
 #include <QPainter>
 
+/**
+ * @file SpriteEditorModel.cpp
+ * @brief Implementation file for the sprite editor model
+ * @details Contains implementations of the core data and logic
+ * @author Arthur Mo (main), Kirra Kostenburg (save/load), Jay Lee (Animation)
+ */
 
 SpriteEditorModel::SpriteEditorModel(QObject *parent)
     : QObject(parent),
     m_currentColor(Qt::black),
     m_frameSize(32, 32),
     m_currentTool(Tools::ToolType::Pen),
-    maxSize(64)
+    m_maxSize(64)
 {
     // Initialize first Frame and Undo Stack
     addFrame();
@@ -32,8 +38,10 @@ void SpriteEditorModel::addFrame() {
     m_frameUndoStacks.append(newStack);
 }
 
-void SpriteEditorModel::removeFrame(){
-    if(m_frames.size() <= 1) return;
+void SpriteEditorModel::removeFrame() {
+    if (m_frames.size() <= 1) {
+        return;
+    }
 
     const int index = m_currentFrameIndex;
 
@@ -42,70 +50,70 @@ void SpriteEditorModel::removeFrame(){
     m_frames.removeAt(index);
 
     // Update current index before emitting signals
-    if(index >= m_frames.size())
+    if (index >= m_frames.size()) {
         m_currentFrameIndex = m_frames.size() - 1;
+    }
 
     emit undoStackChanged();
     emit frameListChanged();
 }
 
-QImage& SpriteEditorModel::getFrame(int index){
+QImage& SpriteEditorModel::getFrame(int index) {
     Q_ASSERT(index >= 0 && index < m_frames.size());
     return m_frames[index];
 }
 
-int SpriteEditorModel::getFramesListSize(){
+int SpriteEditorModel::getFramesListSize() {
     return m_frames.size();
 }
 
 void SpriteEditorModel::setPixel(int x, int y) {
     QImage& currentFrame = getCurrentFrame();
-    if(x >= 0 && y >= 0 && x < m_frameSize.width() && y < m_frameSize.height()) {
+    if (x >= 0 && y >= 0 && x < m_frameSize.width() && y < m_frameSize.height()) {
         currentFrame.setPixelColor(x, y, m_currentColor);
-
     }
 }
 
-void SpriteEditorModel::setUndoPixelColor(const QPoint& pos, const QColor& color){
-    if(getCurrentFrame().rect().contains(pos)) {
+void SpriteEditorModel::setUndoPixelColor(const QPoint& pos, const QColor& color) {
+    if (getCurrentFrame().rect().contains(pos)) {
         getCurrentFrame().setPixelColor(pos, color);
         emit pixelsChanged();
     }
 }
 
-void SpriteEditorModel::setCurrentTool(Tools::ToolType tool){
+void SpriteEditorModel::setCurrentTool(Tools::ToolType tool) {
     m_currentTool = tool;
 }
 
-Tools::ToolType SpriteEditorModel::getCurrentTool(){
+Tools::ToolType SpriteEditorModel::getCurrentTool() {
     return m_currentTool;
 }
 
-int SpriteEditorModel::getCurrentIndex(){
+int SpriteEditorModel::getCurrentIndex() {
     return m_currentFrameIndex;
 }
 
-QColor SpriteEditorModel::getCurrentColor(){
+QColor SpriteEditorModel::getCurrentColor() {
     return m_currentColor;
 }
 
-QSize SpriteEditorModel::getFrameSize() const{
+QSize SpriteEditorModel::getFrameSize() const {
     return m_frameSize;
 }
 
-QSize SpriteEditorModel::getMaxSize () const{
-    return QSize(maxSize, maxSize);
+QSize SpriteEditorModel::getMaxSize() const {
+    return QSize(m_maxSize, m_maxSize);
 }
 
 void SpriteEditorModel::setCurrentFrame(int index) {
-    if(index >= 0 && index < m_frames.size()) {
+    if (index >= 0 && index < m_frames.size()) {
         m_currentFrameIndex = index;
         emit undoStackChanged();
         emit frameListChanged();
     }
 }
 
-QImage& SpriteEditorModel::getCurrentFrame(){
+QImage& SpriteEditorModel::getCurrentFrame() {
     return m_frames[m_currentFrameIndex];
 }
 
@@ -121,13 +129,13 @@ void SpriteEditorModel::moveFrameDown(int index) {
     }
 }
 
-void SpriteEditorModel::setCurrentColor(const QColor &color){
+void SpriteEditorModel::setCurrentColor(const QColor &color) {
     m_currentColor = color;
     emit colorChanged(color); // tells the UI
 }
 
 void SpriteEditorModel::resizeAllFrames(int newSize) {
-    if (newSize < 8 || newSize > maxSize) {
+    if (newSize < 8 || newSize > m_maxSize) {
         return;
     }
 
@@ -146,14 +154,14 @@ void SpriteEditorModel::resizeAllFrames(int newSize) {
     m_frameSize = newFrameSize;
 }
 
-
-void SpriteEditorModel::loadSprite(const QString& fileName)
-{
+void SpriteEditorModel::loadSprite(const QString& fileName) {
     // Implement loading logic here
     qDebug() << "Loading sprite from " << fileName;
 
     QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
 
     QByteArray data = file.readAll();
     file.close();
@@ -175,7 +183,8 @@ void SpriteEditorModel::loadSprite(const QString& fileName)
             QJsonArray row = rows[y].toArray();
             for (int x = 0; x < width; ++x) {
                 QJsonArray pixel = row[x].toArray();
-                QColor color(pixel[0].toInt(), pixel[1].toInt(), pixel[2].toInt(), pixel[3].toInt());
+                QColor color(pixel[0].toInt(), pixel[1].toInt(),
+                             pixel[2].toInt(), pixel[3].toInt());
                 frame.setPixelColor(x, y, color);
             }
         }
@@ -199,13 +208,12 @@ void SpriteEditorModel::loadSprite(const QString& fileName)
     qDebug() << "Loaded" << m_frames.size() << "frames";
 }
 
-
-void SpriteEditorModel::saveSprite(const QString& fileName)
-{
-    if (m_frames.empty()) return;
+void SpriteEditorModel::saveSprite(const QString& fileName) {
+    if (m_frames.empty()) {
+        return;
+    }
 
     QJsonObject spriteJson;
-
 
     int width = m_frames[0].width();
     int height = m_frames[0].height();
@@ -248,13 +256,12 @@ void SpriteEditorModel::saveSprite(const QString& fileName)
     }
 }
 
-QVector<QImage> SpriteEditorModel::getFrames(){
+QVector<QImage> SpriteEditorModel::getFrames() {
     return m_frames;
 }
 
 QUndoStack* SpriteEditorModel::currentUndoStack() const {
-    if(m_currentFrameIndex >= 0 &&
-        m_currentFrameIndex < m_frameUndoStacks.size()) {
+    if (m_currentFrameIndex >= 0 && m_currentFrameIndex < m_frameUndoStacks.size()) {
         return m_frameUndoStacks[m_currentFrameIndex];
     }
     // Create stack if missing (safety check)
@@ -265,7 +272,7 @@ QUndoStack* SpriteEditorModel::currentUndoStack() const {
 void SpriteEditorModel::setUndoLimit(int limit) {
     m_undoLimit = qBound(10, limit, 100);
 
-    for(QUndoStack* stack : std::as_const(m_frameUndoStacks)) {
+    for (QUndoStack* stack : std::as_const(m_frameUndoStacks)) {
         stack->setUndoLimit(m_undoLimit);
     }
 }

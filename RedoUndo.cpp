@@ -4,7 +4,7 @@
  * @details Handles storing and applying pixel color changes with undo/redo operations
  * @author Arthur Mo (main)
  *
- * Checked by Jason Chang
+ * Checked by Jason Chang, Kirra Kotsenburg
  */
 
 #include "RedoUndo.h"

@@ -7,7 +7,7 @@
  * @details Contains the core data and logic for the sprite editor
  * @author Arthur Mo (main), Kirra Kostenburg (save/load), Jay Lee (Animation)
  *
- * Checked by Jason Chang
+ * Checked by Jason Chang, Kirra Kotsenburg
  */
 
 #include <QObject>
@@ -66,7 +66,7 @@ public:
      */
     void moveFrameDown(int index);
 
-    // Frame Access
+    // -------------Frame Access-------------
     /**
      * @brief Gets a reference to a specific frame
      * @param index Frame index to retrieve
@@ -80,7 +80,7 @@ public:
      */
     int getFramesListSize();
 
-    // Pixel Editing
+    // -------------Pixel Editing-------------
     /**
      * @brief Sets pixel color at specified coordinates
      * @param x X coordinate (column)
@@ -157,16 +157,17 @@ public:
     QVector<QImage> getFrames();
 
     /**
-     * @brief Sets active frame by index
-     * @param index Frame to make active
-     */
-    void setCurrentFrame(int index);
-
-    /**
      * @brief Gets the current undo stack
      * @return Pointer to active QUndoStack
      */
     QUndoStack* currentUndoStack() const;
+
+    // -------------Setters-------------
+    /**
+     * @brief Sets active frame by index
+     * @param index Frame to make active
+     */
+    void setCurrentFrame(int index);
 
     /**
      * @brief Updates the current selected color
@@ -192,6 +193,7 @@ public:
      */
     void setUndoLimit(int limit);
 
+    // -------------Additional Handlers-------------
     /**
      * @brief Resizes all frames to a new size
      * @param newSize New size in pixels

@@ -10,7 +10,7 @@
  * @details Contains implementations of the core data and logic
  * @author Arthur Mo (main), Kirra Kostenburg (save/load), Jay Lee (Animation)
  *
- * Checked by Jason Chang
+ * Checked by Jason Chang, Kirra Kotsenburg
  */
 
 SpriteEditorModel::SpriteEditorModel(QObject *parent)

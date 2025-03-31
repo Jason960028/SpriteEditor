@@ -8,7 +8,7 @@
  * @file SpriteEditorController.cpp
  * @brief Implementation file for the sprite editor controller
  * @details Implements user interaction handling and coordinates model-view communication
- * @author Arthur (main), Jason Chang(Modification for additional features)
+ * @author Arthur (main), Jason Chang(Modification for additional features), Kirra Kotsenburg (save and load)
  *
  * Checked by Jay Lee, Kirra Kostenburg
  */

@@ -7,7 +7,7 @@
  * @details Manages frame-by-frame animations with customizable timing and display
  * @author Jay Lee
  *
- * Checked by Jason Chang, Arthur Mo
+ * Checked by Jason Chang, Arthur Mo, Kirra Kotsenburg
  */
 
 #include <QWidget>

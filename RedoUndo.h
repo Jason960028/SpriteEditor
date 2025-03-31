@@ -7,7 +7,7 @@
  * @details Implements QUndoCommand to handle pixel color changes with undo/redo capability
  * @author Arthur Mo (main)
  *
- * Checked by Jason Chang
+ * Checked by Jason Chang, Kirra Kotsenburg
  */
 
 #include <QUndoCommand>

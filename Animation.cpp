@@ -4,7 +4,7 @@
  * @details Handles frame display, animation timing, and rendering
  * @author Jay Lee
  *
- * Checked by Jason Chang, Arthur Mo
+ * Checked by Jason Chang, Arthur Mo, Kirra Kotsenburg
  */
 
 #include "Animation.h"
@@ -82,7 +82,6 @@ void Animation::updateFrame() {
 void Animation::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
-
 
     painter.fillRect(rect(), Qt::white);
 

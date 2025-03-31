@@ -8,7 +8,7 @@
  *
  * @author Jason Chang (main)
  *
- * Checked by Arthur Mo
+ * Checked by Arthur Mo, Kirra Kotsenburg
  */
 
 #include "Tools.h"

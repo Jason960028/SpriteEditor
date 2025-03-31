@@ -5,7 +5,7 @@
  * @file SpriteEditorController.h
  * @brief Header file for the sprite editor controller
  * @details Handles user input and coordinates between model and view components
- * @author Arthur (main), Jason Chang(Modification for additional features)
+ * @author Arthur (main), Jason Chang(Modification for additional features), Kirra Kotsenburg(save/load)
  *
  * Checked by Jay Lee, Kirra Kostenburg
  */

@@ -155,7 +155,7 @@ void SpriteEditorView::connectSignals() {
     // Connect the FPS slider to update the animation frame delay dynamically
     connect(ui->FPS, &QSlider::valueChanged, this, [this](int value) {
         if (value > 0) {
-            m_animation->setFrameRate(1000 / value);  // Calculate delay in milliseconds from FPS
+            m_animation->setFrameRate(value);  // Just pass the FPS value directly
         }
     });
 
@@ -216,6 +216,10 @@ void SpriteEditorView::onPlayButtonClicked() {
         for (int i = 0; i < m_model->getFramesListSize(); ++i) {
             m_animation->addFrame(m_model->getFrame(i));
         }
+
+        // Set the current FPS before playing
+        int currentFps = ui->FPSBox->value();
+        m_animation->setFrameRate(currentFps);
 
         // Start the animation playback
         m_animation->play();

@@ -181,7 +181,20 @@ void SpriteEditorModel::loadSprite(const QString& fileName)
         }
 
         m_frames.push_back(frame);
+
+        // Set up the undo stacks for the frames
+        QUndoStack* newStack = new QUndoStack(this);
+        newStack->setUndoLimit(m_undoLimit);
+        m_frameUndoStacks.append(newStack);
     }
+
+    m_frameSize = QSize(width, height);
+
+    // Set current frame index with ternary
+    m_currentFrameIndex = m_frames.isEmpty() ? -1 : 0;
+
+    emit undoStackChanged();
+    emit frameListChanged();
 
     qDebug() << "Loaded" << m_frames.size() << "frames";
 }

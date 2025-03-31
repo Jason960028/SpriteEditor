@@ -3,6 +3,8 @@
  * @brief Implementation of the Animation class
  * @details Handles frame display, animation timing, and rendering
  * @author Jay Lee
+ *
+ * Checked by Jason Chang, Arthur Mo
  */
 
 #include "Animation.h"

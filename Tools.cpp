@@ -7,6 +7,8 @@
  * The fill tool uses a breadth-first flood fill algorithm.
  *
  * @author Jason Chang (main)
+ *
+ * Checked by Arthur Mo
  */
 
 #include "Tools.h"

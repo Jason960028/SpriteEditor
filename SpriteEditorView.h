@@ -7,6 +7,8 @@
  * @details Implements the user interface for the sprite editor
  * @author Arthur (main), Jason Chang (Canvas implementations, Color panel),
  *         Kirra Kostenburg (save/load), Jay Lee (Animation, Layer)
+ *
+ * Checked by Jason Chang, Arthur Mo, Kirra Kostenburg, Jay Lee
  */
 
 #include <QListWidget>

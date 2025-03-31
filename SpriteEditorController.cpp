@@ -9,6 +9,8 @@
  * @brief Implementation file for the sprite editor controller
  * @details Implements user interaction handling and coordinates model-view communication
  * @author Arthur (main), Jason Chang(Modification for additional features)
+ *
+ * Checked by Jay Lee, Kirra Kostenburg
  */
 
 SpriteEditorController::SpriteEditorController(SpriteEditorModel* model, QObject* parent)

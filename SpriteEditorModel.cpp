@@ -9,6 +9,8 @@
  * @brief Implementation file for the sprite editor model
  * @details Contains implementations of the core data and logic
  * @author Arthur Mo (main), Kirra Kostenburg (save/load), Jay Lee (Animation)
+ *
+ * Checked by Jason Chang
  */
 
 SpriteEditorModel::SpriteEditorModel(QObject *parent)

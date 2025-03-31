@@ -7,7 +7,7 @@
  * @details Handles user input and coordinates between model and view components
  * @author Arthur (main), Jason Chang(Modification for additional features)
  *
- * Checked by Jay Lee
+ * Checked by Jay Lee, Kirra Kostenburg
  */
 
 #include <QObject>

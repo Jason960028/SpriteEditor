@@ -6,6 +6,8 @@
  * displaying a pixel grid, and managing mouse input to emit signals for user interaction.
  *
  * @author Jason Chang (main), Arthur Mo (Adjustments for redo/undo, Canvas Resizing)
+ *
+ * Checked by Arthur Mo, Kirra Kostenburg
  */
 
 #include "Canvas.h"

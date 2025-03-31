@@ -128,7 +128,7 @@ void SpriteEditorController::onSaveClicked(){
     QString fileName = QFileDialog::getSaveFileName(
         m_view,
         tr("Save File"),
-        "", // Optional default filename, e.g., "untitled.ssp"
+        "",
         tr("Spreadsheet Files (*.ssp)")
         );
 
@@ -153,6 +153,7 @@ void SpriteEditorController::onFlipHorizontalClicked() {
 void SpriteEditorController::onCleanButtonClicked() {
     if (m_model) {
         m_model->clearCurrentFrame();
+        m_model->clearCurrentUndoStack();
         emit currentFrameChanged();
     }
 }

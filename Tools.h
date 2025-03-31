@@ -77,7 +77,7 @@ public:
      * @param toolType The tool to use.
      * @param colorType The color to use (ignored for Eraser).
      */
-    static void applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color);
+    //static void applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color);
 
     /**
      * @brief Gets the color at the specified position.
@@ -94,6 +94,15 @@ public:
      * @param fillColor The color to fill with.
      */
     static void fillArea(QImage& image, const QPoint& startPos, const QColor& fillColor);
+
+    struct ToolResult {
+        QVector<QPoint> positions;
+        QVector<QColor> oldColors;
+        QColor newColor;
+    };
+
+    static ToolResult applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color);
+    static QVector<QPoint> getFillAreaPositions(const QImage& image, const QPoint& startPos, const QColor& targetColor);
 
 private:
     static QMap<ToolType, Tools*> m_tools;

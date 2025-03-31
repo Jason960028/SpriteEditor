@@ -113,21 +113,25 @@ void Canvas::updateCanvas(const QImage& frameImage) {
 
 void Canvas::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
-        m_isDrawing = true;
         QPoint pixelPos = screenToImagePos(event->pos());
+        Tools::ToolType currentTool = model ? model->getCurrentTool() : Tools::ToolType::Pen;
+
+        // Handle Fill tool exclusively in the View's handleMousePressed
+        if (currentTool == Tools::ToolType::Fill) {
+            emit mousePressed(pixelPos);
+            return;
+        }
+
+        m_isDrawing = true;
         m_lastPos = pixelPos;
         m_modifiedPixels.clear();
         m_modifiedPixels.append(pixelPos);
         m_oldColors.clear();
 
-        // Get tool-specific color
-        if (model->getCurrentTool() == Tools::ToolType::Eraser) {
-            m_newColor = Qt::transparent;
-        } else {
-            m_newColor = model->getCurrentColor();
-        }
+        m_newColor = (model->getCurrentTool() == Tools::ToolType::Eraser)
+                         ? Qt::transparent
+                         : model->getCurrentColor();
 
-        // Record original color
         QImage& frame = model->getCurrentFrame();
         m_oldColors.append(frame.pixelColor(pixelPos));
         emit mousePressed(pixelPos);
@@ -135,6 +139,10 @@ void Canvas::mousePressEvent(QMouseEvent* event) {
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent* event) {
+    Tools::ToolType currentTool = model ? model->getCurrentTool() : Tools::ToolType::Pen;
+    if (currentTool == Tools::ToolType::Fill) {
+        return;
+    }
     if ((event->buttons() & Qt::LeftButton) && m_isDrawing) {
         QPoint pixelPos = screenToImagePos(event->pos());
         if (pixelPos != m_lastPos) {
@@ -153,6 +161,12 @@ void Canvas::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void Canvas::mouseReleaseEvent(QMouseEvent* event) {
+    Tools::ToolType currentTool = model ? model->getCurrentTool() : Tools::ToolType::Pen;
+    if (currentTool == Tools::ToolType::Fill) {
+        emit mouseReleased(screenToImagePos(event->pos()));
+        return;
+    }
+
     if(event->button() == Qt::LeftButton && m_isDrawing) {
         m_isDrawing = false;
 

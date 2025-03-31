@@ -169,7 +169,7 @@ public:
     // a method only serves for Redo/Undo stack
     void setUndoPixelColor(const QPoint& pos, const QColor& color);
 
-
+    void clearCurrentUndoStack();
 
     // set the limitation for undo stack
     void setUndoLimit(int limit);

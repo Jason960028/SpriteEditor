@@ -5,7 +5,9 @@
  * @file RedoUndo.h
  * @brief Header file for the undo/redo command functionality in the sprite editor
  * @details Implements QUndoCommand to handle pixel color changes with undo/redo capability
- * @author Arthur (main)
+ * @author Arthur Mo (main)
+ *
+ * Checked by Jason Chang
  */
 
 #include <QUndoCommand>
@@ -25,28 +27,32 @@ public:
     /**
      * @brief Constructor for the undo/redo command
      * @param model Pointer to the sprite editor model
-     * @param positions of pixel positions affected
-     * @param oldColors of original colors before change
+     * @param positions Vector of pixel positions affected
+     * @param oldColors Vector of original colors before change
      * @param newColor The new color being applied
      * @param frameIndex Index of the frame being modified
      */
-    RedoUndoCommand(SpriteEditorModel* model, const QVector<QPoint>& positions, const QVector<QColor>& oldColors, const QColor& newColor, int frameIndex);
+    RedoUndoCommand(SpriteEditorModel* model, const QVector<QPoint>& positions,
+                    const QVector<QColor>& oldColors, const QColor& newColor,
+                    int frameIndex);
 
-    //Reverts the changes made by this command
+    /**
+     * @brief Reverts the changes made by this command
+     * @details Restores the original colors to the modified pixels
+     */
     void undo() override;
-    //Applies or reapplies the changes made by this command
+
+    /**
+     * @brief Applies or reapplies the changes made by this command
+     * @details Sets the new color to all affected pixels
+     */
     void redo() override;
 
 private:
-    // Pointer to the sprite editor model
     SpriteEditorModel* m_model;
-    // Positions of affected pixels
-    QVector<QPoint> m_positions;
-    // Original colors before change
-    QVector<QColor> m_oldColors;
-    // New color being applied
-    QColor m_newColor;
-    // Index of the frame being modified
+    QVector<QPoint> m_positions;    // Positions of affected pixels
+    QVector<QColor> m_oldColors;    // Original colors before change
+    QColor m_newColor;              // New color being applied
     int m_frameIndex;
 };
 

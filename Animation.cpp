@@ -1,29 +1,33 @@
+/**
+ * @file Animation.cpp
+ * @brief Implementation of the Animation class
+ * @details Handles frame display, animation timing, and rendering
+ * @author Jay Lee
+ */
+
 #include "Animation.h"
 #include <QPainter>
 
 Animation::Animation(QWidget *parent)
     : QWidget(parent),
     m_currentFrameIndex(0),
-    m_frameDelay(100) // Default frame delay: 100ms (~10 FPS)
+    m_fps(10) // Default 10 FPS
 {
     // Connect timer to frame update function
     connect(&m_timer, &QTimer::timeout, this, &Animation::updateFrame);
 }
 
-Animation::~Animation()
-{
+Animation::~Animation() {
     stop();
 }
 
-void Animation::addFrame(const QImage &frame)
-{
+void Animation::addFrame(const QImage &frame) {
     // Add a new frame and refresh the display
     m_frames.append(frame);
     update();
 }
 
-void Animation::clearFrames()
-{
+void Animation::clearFrames() {
     // Stop animation and clear all frames
     stop();
     m_frames.clear();
@@ -31,8 +35,7 @@ void Animation::clearFrames()
     update();
 }
 
-void Animation::showSingleFrame(const QImage &frame)
-{
+void Animation::showSingleFrame(const QImage &frame) {
     // Stop animation and display only a single frame (used for preview)
     stop();
     m_frames.clear();
@@ -41,48 +44,45 @@ void Animation::showSingleFrame(const QImage &frame)
     update();
 }
 
-void Animation::play()
-{
+void Animation::play() {
     // Start the animation if not already running
     if (!m_timer.isActive() && !m_frames.isEmpty()) {
-        m_timer.start(m_frameDelay);
+        int delay = m_fps > 0 ? 1000 / m_fps : 100;
+        m_timer.start(delay);
     }
 }
 
-void Animation::stop()
-{
+void Animation::stop() {
     // Stop the animation timer
     if (m_timer.isActive()) {
         m_timer.stop();
     }
 }
 
-void Animation::setFrameDelay(int delay)
-{
-    // Update delay between frames and restart the timer if necessary
-    m_frameDelay = delay;
+void Animation::setFrameRate(int fps) {
+    // Update fps and restart the timer if necessary
+    m_fps = fps;
     if (m_timer.isActive()) {
-        m_timer.start(m_frameDelay);
+        int delay = m_fps > 0 ? 1000 / m_fps : 100;
+        m_timer.start(delay);
     }
 }
 
-void Animation::updateFrame()
-{
-    // Advance to the next frame and repaint the widget
-    if (m_frames.isEmpty())
+void Animation::updateFrame() {
+    if (m_frames.isEmpty()) {
         return;
+    }
 
     m_currentFrameIndex = (m_currentFrameIndex + 1) % m_frames.size();
     update();
 }
 
-void Animation::paintEvent(QPaintEvent *event)
-{
+void Animation::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
 
-    // Fill background
-    painter.fillRect(rect(), Qt::gray);
+
+    painter.fillRect(rect(), Qt::white);
 
     if (!m_frames.isEmpty()) {
         // Draw the current frame, scaled and centered
@@ -91,7 +91,6 @@ void Animation::paintEvent(QPaintEvent *event)
         QPoint center = rect().center() - QPoint(scaled.width() / 2, scaled.height() / 2);
         painter.drawImage(center, scaled);
     } else {
-        // If no frames are available, show placeholder text
         painter.setPen(Qt::black);
         painter.drawText(rect(), Qt::AlignCenter, "No frames to display");
     }

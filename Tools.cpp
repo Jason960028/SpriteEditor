@@ -1,28 +1,25 @@
-#include "Tools.h"
-#include <QPainter>
-#include "SpriteEditorModel.h"
-
-
-// Static tool instances
-QMap<Tools::ToolType, Tools*> Tools::m_tools;
 /**
- * @file tools.cpp
+ * @file Tools.cpp
  * @brief Implements the Tools class, providing core drawing tool logic for the sprite editor.
  *
  * This file includes the implementation of pixel-editing tools such as Pen, Eraser,
  * and Fill, as well as utility functions to convert tool-specific types to Qt types.
  * The fill tool uses a breadth-first flood fill algorithm.
  *
- * @author Jason Chang
+ * @author Jason Chang (main)
  */
 
 #include "Tools.h"
+#include <QPainter>
 #include <QQueue>
 #include <QSet>
+#include "SpriteEditorModel.h"
+
+// Static tool instances
+QMap<Tools::ToolType, Tools*> Tools::m_tools;
 
 Tools::Tools() {
-
-
+    // Empty constructor
 }
 
 QColor Tools::getQColor(ColorType colorType) {
@@ -76,7 +73,7 @@ QColor Tools::getColorAt(const QImage& image, const QPoint& pos) {
 }
 
 void Tools::fillArea(QImage& image, const QPoint& startPos, const QColor& fillColor) {
-    // Get the color at the starting position — this is the target color to be replaced
+    // Get the color at the starting position
     QColor targetColor = image.pixelColor(startPos);
 
     // If the target color is the same as the fill color, there's nothing to do

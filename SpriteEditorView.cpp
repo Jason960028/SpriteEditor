@@ -10,6 +10,7 @@
 #include "canvas.h"
 #include <QVBoxLayout>
 #include "Animation.h"
+#include "RedoUndo.h"
 
 /**
  * @file SpriteEditorView.cpp
@@ -272,13 +273,25 @@ void SpriteEditorView::handleFrameChanged() {
 }
 
 void SpriteEditorView::handleMousePressed(const QPoint& pos) {
-    if (pos.x() >= 0 && pos.y() >= 0) {
-        Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool,
-                         m_model->getCurrentColor());
+    QImage& currentFrame = m_model->getCurrentFrame();
+    Tools::ToolResult result = Tools::applyTool(currentFrame, pos, m_currentTool, m_model->getCurrentColor());
+
+    if(m_currentTool == Tools::ToolType::Fill){
+        if (!result.positions.isEmpty()) {
+            RedoUndoCommand* cmd = new RedoUndoCommand(
+                m_model,
+                result.positions,
+                result.oldColors,
+                result.newColor,
+                m_model->getCurrentIndex()
+                );
+            m_model->currentUndoStack()->push(cmd);
+            updateCanvasDisplay();
+        }
+    }else{
         updateCanvasDisplay();
     }
 }
-
 void SpriteEditorView::handleMouseDragged(const QPoint& pos) {
     if (pos.x() >= 0 && pos.y() >= 0) {
         Tools::applyTool(m_model->getCurrentFrame(), pos, m_currentTool,

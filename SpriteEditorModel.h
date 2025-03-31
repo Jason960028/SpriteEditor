@@ -89,11 +89,16 @@ public:
     void setPixel(int x, int y);
 
     /**
-     * @brief Internal method for setting pixel color with undo/redo support
+     * @brief Method for setting pixel color with undo/redo support
      * @param pos Pixel position
      * @param color Color to set
      */
     void setUndoPixelColor(const QPoint& pos, const QColor& color);
+
+    /**
+     * @brief Method for clearing current undo stack
+     */
+    void clearCurrentUndoStack();
 
     // -------------File I/O-------------
     /**

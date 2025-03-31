@@ -309,3 +309,9 @@ void SpriteEditorModel::clearCurrentFrame() {
     currentFrame.fill(Qt::transparent);
     emit pixelsChanged();
 }
+
+void SpriteEditorModel::clearCurrentUndoStack() {
+    if (m_currentFrameIndex >= 0 && m_currentFrameIndex < m_frameUndoStacks.size()) {
+        m_frameUndoStacks[m_currentFrameIndex]->clear();
+    }
+}

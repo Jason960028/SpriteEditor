@@ -151,6 +151,7 @@ void SpriteEditorController::onFlipHorizontalClicked() {
 void SpriteEditorController::onCleanButtonClicked() {
     if (m_model) {
         m_model->clearCurrentFrame();
+        m_model->clearCurrentUndoStack();
         emit currentFrameChanged();
     }
 }

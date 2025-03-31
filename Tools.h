@@ -70,15 +70,6 @@ public:
     static QColor getQColor(ColorType colorType);
 
     /**
-     * @brief Applies a tool at a specific position.
-     * @param image The image to modify.
-     * @param pos The position to apply the tool.
-     * @param toolType The tool to use.
-     * @param color The color to use
-     */
-    static void applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color);
-
-    /**
      * @brief Gets the color at the specified position.
      * @param image The image to sample from.
      * @param pos The position to sample at.
@@ -93,6 +84,36 @@ public:
      * @param fillColor The color to fill with.
      */
     static void fillArea(QImage& image, const QPoint& startPos, const QColor& fillColor);
+
+
+    /**
+     * @struct ToolResult
+     * @brief Contains the result of applying a tool to an image.
+     */
+    struct ToolResult {
+        QVector<QPoint> positions;  // The positions affected by the tool
+        QVector<QColor> oldColors;  // The original colors at the affected positions
+        QColor newColor;            // The new color applied
+    };
+
+    /**
+     * @brief Applies the specified tool at the given position.
+     * @param image The image to modify.
+     * @param pos The position to apply the tool at.
+     * @param toolType The type of tool to apply.
+     * @param color The color to use with the tool.
+     * @return A ToolResult containing information about the changes made.
+     */
+    static ToolResult applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color);
+
+    /**
+     * @brief Gets the positions that would be filled by a fill operation.
+     * @param image The image to analyze.
+     * @param startPos The starting position for the fill.
+     * @param targetColor The color to replace.
+     * @return A vector of positions that would be filled.
+     */
+    static QVector<QPoint> getFillAreaPositions(const QImage& image, const QPoint& startPos, const QColor& targetColor);
 
 private:
     static QMap<ToolType, Tools*> m_tools;

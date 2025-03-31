@@ -46,24 +46,84 @@ QColor Tools::getQColor(ColorType colorType) {
     }
 }
 
-void Tools::applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color) {
-    // Check if position is within image bounds
-    if (pos.x() < 0 || pos.x() >= image.width() ||
-        pos.y() < 0 || pos.y() >= image.height()) {
-        return;
+Tools::ToolResult Tools::applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color) {
+    ToolResult result;
+    result.newColor = color;
+
+    if (pos.x() < 0 || pos.x() >= image.width() || pos.y() < 0 || pos.y() >= image.height()) {
+        return result;
     }
 
     switch (toolType) {
-    case ToolType::Pen:
+    case ToolType::Pen: {
+        QColor oldColor = image.pixelColor(pos);
         image.setPixelColor(pos, color);
-        break;
-    case ToolType::Eraser:
-        image.setPixelColor(pos, Qt::transparent);
-        break;
-    case ToolType::Fill:
-        fillArea(image, pos, color);
+        result.positions.append(pos);
+        result.oldColors.append(oldColor);
+        result.newColor = color;
         break;
     }
+    case ToolType::Eraser: {
+        QColor oldColor = image.pixelColor(pos);
+        image.setPixelColor(pos, Qt::transparent);
+        result.positions.append(pos);
+        result.oldColors.append(oldColor);
+        result.newColor = Qt::transparent;
+        break;
+    }
+    case ToolType::Fill: {
+        QColor targetColor = image.pixelColor(pos);
+        if (targetColor == color) return result;
+
+        QVector<QPoint> filledPositions = getFillAreaPositions(image, pos, targetColor);
+        result.positions = filledPositions;
+        result.oldColors.reserve(filledPositions.size());
+        for (const auto& p : filledPositions) {
+            result.oldColors.append(targetColor);
+        }
+
+        for (const auto& p : filledPositions) {
+            image.setPixelColor(p, color);
+        }
+
+        break;
+    }
+    }
+
+    return result;
+}
+
+QVector<QPoint> Tools::getFillAreaPositions(const QImage& image, const QPoint& startPos, const QColor& targetColor) {
+    QVector<QPoint> positions;
+    if (image.pixelColor(startPos) != targetColor) return positions;
+
+    QQueue<QPoint> queue;
+    QSet<QPoint> visited;
+
+    queue.enqueue(startPos);
+    visited.insert(startPos);
+
+    int dx[] = {0, 1, 0, -1};
+    int dy[] = {-1, 0, 1, 0};
+
+    while (!queue.isEmpty()) {
+        QPoint current = queue.dequeue();
+        positions.append(current);
+
+        for (int i = 0; i < 4; ++i) {
+            QPoint next(current.x() + dx[i], current.y() + dy[i]);
+            if (next.x() < 0 || next.x() >= image.width() ||
+                next.y() < 0 || next.y() >= image.height() ||
+                visited.contains(next) ||
+                image.pixelColor(next) != targetColor) {
+                continue;
+            }
+            queue.enqueue(next);
+            visited.insert(next);
+        }
+    }
+
+    return positions;
 }
 
 QColor Tools::getColorAt(const QImage& image, const QPoint& pos) {

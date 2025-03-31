@@ -1,8 +1,13 @@
-# Sprite Editor 🎨
+# Sprite Editor 
+
+## Overview
 
 The Sprite Editor is a tool for creating and animating pixelated sprites. From simple graphics tools to animation previews, it is a great tool for 2D game development or pixel art.
-
-## Main features 
+- Draw pixel on canvas with tools
+- Add or delete frame to make animation.
+- Save and load the work as a .ssp file.
+  
+## Features 
 - Pen tool: Click on any pixel to draw on canvs.  
 - Eraser Tool: Erase pixels.  
 - Fill tool: Fill the same color area at once.  
@@ -14,11 +19,16 @@ The Sprite Editor is a tool for creating and animating pixelated sprites. From s
 - Canvas Resize: Change the canvas to the desired pixel size.  
 - Canvas Clean function: Reset the current frame.
 
-## Technology used
-- The Framework: Qt  
-- Language: C++ 
+## Requirements
+Download QT Creator app. And build this project.
 
 ## How to run
-1. make sure you have Qt installed.
-2. Download the zip file and load it at the QT. 
-3. Run the project
+1. make sure you have QT installed.
+2. Download the zip file and load it at the QT.
+3. Build this project
+4. Run the project
+
+## Technology used
+- The Framework: QT  
+- Language: C++ 
+

@@ -41,11 +41,10 @@ To run the program, install QT and clone this repo as a new project.
   - QFileDialog for file operations.
   - QJsonDocument/QJsonObject for file serialization.
 
-  **Architecture Pattern**
-    Model-View-Controller architecture
-    - SpriteEditorModel: Manages data and business logic.
-    - SpriteEditorView: handles UI and user interaction.
-    - SpriteEditorController: Coordinates between model and view.
+  **Architecture Pattern MVC**
+  - SpriteEditorModel: Manages data and business logic.
+  - SpriteEditorView: handles UI and user interaction.
+  - SpriteEditorController: Coordinates between model and view.
 
   **Build System**
   - QMake

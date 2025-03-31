@@ -2,7 +2,8 @@
 
 The Sprite Editor is a tool for creating and animating pixelated sprites. From simple graphics tools to animation previews, it is a great tool for 2D game development or pixel art.
 
-## Main features - Pen tool: Click on any pixel to draw on canvs.  
+## Main features 
+- Pen tool: Click on any pixel to draw on canvs.  
 - Eraser Tool: Erase pixels.  
 - Fill tool: Fill the same color area at once.  
 - Flip Canvas: Flip the image of the current canvas.  

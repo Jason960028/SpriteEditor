@@ -3,9 +3,9 @@
 
 /**
  * @file SpriteEditorController.h
- * @brief
- *
- * @author Arthur(main)
+ * @brief Header file for the sprite editor controller
+ * @details Handles user input and coordinates between model and view components
+ * @author Arthur (main)
  */
 
 #include <QObject>
@@ -15,19 +15,32 @@
 class SpriteEditorModel;
 class SpriteEditorView;
 
+/**
+ * @class SpriteEditorController
+ * @brief Controller class for the sprite editor application
+ * @details Manages user interactions and coordinates between model and view
+ */
 class SpriteEditorController : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * @brief Constructor for the sprite editor controller
+     * @param model Pointer to the sprite editor model
+     * @param parent Parent QObject
+     */
     explicit SpriteEditorController(SpriteEditorModel* model, QObject* parent = nullptr);
 
 
-    // Frame operations
+    // Animation control methods
 
-
-    // Animation control
+    // Starts the animation playback
     void playAnimation();
+
+    // Stops the animation playback
     void stopAnimation();
+
+    // Sets the view component
     void setView(SpriteEditorView* view);
 
 signals:
@@ -72,23 +85,39 @@ public slots:
     // slot to move to next frame
     void moveFrameDown(int index);
 
+    // slot to handle load clicked
     void onLoadClicked();
+
+    // slot to handle save clicked
     void onSaveClicked();
 
+    // slot to handle color selection
     void onColorSelected(const QColor& color);
 
+    // slot to handle filp clicked
     void onFlipHorizontalClicked();
 
+    // slot to handle clean clicked
     void onCleanButtonClicked();
 
 
 
 
 private:
+
+    // Updates the state of tool buttons in the UI
     void updateToolButtonStates();
+
+    // Pointer to the model component
     SpriteEditorModel* m_model;
+
+    // Currently selected tool
     Tools::ToolType m_currentTool;
+
+    // Parent widget
     QWidget* m_parentWidget;
+
+    // Pointer to the view component
     SpriteEditorView* m_view = nullptr;
 };
 

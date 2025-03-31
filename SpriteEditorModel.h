@@ -3,9 +3,9 @@
 
 /**
  * @file SpriteEditorModel.h
- * @brief
- *
- * @author Arthur Mo(main), Kirra Kostenburg(save/load), Jay Lee(Animation)
+ * @brief Header file for the sprite editor model
+ * @details Contains the core data and business logic for the sprite editor
+ * @author Arthur Mo (main), Kirra Kostenburg (save/load), Jay Lee (Animation)
  */
 
 #include <QObject>
@@ -16,6 +16,11 @@
 #include "tools.h"
 #include <QUndoStack>
 
+/**
+ * @class SpriteEditorModel
+ * @brief Model class for the sprite editor application
+ * @details Manages the sprite data, frame storage, and editing operations
+ */
 class SpriteEditorModel : public QObject {
     Q_OBJECT
 
@@ -23,46 +28,140 @@ class SpriteEditorModel : public QObject {
 public:
     explicit SpriteEditorModel(QObject* parent = nullptr);
 
-    // create a new project
+    // Project Management
+    /**
+     * @brief Creates a new sprite project with specified dimensions
+     * @param width Width of the sprite canvas
+     * @param height Height of the sprite canvas
+     */
     void createNewProject(int width, int height);
 
-    // add new frame
+    /**
+     * @brief Adds a new transparent frame to the sprite
+     * @details Creates both a new QImage frame and associated QUndoStack
+     */
     void addFrame();
 
-    // remove the current frame
+    /**
+     * @brief Removes the current frame from the sprite
+     * @details Maintains at least one frame. Updates current frame index if needed.
+     */
     void removeFrame();
-    // handle move up
+
+    // Frame Navigation
+    /**
+     * @brief Moves frame focus up in the sequence
+     * @param index Current frame index
+     */
     void moveFrameUp(int index);
-    // handle move down
+
+    /**
+     * @brief Moves frame focus down in the sequence
+     * @param index Current frame index
+     */
     void moveFrameDown(int index);
 
-    // get the selected frame by index
+    // Frame Access
+    /**
+     * @brief Gets a reference to a specific frame
+     * @param index Frame index to retrieve
+     * @return Reference to the requested QImage frame
+     */
     QImage& getFrame(int index);
 
-    //get the framesList size
+    /**
+     * @brief Gets the number of frames in the sprite
+     * @return Current frame count
+     */
     int getFramesListSize();
 
-    // update the pixel color with the provided position
+    // Pixel Editing
+    /**
+     * @brief Sets pixel color at specified coordinates
+     * @param x X coordinate (column)
+     * @param y Y coordinate (row)
+     */
     void setPixel(int x, int y);
 
+    /**
+     * @brief Internal method for setting pixel color with undo/redo support
+     * @param pos Pixel position
+     * @param color Color to set
+     */
     void extracted(int &width, int &height, QJsonArray &framesArray);
+
+    // File I/O
+    /**
+     * @brief Loads sprite from JSON file
+     * @param fileName Path to sprite file
+     */
     void loadSprite(const QString &fileName);
 
+    /**
+     * @brief Saves sprite to JSON file
+     * @param fileName Destination file path
+     */
     void saveSprite(const QString& fileName);
 
-    // return current Canvas size (for new frame usage)
+    // Getters
+    /**
+     * @brief Gets current canvas dimensions
+     * @return Size of frames in pixels
+     */
     QSize getFrameSize() const;
 
-    void setFrameSize(int size);
+    /**
+     * @brief Gets current Frame
+     * @return current frame reference
+     */
+    QImage& getCurrentFrame();
 
-    // use index to change current frame
+    /**
+     * @brief Gets maximum allowed canvas size
+     * @return Maximum dimensions in pixels
+     */
+    QSize getMaxSize() const;
+
+    /**
+     * @brief Gets current editing tool
+     * @return Active tool type
+     */
+    Tools::ToolType getCurrentTool();
+
+    /**
+     * @brief Gets current drawing color
+     * @return Active color
+     */
+    QColor getCurrentColor();
+
+    /**
+     * @brief Gets current frame index
+     * @return Index of active frame
+     */
+    int getCurrentIndex();
+
+    /**
+     * @brief Gets all frames as a vector
+     * @return Copy of frame collection
+     */
+    QVector<QImage> getFrames();
+
+    /**
+     * @brief Sets active frame by index
+     * @param index Frame to make active
+     */
     void setCurrentFrame(int index);
 
-    //get current frame
-    QImage& getCurrentFrame();
+    /**
+     * @brief Gets the current undo stack
+     * @return Pointer to active QUndoStack
+     */
+    QUndoStack* currentUndoStack() const;
 
     // slot to update the current selected color
     void setCurrentColor(const QColor &color);
+
+    void setFrameSize(int size);
 
     // set the tool to current tool
     void setCurrentTool(Tools::ToolType tool);
@@ -70,26 +169,14 @@ public:
     // a method only serves for Redo/Undo stack
     void setUndoPixelColor(const QPoint& pos, const QColor& color);
 
-    //get the maxium size of canvas
-    QSize getMaxSize() const;
+
 
     // set the limitation for undo stack
     void setUndoLimit(int limit);
 
-    // access the currentUndoStack
-    QUndoStack* currentUndoStack() const;
 
-    // get the Tool from model
-    Tools::ToolType getCurrentTool();
 
-    //getCurrentColor
-    QColor getCurrentColor();
 
-    //get current index
-    int getCurrentIndex();
-
-    // return the frame list
-    QVector<QImage> getFrames();
 
     // resize all frames
     void resizeAllFrames(int newSize);

@@ -8,16 +8,15 @@
  * @author Arthur(main), Jason Chang(Canvas implementations, Color panel), Kirra Kostenburg(save/load), Jay Lee(Animation, Layer)
  */
 
-#include <QMainWindow>
-#include "SpriteEditorModel.h"
-#include "SpriteEditorController.h"
-#include "canvas.h"
-#include "tools.h"
-#include "Animation.h"
 #include <QListWidget>
+#include <QMainWindow>
 #include <QPushButton>
 #include <QSpinBox>
-#include <QPushButton>
+#include "Animation.h"
+#include "SpriteEditorController.h"
+#include "SpriteEditorModel.h"
+#include "canvas.h"
+#include "tools.h"
 
 class QToolButton;
 
@@ -30,18 +29,15 @@ class SpriteEditorView : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit SpriteEditorView(SpriteEditorModel* model,
-                              SpriteEditorController* controller,
-                              QWidget* parent = nullptr);
+    explicit SpriteEditorView(SpriteEditorModel *model,
+                              SpriteEditorController *controller,
+                              QWidget *parent = nullptr);
     ~SpriteEditorView();
 
     // method to update Canvas
     void updateCanvasDisplay();
     // method to resize Canvas
     void applyResize(int size);
-
-
-
 
 signals:
     void addFrameRequested();
@@ -51,18 +47,15 @@ signals:
     void frameSelected(int index);
     void loadClicked();
     void saveClicked();
-    void colorSelected(const QColor& color);
-
-
-
+    void colorSelected(const QColor &color);
 
 private slots:
 
-    void handleMousePressed(const QPoint& pos);
+    void handleMousePressed(const QPoint &pos);
 
-    void handleMouseDragged(const QPoint& pos);
+    void handleMouseDragged(const QPoint &pos);
 
-    void handleMouseReleased(const QPoint& pos);
+    void handleMouseReleased(const QPoint &pos);
     //handle the Canvas update when frame changed
     void handleFrameChanged();
 
@@ -83,8 +76,6 @@ private slots:
     // slot to handle resize
     void onResizeClicked();
 
-
-
     // Slot to update the preview when Animation emits frameChanged signal
     void updatePreviewFrame(const QImage &frame);
 
@@ -97,7 +88,7 @@ private slots:
     void onSaveButtonClicked();
 
     void onColorSelected(int colorIndex);
-    void onModelColorChanged(const QColor& color);
+    void onModelColorChanged(const QColor &color);
     void updateSelectedColorButton(int colorIndex);
 
     void updateUndoRedoConnections();
@@ -106,12 +97,15 @@ private:
     void setupUI();
     void setupTools();
     void connectSignals();
+    void setupButtonIcons();
+    void applyTheme();
 
-    Ui::SpriteEditorView* ui;
 
-    SpriteEditorModel* m_model;
-    SpriteEditorController* m_controller;
-    Canvas* m_canvasWidget;
+    Ui::SpriteEditorView *ui;
+
+    SpriteEditorModel *m_model;
+    SpriteEditorController *m_controller;
+    Canvas *m_canvasWidget;
 
     // Tool
     Tools::ToolType m_currentTool;
@@ -120,40 +114,37 @@ private:
 
     QColor m_currentColor;
 
-    Canvas*  m_canvas;
+    Canvas *m_canvas;
 
-    QAction* undoAction;
-    QAction* redoAction;
+    QAction *undoAction;
+    QAction *redoAction;
 
     // UI Elements
-    QToolButton* m_penButton;
-    QToolButton* m_eraserButton;
-    QToolButton* m_fillingButton;
-    QToolButton* m_addFrameButton;
-    QToolButton* m_deleteFrameButton;
-    QToolButton* m_playButton;
-    QToolButton* m_stopButton;
-    QToolButton* m_flipButton;
-    QPushButton* m_loadButton;
-    QPushButton* m_saveButton;
-    QPushButton* m_cleanButton;
-    QListWidget* m_frameList;
-    QSpinBox* m_sizeSpinBox;
-    QPushButton* m_resizeButton;
-    QWidget* m_ui;
-    QUndoStack* m_currentUndoStack;
-
+    QToolButton *m_penButton;
+    QToolButton *m_eraserButton;
+    QToolButton *m_fillingButton;
+    QToolButton *m_addFrameButton;
+    QToolButton *m_deleteFrameButton;
+    QToolButton *m_playButton;
+    QToolButton *m_stopButton;
+    QToolButton *m_flipButton;
+    QPushButton *m_loadButton;
+    QPushButton *m_saveButton;
+    QPushButton *m_cleanButton;
+    QListWidget *m_frameList;
+    QSpinBox *m_sizeSpinBox;
+    QPushButton *m_resizeButton;
+    QWidget *m_ui;
+    QUndoStack *m_currentUndoStack;
 
     // Animation object (for frame preview)
-    Animation* m_animation;
+    Animation *m_animation;
     QImage m_previewImage;
 
-    QVector<QToolButton*> m_colorButtons;
-    QFrame* m_currentColorFrame;
+    QVector<QToolButton *> m_colorButtons;
+    QFrame *m_currentColorFrame;
     void setupColorPalette();
-    QToolButton* createColorButton(const QColor& color, int index);
+    QToolButton *createColorButton(const QColor &color, int index);
 };
 
 #endif // SPRITEEDITORVIEW_H
-
-

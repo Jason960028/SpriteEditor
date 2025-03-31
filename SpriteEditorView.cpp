@@ -26,6 +26,8 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     ui->setupUi(this);
 
     setupColorPalette();
+    setupButtonIcons();
+    applyTheme();
 
     m_penButton = findChild<QToolButton*>("Pen");
     m_eraserButton = findChild<QToolButton*>("Eraser");
@@ -57,19 +59,19 @@ SpriteEditorView::SpriteEditorView(SpriteEditorModel* model,
     ui->Eraser->setCheckable(true);
     ui->Fill->setCheckable(true);
 
-    QString toolButtonStyle =
-        "QToolButton { border: 1px solid darkgray; } "
-        "QToolButton:checked { border: 2px solid blue; }";
+    // Set up FPS slider and spinbox
+    ui->FPSBox->setRange(1, 60);  // Set reasonable range for FPS (1-)
+    ui->FPS->setRange(1, 60);     // Match the slider range
+    ui->FPSBox->setValue(10);     // Default to 10 FPS
+    ui->FPS->setValue(10);        // Set matching default for slider
 
-    ui->Pen->setStyleSheet(toolButtonStyle);
-    ui->Eraser->setStyleSheet(toolButtonStyle);
-    ui->Fill->setStyleSheet(toolButtonStyle);
+
 
     // Initial condition, pen selected
     ui->Pen->setChecked(true);
 
     ui->CanvasFrame->setStyleSheet("QFrame { border: none; }");
-    ui->SizeFrame->setStyleSheet("QFrame { border: none; }");
+
 
     // Canvas setup
     m_canvas = new Canvas(this, m_model);
@@ -152,6 +154,8 @@ void SpriteEditorView::connectSignals()
     // Connect the Stop button to the slot that stops the animation
     connect(ui->Stop, &QPushButton::clicked, this, &SpriteEditorView::onStopButtonClicked);
 
+    connect(ui->FPS, &QSlider::valueChanged, ui->FPSBox, &QSpinBox::setValue);
+    connect(ui->FPSBox, &QSpinBox::valueChanged, ui->FPS, &QSlider::setValue);
     // Connect the FPS slider to update the animation frame delay dynamically
     connect(ui->FPS, &QSlider::valueChanged, this, [this](int value) {
         if (value > 0)
@@ -506,9 +510,10 @@ QToolButton* SpriteEditorView::createColorButton(const QColor& color, int index)
     return button;
 }
 
-void SpriteEditorView::updateSelectedColorButton(int colorIndex) {
+void SpriteEditorView::updateSelectedColorButton(int colorIndex)
+{
     // Uncheck all buttons
-    for (QToolButton* btn : m_colorButtons) {
+    for (QToolButton *btn : m_colorButtons) {
         btn->setChecked(false);
     }
 
@@ -519,6 +524,12 @@ void SpriteEditorView::updateSelectedColorButton(int colorIndex) {
 
     // Update the current color frame
     if (m_currentColorFrame) {
+        // Update the stylesheet with the new color
+        QString colorStyle = QString("QFrame { background-color: %1; border: 1px solid black; }")
+                                 .arg(m_currentColor.name());
+        m_currentColorFrame->setStyleSheet(colorStyle);
+
+        // Also update the palette for backup approach
         QPalette pal = m_currentColorFrame->palette();
         pal.setColor(QPalette::Window, m_currentColor);
         m_currentColorFrame->setPalette(pal);
@@ -584,4 +595,337 @@ void SpriteEditorView::updateUndoRedoConnections(){
 
     m_currentUndoStack = stack;
 }
+
+void SpriteEditorView::setupButtonIcons(){
+    // Define icon size
+    QSize iconSize(24, 24);
+
+    // Create icons from resource files
+    // You'll need to add these icons to a resources.qrc file
+
+    // Tools
+    ui->Pen->setIcon(QIcon("://pen.png"));     // Image 7
+    ui->Pen->setText("");
+    ui->Pen->setIconSize(iconSize);
+    ui->Pen->setToolTip("Pen Tool");
+
+    ui->Eraser->setIcon(QIcon("://eraser.png"));   // Image 6
+    ui->Eraser->setText("");
+    ui->Eraser->setIconSize(iconSize);
+    ui->Eraser->setToolTip("Eraser Tool");
+
+    ui->Fill->setIcon(QIcon("://fill.png"));   // Image 8
+    ui->Fill->setText("");
+    ui->Fill->setIconSize(iconSize);
+    ui->Fill->setToolTip("Fill Tool");
+
+    // Frame controls
+    ui->AddFrame->setIcon(QIcon("://plus.png"));    // Image 5
+    ui->AddFrame->setText("");
+    ui->AddFrame->setIconSize(iconSize);
+    ui->AddFrame->setToolTip("Add Frame");
+
+    ui->DeleteFrame->setIcon(QIcon("://minus.png"));  // Image 4
+    ui->DeleteFrame->setText("");
+    ui->DeleteFrame->setIconSize(iconSize);
+    ui->DeleteFrame->setToolTip("Delete Frame");
+
+    ui->moveUpFrameButton->setIcon(QIcon("://arrowUp.png"));    // Image 3
+    ui->moveUpFrameButton->setText("");
+    ui->moveUpFrameButton->setIconSize(iconSize);
+    ui->moveUpFrameButton->setToolTip("Move Frame Up");
+
+    ui->moveDownFrameButton->setIcon(QIcon("://arrowDown.png"));    // Image 2
+    ui->moveDownFrameButton->setText("");
+    ui->moveDownFrameButton->setIconSize(iconSize);
+    ui->moveDownFrameButton->setToolTip("Move Frame Down");
+
+    // Flip button
+    ui->Flip->setIcon(QIcon("://flip.png"));   // (You could use Image 1 for this)
+    ui->Flip->setText("");
+    ui->Flip->setIconSize(iconSize);
+    ui->Flip->setToolTip("Flip Horizontally");
+}
+
+
+void SpriteEditorView::applyTheme() {
+    QFont arialFont("Arial", 9);
+    QApplication::setFont(arialFont);
+    QFont mediumArialFont("Arial", 11);  // Medium size
+    QFont largeArialFont("Arial", 15);   // Large size
+
+    // Color definition
+    QColor bgDark = QColor(35, 39, 42);         // Dark gray background
+    QColor bgMedium = QColor(44, 47, 51);       // Medium gray panels
+    QColor bgLight = QColor(54, 57, 63);        // Light gray elements
+    QColor accentPink = QColor(255, 115, 179);  // Pink accent for primary actions
+    QColor accentCyan = QColor(124, 232, 255);  // Cyan accent for secondary actions
+    QColor accentPurple = QColor(177, 158, 248);// Purple accent for highlights
+    QColor textLight = QColor(220, 224, 227);   // Light text
+    QColor borderDark = QColor(26, 29, 31);     // Dark border
+
+    // Set the application palette
+    QPalette palette;
+    palette.setColor(QPalette::Window, bgDark);
+    palette.setColor(QPalette::WindowText, textLight);
+    palette.setColor(QPalette::Base, bgMedium);
+    palette.setColor(QPalette::AlternateBase, bgDark);
+    palette.setColor(QPalette::Text, textLight);
+    palette.setColor(QPalette::Button, bgMedium);
+    palette.setColor(QPalette::ButtonText, textLight);
+    palette.setColor(QPalette::Highlight, accentPink);
+    palette.setColor(QPalette::HighlightedText, QColor(255, 255, 255));
+    this->setPalette(palette);
+
+    // Frame styling with glowing accents
+    QString mainFrameStyle = QString("QFrame { "
+                                     "  background-color: %1; "
+                                     "  border: 1px solid %2; "
+                                     "  border-radius: 5px; "
+                                     "}")
+                                 .arg(bgMedium.name(), borderDark.name());
+
+    QString canvasFrameStyle = QString("QFrame { "
+                                       "  background-color: %1; "
+                                       "  border: 2px solid %2; "
+                                       "  border-radius: 5px; "
+                                       "}")
+                                   .arg(bgDark.name(), bgDark.name());
+
+    QString previewFrameStyle = QString("QFrame { "
+                                        "  background-color: %1; "
+                                        "  border: 2px solid %2; "
+                                        "  border-radius: 5px; "
+                                        "}")
+                                    .arg(bgMedium.name(), accentCyan.name());
+
+    // Special styling for the color panel frame to make text visible
+    QString colorPanelFrameStyle = QString("QFrame { "
+                                           "  background-color: %1; "
+                                           "  border: 1px solid %2; "
+                                           "  border-radius: 5px; "
+                                           "}")
+                                       .arg(bgMedium.name(), accentPurple.name());
+
+
+    // Apply frame styles
+    ui->MainFrame->setStyleSheet(mainFrameStyle);
+    ui->CanvasFrame->setStyleSheet(canvasFrameStyle);
+    ui->ColorPanelFram->setStyleSheet(colorPanelFrameStyle);
+    ui->FrameList->setStyleSheet(mainFrameStyle);
+    ui->PreviewFrame->setStyleSheet(colorPanelFrameStyle);
+    ui->Tool->setStyleSheet(colorPanelFrameStyle);
+    ui->frame->setStyleSheet(mainFrameStyle);
+
+    // Make color palette title more visible with specific styling
+    QList<QLabel*> colorPanelLabels = ui->ColorPanelFram->findChildren<QLabel*>();
+    for (QLabel* label : colorPanelLabels) {
+        label->setStyleSheet("QLabel { color: rgb(255, 255, 255); font-weight: bold; font-size: 12px; }");
+    }
+
+    // Style color buttons specifically for dark theme
+    QList<QToolButton*> colorButtons = ui->ColorPanelFram->findChildren<QToolButton*>();
+    for (QToolButton* btn : colorButtons) {
+        btn->setStyleSheet(
+            "QToolButton { "
+            "  background-color: rgb(44, 47, 51); "
+            "  border: 1px solid rgb(26, 29, 31); "
+            "  border-radius: 3px; "
+            "} "
+            "QToolButton:hover { "
+            "  border: 1px solid rgb(124, 232, 255); "
+            "} "
+            "QToolButton:checked { "
+            "  border: 2px solid rgb(255, 115, 179); "
+            "  background-color: rgb(54, 57, 63); "
+            "}"
+            );
+    }
+
+
+
+
+    // Tool button styling with neon-like glow effects
+    QString toolButtonStyle = QString("QToolButton { "
+                                      "  background-color: %1; "
+                                      "  border: 1px solid %2; "
+                                      "  border-radius: 5px; "
+                                      "} "
+                                      "QToolButton:hover { "
+                                      "  background-color: %3; "
+                                      "  border: 1px solid %4; "
+                                      "} "
+                                      "QToolButton:pressed { "
+                                      "  background-color: %5; "
+                                      "} "
+                                      "QToolButton:checked { "
+                                      "  background-color: %1; "
+                                      "  border: 2px solid %4; "
+                                      "}")
+                                  .arg(bgMedium.name(),
+                                       borderDark.name(),
+                                       bgLight.name(),
+                                       accentPink.name(),
+                                       bgDark.name());
+
+    // Apply button styles
+    ui->Pen->setStyleSheet(toolButtonStyle);
+    ui->Eraser->setStyleSheet(toolButtonStyle);
+    ui->Fill->setStyleSheet(toolButtonStyle);
+    ui->Flip->setStyleSheet(toolButtonStyle);
+    ui->AddFrame->setStyleSheet(toolButtonStyle);
+    ui->DeleteFrame->setStyleSheet(toolButtonStyle);
+    ui->moveUpFrameButton->setStyleSheet(toolButtonStyle);
+    ui->moveDownFrameButton->setStyleSheet(toolButtonStyle);
+    ui->Play->setStyleSheet(toolButtonStyle);
+    ui->Stop->setStyleSheet(toolButtonStyle);
+
+
+    // Primary action button styling (pink)
+    QString pinkButtonStyle = QString("QPushButton { "
+                                      "  background-color: %1; "
+                                      "  color: rgb(35, 39, 42); "
+                                      "  border: none; "
+                                      "  border-radius: 5px; "
+                                      "  padding: 5px 10px; "
+                                      "  font-weight: bold; "
+                                      "} "
+                                      "QPushButton:hover { "
+                                      "  background-color: %2; "
+                                      "} "
+                                      "QPushButton:pressed { "
+                                      "  background-color: %3; "
+                                      "}")
+                                  .arg(accentPink.name(),
+                                       accentPink.lighter(110).name(),
+                                       accentPink.darker(110).name());
+
+    // Apply to primary action buttons
+    ui->saveButton->setStyleSheet(pinkButtonStyle);
+    ui->loadButton->setStyleSheet(pinkButtonStyle);
+
+    // Secondary action button styling (cyan)
+    QString cyanButtonStyle = QString("QPushButton { "
+                                      "  background-color: %1; "
+                                      "  color: rgb(35, 39, 42); "
+                                      "  border: none; "
+                                      "  border-radius: 5px; "
+                                      "  padding: 5px 10px; "
+                                      "  font-weight: bold; "
+                                      "} "
+                                      "QPushButton:hover { "
+                                      "  background-color: %2; "
+                                      "} "
+                                      "QPushButton:pressed { "
+                                      "  background-color: %3; "
+                                      "}")
+                                  .arg(accentCyan.name(),
+                                       accentCyan.lighter(110).name(),
+                                       accentCyan.darker(110).name());
+
+    // Apply to secondary action buttons
+    ui->ResizeButton->setStyleSheet(cyanButtonStyle);
+
+
+    // Tertiary action button styling (purple)
+    QString purpleButtonStyle = QString("QPushButton { "
+                                        "  background-color: %1; "
+                                        "  color: rgb(35, 39, 42); "
+                                        "  border: none; "
+                                        "  border-radius: 5px; "
+                                        "  padding: 5px 10px; "
+                                        "  font-weight: bold; "
+                                        "} "
+                                        "QPushButton:hover { "
+                                        "  background-color: %2; "
+                                        "} "
+                                        "QPushButton:pressed { "
+                                        "  background-color: %3; "
+                                        "}")
+                                    .arg(accentPurple.name(),
+                                         accentPurple.lighter(110).name(),
+                                         accentPurple.darker(110).name());
+
+    ui->CleanButton->setStyleSheet(purpleButtonStyle);
+    ui->undoButton->setStyleSheet(purpleButtonStyle);
+    ui->redoButton->setStyleSheet(purpleButtonStyle);
+
+    // Style list widget with dark theme and glowing selection
+    ui->frameListWidget->setStyleSheet(
+        QString("QListWidget { "
+                "  background-color: %1; "
+                "  border: 1px solid %2; "
+                "  border-radius: 5px; "
+                "  color: %3; "
+                "} "
+                "QListWidget::item { "
+                "  padding: 6px; "
+                "  border-radius: 3px; "
+                "  margin: 2px; "
+                "} "
+                "QListWidget::item:selected { "
+                "  background-color: %4; "
+                "  color: rgb(35, 39, 42); "
+                "} "
+                "QListWidget::item:hover:!selected { "
+                "  background-color: %5; "
+                "}")
+            .arg(bgMedium.name(), borderDark.name(),
+                 textLight.name(), accentPink.name(), bgLight.name())
+        );
+
+    // Style spinboxes with dark theme
+    QString spinBoxStyle = QString(
+                               "QSpinBox { "
+                               "  background-color: %1; "
+                               "  color: %3; "
+                               "  border: 1px solid %2; "
+                               "  border-radius: 5px; "
+                               "  padding: 3px; "
+                               "}")
+                               .arg(bgMedium.name(),
+                                    borderDark.name(),
+                                    textLight.name());
+
+    ui->SizeBox->setStyleSheet(spinBoxStyle);
+    ui->FPSBox->setStyleSheet(spinBoxStyle);
+    ui->FPSFrame->setStyleSheet("QFrame { border: none; }");
+
+
+    // Style sliders with glowing effect
+    QString sliderStyle = QString("QSlider::groove:horizontal { "
+                                  "  height: 6px; "
+                                  "  background: %1; "
+                                  "  border-radius: 3px; "
+                                  "} "
+                                  "QSlider::handle:horizontal { "
+                                  "  background: %2; "
+                                  "  border: none; "
+                                  "  width: 16px; "
+                                  "  height: 16px; "
+                                  "  margin: -5px 0; "
+                                  "  border-radius: 8px; "
+                                  "}")
+                              .arg(bgLight.name(), accentCyan.name());
+
+    ui->SizeLabel->setFont(largeArialFont);
+    ui->FPS->setStyleSheet(sliderStyle);
+
+
+    if (QLabel* fpsLabel = ui->FPSFrame->findChild<QLabel*>()) {
+        fpsLabel->setFont(largeArialFont);
+    }
+
+    // For the confirm button
+    if (ui->ResizeButton) ui->ResizeButton->setFont(mediumArialFont);
+
+
+    // Make labels stand out with bright text
+    QList<QLabel*> labels = findChildren<QLabel*>();
+    for (QLabel* label : labels) {
+
+        label->setStyleSheet("QLabel { color: rgb(255, 255, 255); font-weight: bold; border: none}");
+    }
+}
+
 

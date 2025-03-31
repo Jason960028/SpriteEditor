@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>arrowDown.png</file>
+        <file>arrowUp.png</file>
+        <file>eraser.png</file>
+        <file>fill.png</file>
+        <file>flip.png</file>
+        <file>minus.png</file>
+        <file>pen.png</file>
+        <file>plus.png</file>
+    </qresource>
+</RCC>

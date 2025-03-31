@@ -24,8 +24,8 @@
 
 
 ## How to run
-  This program is a QT-based program.
-  To run the program, install QT and clone this repo as a new project.
+This program is a QT-based program.
+To run the program, install QT and clone this repo as a new project.
 
 ## Technical Stack Used
   **Language:** C++
@@ -33,25 +33,25 @@
   **Framework:** QT Framework
 
   **QT Components**
-    - QWidget for UI components
-    - QPainter for rendering graphics
-    - QImage for sprite manipulation
-    - QTimer for animation control
-    - QUndoStack/QUndoCommand for undo/redo functionality
-    - QFileDialog for file operations
-    - QJsonDocument/QJsonObject for file serialization
+  - QWidget for UI components.
+  - QPainter for rendering graphics.
+  - QImage for sprite manipulation.
+  - QTimer for animation control.
+  - QUndoStack/QUndoCommand for undo/redo functionality.
+  - QFileDialog for file operations.
+  - QJsonDocument/QJsonObject for file serialization.
 
   **Architecture Pattern**
     Model-View-Controller architecture
-      - SpriteEditorModel: Manages data and business logic
-      - SpriteEditorView: handles UI and user interaction.
-      - SpriteEditorController: Coordinates between model and view
+    - SpriteEditorModel: Manages data and business logic.
+    - SpriteEditorView: handles UI and user interaction.
+    - SpriteEditorController: Coordinates between model and view.
 
   **Build System**
-    - QMake
+  - QMake
 
   **File Format**
-    - Custom .ssp file format for sprite data storage using JSON
+  - Custom .ssp file format for sprite data storage using JSON
       
 
   

@@ -159,7 +159,7 @@ void SpriteEditorView::connectSignals()
     // Connect the FPS slider to update the animation frame delay dynamically
     connect(ui->FPS, &QSlider::valueChanged, this, [this](int value) {
         if (value > 0)
-            m_animation->setFrameDelay(1000 / value);  // Calculate delay in milliseconds from FPS
+            m_animation->setFrameRate(1000 / value);  // Calculate delay in milliseconds from FPS
     });
 
     // Connect save and load

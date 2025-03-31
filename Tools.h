@@ -2,15 +2,13 @@
 #define TOOLS_H
 
 /**
- * @file tools.h
+ * @file Tools.h
  * @brief Declares the Tools class, which provides basic drawing functionality for the sprite editor.
  *
  * This class includes definitions for available tool types and color palettes,
- * along with static utility functions to apply drawing actions (pen, eraser, fill)
- * on a QImage-based canvas.
+ * along with static utility functions to apply drawing actions on a canvas.
  *
- *
- * @author Jason Chang(main)
+ * @author Jason Chang (main)
  */
 
 #include <QImage>
@@ -23,8 +21,6 @@
  */
 class Tools {
 public:
-
-
     /**
      * @enum ToolType
      * @brief Tool types available in the sprite editor.
@@ -75,7 +71,7 @@ public:
      * @param image The image to modify.
      * @param pos The position to apply the tool.
      * @param toolType The tool to use.
-     * @param colorType The color to use (ignored for Eraser).
+     * @param color The color to use
      */
     static void applyTool(QImage& image, const QPoint& pos, ToolType toolType, const QColor& color);
 
@@ -88,7 +84,7 @@ public:
     static QColor getColorAt(const QImage& image, const QPoint& pos);
 
     /**
-     * @brief Fills an area with a specified color using a flood-fill algorithm.
+     * @brief Fills an area with a specified color using a BFS algorithm.
      * @param image The image to modify.
      * @param startPos The starting position for the fill.
      * @param fillColor The color to fill with.
@@ -97,8 +93,6 @@ public:
 
 private:
     static QMap<ToolType, Tools*> m_tools;
-
-
 };
 
 #endif // TOOLS_H

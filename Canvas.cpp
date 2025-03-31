@@ -1,14 +1,14 @@
 /**
- * @file canvas.cpp
+ * @file Canvas.cpp
  * @brief Implements the Canvas class for rendering and interacting with pixel-based sprites.
  *
  * The Canvas class handles drawing the sprite image, rendering a checkerboard background for transparency,
  * displaying a pixel grid, and managing mouse input to emit signals for user interaction.
  *
- * @author Jason Chang
+ * @author Jason Chang (main), Arthur Mo (Adjustments for redo/undo, Canvas Resizing)
  */
 
-#include "canvas.h"
+#include "Canvas.h"
 #include "RedoUndo.h"
 #include <QPainter>
 #include <QMouseEvent>
@@ -16,22 +16,20 @@
 
 Canvas::Canvas(QWidget* parent, SpriteEditorModel* model)
     : QWidget(parent),
-    model(model)
-{
+    model(model) {
     // Initialize with safe defaults
     canvasWidth = 32;
     canvasHeight = 32;
     maxGridWidth = 64;
     maxGridHeight = 64;
 
-    if(model) {
+    if (model) {
         qDebug() << "Canvas created - Model is NOT NULL";
         canvasWidth = model->getFrameSize().width();
         canvasHeight = model->getFrameSize().height();
         maxGridWidth = model->getMaxSize().width();
         maxGridHeight = model->getMaxSize().height();
         displayImage = model->getCurrentFrame();
-
     } else {
         qDebug() << "Canvas created - Model is NULL!";
         displayImage = QImage(QSize(32, 32), QImage::Format_ARGB32);
@@ -51,7 +49,7 @@ void Canvas::paintEvent(QPaintEvent* event) {
 
     QPainter painter(this);
 
-    if(model) {
+    if (model) {
         displayImage = model->getCurrentFrame(); // Refresh image reference
     }
 
@@ -106,7 +104,6 @@ QPoint Canvas::screenToImagePos(const QPoint& screenPos) const {
 }
 
 void Canvas::updateCanvas(const QImage& frameImage) {
-
     displayImage = frameImage;
     update();
 }
@@ -140,7 +137,6 @@ void Canvas::mouseMoveEvent(QMouseEvent* event) {
         if (pixelPos != m_lastPos) {
             QImage& frame = model->getCurrentFrame();
 
-
             if (!m_modifiedPixels.contains(pixelPos)) {
                 m_oldColors.append(frame.pixelColor(pixelPos));
                 m_modifiedPixels.append(pixelPos);
@@ -153,10 +149,10 @@ void Canvas::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void Canvas::mouseReleaseEvent(QMouseEvent* event) {
-    if(event->button() == Qt::LeftButton && m_isDrawing) {
+    if (event->button() == Qt::LeftButton && m_isDrawing) {
         m_isDrawing = false;
 
-        if(!m_modifiedPixels.isEmpty() && model && model->currentUndoStack()) {
+        if (!m_modifiedPixels.isEmpty() && model && model->currentUndoStack()) {
             model->currentUndoStack()->push(
                 new RedoUndoCommand(
                     model,
@@ -171,9 +167,8 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event) {
     }
 }
 
-void Canvas::resetCanvasSize()
-{
-    if(model) {
+void Canvas::resetCanvasSize() {
+    if (model) {
         canvasWidth = model->getFrameSize().width();
         canvasHeight = model->getFrameSize().height();
         maxGridWidth = model->getMaxSize().width();
@@ -185,4 +180,3 @@ void Canvas::resetCanvasSize()
         displayImage.fill(Qt::transparent);
     }
 }
-

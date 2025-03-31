@@ -3,9 +3,10 @@
 
 /**
  * @file SpriteEditorView.h
- * @brief
- *
- * @author Arthur(main), Jason Chang(Canvas implementations, Color panel), Kirra Kostenburg(save/load), Jay Lee(Animation, Layer)
+ * @brief Header file for the sprite editor view
+ * @details Implements the user interface for the sprite editor
+ * @author Arthur (main), Jason Chang (Canvas implementations, Color panel),
+ *         Kirra Kostenburg (save/load), Jay Lee (Animation, Layer)
  */
 
 #include <QListWidget>
@@ -24,6 +25,11 @@ namespace Ui {
 class SpriteEditorView;
 }
 
+/**
+ * @class SpriteEditorView
+ * @brief View class for the sprite editor application
+ * @details Implements the user interface and handles visualization
+ */
 class SpriteEditorView : public QMainWindow
 {
     Q_OBJECT
@@ -51,26 +57,37 @@ signals:
 
 private slots:
 
+    // slot to handle mouse Pressed
     void handleMousePressed(const QPoint &pos);
 
+    // slot to handle mouse Dragged
     void handleMouseDragged(const QPoint &pos);
 
+    // slot to handle mouse Released
     void handleMouseReleased(const QPoint &pos);
+
     //handle the Canvas update when frame changed
     void handleFrameChanged();
 
+    // slot to update the FrameList
     void updateFrameList(int currentIndex);
 
+    // slot to handle Add frame clicked
     void onAddFrameClicked();
 
+    // slot to handle delete frame clicked
     void onDeleteFrameClicked();
 
+    // slot to handle move frame up clicked
     void onMoveUpClicked();
 
+    // slot to handle move frame down clicked
     void onMoveDownClicked();
 
+    // slot to handle Frame selected
     void onFrameSelectionChanged();
 
+    // slot to update Tool button selected
     void updateToolButtonStates();
 
     // slot to handle resize
@@ -87,22 +104,22 @@ private slots:
     void onLoadButtonClicked();
     void onSaveButtonClicked();
 
+    // Color selections
     void onColorSelected(int colorIndex);
     void onModelColorChanged(const QColor &color);
     void updateSelectedColorButton(int colorIndex);
 
+    // Redo/Undo connection slot
     void updateUndoRedoConnections();
 
 private:
+    // basic UI set up
     void setupUI();
     void setupTools();
     void connectSignals();
     void setupButtonIcons();
     void applyTheme();
-
-
     Ui::SpriteEditorView *ui;
-
     SpriteEditorModel *m_model;
     SpriteEditorController *m_controller;
     Canvas *m_canvasWidget;

@@ -14,6 +14,7 @@
 #include "tools.h"
 #include <QFileDialog>
 
+
 class SpriteEditorModel;
 class SpriteEditorView;
 
@@ -30,7 +31,7 @@ public:
      * @param model Pointer to the sprite editor model
      * @param parent Parent QObject
      */
-    explicit SpriteEditorController(SpriteEditorModel* model, QObject* parent = nullptr);
+    explicit SpriteEditorController(SpriteEditorModel* model,QObject* parent = nullptr);
 
     /**
      * @brief Starts the animation playback
@@ -151,6 +152,8 @@ public slots:
      * @brief Handles clean button click
      */
     void onCleanButtonClicked();
+
+    void onResizeClicked(int size);
 
 private:
     /**

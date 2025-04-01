@@ -145,6 +145,7 @@ void SpriteEditorView::connectSignals() {
     connect(m_canvas, &Canvas::mousePressed, this, &SpriteEditorView::handleMousePressed);
     connect(m_canvas, &Canvas::mouseDragged, this, &SpriteEditorView::handleMouseDragged);
     connect(m_canvas, &Canvas::mouseReleased, this, &SpriteEditorView::handleMouseReleased);
+    connect(this, &SpriteEditorView::resizeButtonSignal, m_controller, &SpriteEditorController::onResizeClicked);
 
     // Connect the Play button to the slot that starts the animation
     connect(ui->Play, &QPushButton::clicked, this, &SpriteEditorView::onPlayButtonClicked);
@@ -185,6 +186,7 @@ void SpriteEditorView::connectSignals() {
 
     connect(m_model, &SpriteEditorModel::undoStackChanged,
             this, &SpriteEditorView::updateUndoRedoConnections);
+
 
     updateUndoRedoConnections();
 }
@@ -382,14 +384,13 @@ void SpriteEditorView::applyResize(int size) {
                                       .arg(size),
                                   QMessageBox::Yes|QMessageBox::No);
 
-    if (reply == QMessageBox::Yes) {
-        m_model->resizeAllFrames(size);
-        m_canvas->resetCanvasSize();
 
+    if (reply == QMessageBox::Yes) {
+        emit resizeButtonSignal(size);
+        m_canvas->resetCanvasSize();
         // Update the Canvas widget's fixed size based on the new dimensions
         int pixelScale = 10; // Match the initial scale factor
         m_canvas->setFixedSize(size * pixelScale, size * pixelScale);
-
         updateCanvasDisplay();
 
         // Update animation preview

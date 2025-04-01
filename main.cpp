@@ -5,7 +5,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     SpriteEditorModel model;
-    SpriteEditorController controller(&model);
+    Canvas canvas;
+    SpriteEditorController controller(&model, &canvas);
     SpriteEditorView view(&model, &controller);
     controller.setView(&view);
 

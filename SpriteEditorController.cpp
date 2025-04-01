@@ -3,7 +3,6 @@
 #include "SpriteEditorView.h"
 #include <QMessageBox>
 #include <QPushButton>
-
 /**
  * @file SpriteEditorController.cpp
  * @brief Implementation file for the sprite editor controller
@@ -13,7 +12,7 @@
  * Checked by Jay Lee, Kirra Kostenburg
  */
 
-SpriteEditorController::SpriteEditorController(SpriteEditorModel* model, QObject* parent)
+SpriteEditorController::SpriteEditorController(SpriteEditorModel* model,QObject* parent)
     : QObject(parent),
     m_model(model),
     m_currentTool(Tools::ToolType::Pen) {
@@ -154,4 +153,8 @@ void SpriteEditorController::onCleanButtonClicked() {
         m_model->clearCurrentUndoStack();
         emit currentFrameChanged();
     }
+}
+
+void SpriteEditorController::onResizeClicked(int size){
+    m_model->resizeAllFrames(size);
 }

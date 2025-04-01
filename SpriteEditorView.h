@@ -108,6 +108,8 @@ signals:
      */
     void colorSelected(const QColor &color);
 
+    void resizeButtonSignal(int size);
+
 private slots:
     /**
      * @brief Handles mouse press events on canvas

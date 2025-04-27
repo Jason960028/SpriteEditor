@@ -11,7 +11,7 @@ CONFIG += c++17
 SOURCES += \
     Animation.cpp \
     Canvas.cpp \
-    SaveLoad.cpp \
+    RedoUndo.cpp \
     SpriteEditorController.cpp \
     SpriteEditorModel.cpp \
     SpriteEditorView.cpp \
@@ -21,7 +21,7 @@ SOURCES += \
 HEADERS += \
     Animation.h \
     Canvas.h \
-    SaveLoad.h \
+    RedoUndo.h \
     SpriteEditorController.h \
     SpriteEditorModel.h \
     SpriteEditorView.h \
